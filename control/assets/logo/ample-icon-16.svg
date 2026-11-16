@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="AMPLE">
+  <!-- Simplified for 16 px (tray, favicon): the pulse and the gap turn into noise at that
+       size, so the A is solid with a plain crossbar. Same outline as the full logo. -->
+  <rect width="512" height="512" rx="115" fill="#141414"/>
+  <g fill="#f08a24" stroke="#f08a24" stroke-width="6" stroke-linejoin="round">
+    <path d="M206.3 105 Q214 91 228 91 L280.5 91 Q294.4 91 302.1 105 L404.1 290.9 L322.8 290.9 L288.6 228 C266.8 187.9 240.2 187.9 218.6 228 L184.6 290.9 L104.2 290.9 Z"/>
+    <path d="M104.2 290.9 L404.1 290.9 L470.6 411.9 L401 411.9 Q388.1 411.9 381.9 401 L367.1 375 Q349 343.3 325 343.3 L180 343.3 Q157 343.3 138.9 375 L124.1 401 Q117.9 411.9 105 411.9 L37.8 411.9 Z"/>
+  </g>
+</svg>

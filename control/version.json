@@ -1,0 +1,8 @@
+{
+  "_help": "AMPLE's own version. The ONLY place to change it: the setup file name (AMPLE-Setup-<version>.exe), the control panel, the installer and the update check all read it from here. 'notes' go into dist\\latest.json and are shown in the panel next to the update.",
+  "version": "1.0.0",
+  "notes": {
+    "en": "The first release of AMPLE: Apache, MariaDB, PHP 8.5, phpMyAdmin, Mailpit and Composer in one install, with a real control panel, Log Doctor, sites at NAME.localhost, HTTPS, one-click sharing and updates from the panel.",
+    "ar": "الإصدار الأول من AMPLE: Apache و MariaDB و PHP 8.5 و phpMyAdmin و Mailpit و Composer في تثبيت واحد، مع لوحة تحكم حقيقية و Log Doctor ومواقع على NAME.localhost و HTTPS ومشاركة بضغطة واحدة وتحديثات من اللوحة."
+  }
+}

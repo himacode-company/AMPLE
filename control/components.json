@@ -1,0 +1,100 @@
+{
+  "_help": "dest = folder inside AMPLE. preserve = kept across upgrades (your data). prune = unneeded folders removed after install.",
+  "node": {
+    "version": "24.22.3",
+    "note": "Runs AMPLE itself on PCs without Node.js. Only node.exe is extracted to control\\runtime. Signed by the OpenJS Foundation (passes Smart App Control).",
+    "url": "https://nodejs.org/dist/v24.22.3/node-v24.22.3-win-x64.zip",
+    "sha256": "e612af99f626ab415ea225af6bce5c971feb448cb5cae250bb1c3fa50c5f7d9f",
+    "file": "node-v24.22.3-win-x64/node.exe",
+    "dest": "control/runtime/node.exe"
+  },
+  "apache": {
+    "version": "2.4.66",
+    "note": "2.4.71 is a VS18 build (needs Visual C++ runtime 14.50+). Revisit later.",
+    "url": "https://www.apachelounge.com/download/VS17/binaries/httpd-2.4.66-251206-win64-VS17.zip",
+    "sha256": "2cd1f349b6705e43e784e876a233eeb1a859fa6b8abc693a91f87b35a368f7f9",
+    "stripPrefix": "Apache24",
+    "dest": "apache",
+    "preserve": [
+      "conf/vhosts",
+      "conf/ssl"
+    ],
+    "prune": [
+      "htdocs",
+      "cgi-bin",
+      "logs",
+      "manual"
+    ]
+  },
+  "php": [
+    {
+      "version": "8.5.12",
+      "url": "https://windows.php.net/downloads/releases/php-8.5.12-1-Win32-vs17-x64.zip",
+      "archiveUrl": "https://windows.php.net/downloads/releases/archives/php-8.5.12-1-Win32-vs17-x64.zip",
+      "sha256": "0dacd6484b092b5e9ae9fa3d7f96a937caf9d874eee2d980b68ed3129741144a",
+      "stripPrefix": "",
+      "dest": "php/8.5.12"
+    }
+  ],
+  "mariadb": {
+    "version": "11.8.9",
+    "url": "https://downloads.mariadb.org/rest-api/mariadb/11.8.9/mariadb-11.8.9-winx64.zip",
+    "sha256": "830c46727d9278eae212ae3eca44eeb9e71b2a68704e95f344a64fba7b1963f5",
+    "stripPrefix": "mariadb-11.8.9-winx64",
+    "dest": "mariadb",
+    "preserve": [
+      "data"
+    ]
+  },
+  "cacert": {
+    "version": "latest",
+    "note": "Mozilla CA bundle from curl.se, used by PHP curl/openssl for HTTPS.",
+    "url": "https://curl.se/ca/cacert.pem",
+    "sha256": null,
+    "plainFile": true,
+    "dest": "php/cacert.pem"
+  },
+  "mailpit": {
+    "version": "1.33.1",
+    "note": "Catches every email PHP sends; view them at http://localhost/mailpit/. SHA-256 from the GitHub release digest.",
+    "url": "https://github.com/axllent/mailpit/releases/download/v1.33.1/mailpit-windows-amd64.zip",
+    "sha256": "0bcf8f1e7c21005b30c206064ff2f37dac602ef66774e558379d326f5673d652",
+    "stripPrefix": "",
+    "dest": "mailpit",
+    "preserve": [
+      "data"
+    ]
+  },
+  "composer": {
+    "version": "latest",
+    "note": "Composer (PHP package manager). Runs with AMPLE's active PHP via bin\\composer.",
+    "url": "https://getcomposer.org/download/latest-stable/composer.phar",
+    "sha256": null,
+    "plainFile": true,
+    "dest": "bin/composer.phar"
+  },
+  "electron": {
+    "version": "45.3.2",
+    "note": "Runs the AMPLE control panel (control\\panel). Official build, SHA-256 from Electron's SHASUMS256.txt. electron.exe is only RENAMED to AMPLE.exe (never modified), so Windows sees the exact published file. Not code-signed by the Electron project.",
+    "url": "https://github.com/electron/electron/releases/download/v45.3.2/electron-v45.3.2-win32-x64.zip",
+    "sha256": "cd1ab0d49c2f76838c0c9ff75afefb4d9d85ca59036691932bf35be8eceba98b",
+    "stripPrefix": "",
+    "dest": "electron"
+  },
+  "cloudflared": {
+    "version": "2026.11.0",
+    "note": "Only for \"ample share\" (a public link to one site). Downloaded the first time you share, not by setup. Signed by Cloudflare, Inc.; SHA-256 from the GitHub release.",
+    "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.11.0/cloudflared-windows-amd64.exe",
+    "sha256": "d5c1d82031da6253dcdcff64c944cd0fe063016edeb2e4fd088075fc9bd52d0a",
+    "plainFile": true,
+    "onDemand": true,
+    "dest": "cloudflared/cloudflared.exe"
+  },
+  "phpmyadmin": {
+    "version": "5.2.3",
+    "url": "https://files.phpmyadmin.net/phpMyAdmin/5.2.3/phpMyAdmin-5.2.3-all-languages.zip",
+    "sha256": null,
+    "stripPrefix": "phpMyAdmin-5.2.3-all-languages",
+    "dest": "phpmyadmin"
+  }
+}

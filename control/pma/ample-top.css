@@ -1,0 +1,138 @@
+/*
+ * AMPLE: phpMyAdmin top bar (path line + tabs) in the Ember identity (always dark).
+ * Every rule is limited to the top bar: #floating_menubar (the container phpMyAdmin's
+ * JavaScript moves the bar into), #server-breadcrumb (path line), #topmenucontainer
+ * (tabs + "More" menu) and #page_nav_icons (small icons at the top right).
+ *
+ * Icons are line drawings used as a CSS mask. In the tabs and the path line each one has
+ * its own color (end of this file, a bit brighter on hover); the top-right icons follow
+ * the text color. An icon not listed below keeps phpMyAdmin's own image (never an empty square).
+ */
+
+#floating_menubar { background: #15171c; box-shadow: 0 2px 10px rgba(0, 0, 0, .18); }
+
+/* Hidden (only the tabs stay at the top): the path line "Server: … » Database » Table"
+   and the top-right icons (back to top, page settings). Their styles below stay unused. */
+#server-breadcrumb, #page_nav_icons { display: none !important; }
+
+/* ---- path line: Server » Database » Table --------------------------------------- */
+#server-breadcrumb .breadcrumb-navbar {
+  --bs-breadcrumb-divider: "»";
+  background: #15171c !important; text-shadow: none !important; padding: 7px 18px !important;
+  border-bottom: 1px solid #24272e; font-size: 13px; color: #9a9ea7; align-items: center;
+}
+#server-breadcrumb .breadcrumb-item { display: inline-flex; align-items: center; gap: 6px; color: #9a9ea7; }
+#server-breadcrumb .breadcrumb-item a { color: #e2dfd8 !important; text-decoration: none; }
+#server-breadcrumb .breadcrumb-item a:hover { color: #f08a24 !important; }
+#server-breadcrumb .breadcrumb-item + .breadcrumb-item::before { color: #f08a24; font-weight: 700; padding-right: 8px; }
+#server-breadcrumb .breadcrumb-comment { color: #7d828c !important; font-weight: 400 !important; font-style: italic; text-shadow: none !important; }
+#server-breadcrumb .breadcrumb-item .icon { color: #9a9ea7; }
+
+/* ---- tabs ----------------------------------------------------------------------- */
+#topmenucontainer { background: #15171c; padding-right: 0 !important; }
+#topmenucontainer .navbar { background: #15171c !important; padding: 0 10px !important; }
+#topmenucontainer #topmenu { gap: 0; }
+/* phpMyAdmin's theme paints each tab (the <li>) with a grey gradient and borders: remove them */
+#topmenucontainer .navbar-nav .nav-item,
+#topmenucontainer .navbar-nav .nav-item:hover,
+#topmenucontainer .navbar-nav .nav-item.active { background: none !important; border: 0 !important; }
+/* joined tabs with a thin full-height divider between each two */
+#topmenucontainer #topmenu .nav-link {
+  display: inline-flex; align-items: center; gap: 2px; color: #b4b8c0 !important; font-size: 13.5px;
+  padding: 11px 14px !important; border: 0; border-radius: 0; background: none;
+  transition: color .15s, background .15s;
+}
+#topmenucontainer #topmenu > .nav-item + .nav-item > .nav-link { border-left: 1px solid #2f333c; }
+#topmenucontainer #topmenu .nav-link:hover { color: #fff !important; background: rgba(255, 255, 255, .06); }
+#topmenucontainer #topmenu .nav-item.active > .nav-link,
+#topmenucontainer #topmenu .nav-link.active { color: #fff !important; background: #1f2229; box-shadow: inset 0 -2px 0 #f08a24; }
+#topmenucontainer .nav-link .icon { transition: filter .15s; }
+#topmenucontainer .nav-link:hover .icon { filter: brightness(1.25); }
+
+/* "More" menu (made by phpMyAdmin when the tabs do not fit) */
+#topmenucontainer .dropdown-toggle::after { border-top-color: #f08a24; margin-left: 6px; }
+#topmenucontainer .dropdown-menu {
+  background: #1f2229 !important; border: 1px solid #2a2e36 !important; border-radius: 10px !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .5) !important; padding: 6px !important; min-width: 200px;
+}
+/* inside "More": plain rows, not framed buttons */
+#topmenucontainer .dropdown-menu .nav-link { display: flex !important; width: 100%; border: 0 !important; background: none !important;
+  border-radius: 7px !important; padding: 8px 10px !important; }
+#topmenucontainer .dropdown-menu .nav-link:hover { background: rgba(240, 138, 36, .14) !important; }
+#topmenucontainer .dropdown-menu .nav-item.active > .nav-link { box-shadow: inset 3px 0 0 #f08a24; }
+
+/* small screens: the menu button */
+#topmenucontainer .navbar-toggler { border-color: #2a2e36 !important; margin: 6px 0; }
+#topmenucontainer .navbar-toggler-icon { filter: invert(1) brightness(.85); }
+
+/* ---- top-right icons (page settings, back to top) ------------------------------- */
+#page_nav_icons { background: #15171c; border-radius: 0 0 0 8px; padding: 4px 8px !important; }
+#page_nav_icons .icon { color: #9a9ea7; }
+#page_nav_icons a:hover .icon, #page_nav_icons #page_settings_icon:hover .icon { color: #f08a24; }
+
+/* ---- icons ---------------------------------------------------------------------- */
+/* The shared part, only for the icons drawn below (others keep phpMyAdmin's image). */
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) :is(
+  .ic_s_host, .ic_s_db, .ic_s_tbl, .ic_b_views, .ic_b_browse, .ic_b_props, .ic_b_sql, .ic_b_search,
+  .ic_b_insrow, .ic_b_export, .ic_b_tblexport, .ic_b_import, .ic_b_tblimport, .ic_b_tblops,
+  .ic_s_status, .ic_s_rights, .ic_s_replication, .ic_s_vars, .ic_s_asci, .ic_b_engine, .ic_b_plugin,
+  .ic_b_routines, .ic_b_events, .ic_b_triggers, .ic_b_relations, .ic_eye, .ic_b_more,
+  .ic_s_cog, .ic_s_top, .ic_s_lock
+) {
+  background: currentColor !important; width: 16px; height: 16px; margin: 0 4px 0 0 !important; vertical-align: -3px;
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat;
+}
+
+/* the drawings (16 x 16, 1.5 px lines; the color comes from the text, not from here) */
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_host { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='2.5' width='11' height='4.5' rx='1'/%3E%3Crect x='2.5' y='9' width='11' height='4.5' rx='1'/%3E%3Cpath d='M5 4.75h.01M5 11.25h.01'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_db { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='8' cy='3.6' rx='5' ry='2'/%3E%3Cpath d='M3 3.6v8.8c0 1.1 2.2 2 5 2s5-.9 5-2V3.6M3 8c0 1.1 2.2 2 5 2s5-.9 5-2'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) :is(.ic_s_tbl, .ic_b_browse) { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='2.5' width='12' height='11' rx='1.6'/%3E%3Cpath d='M2 6h12M2 9.6h12M6.4 6v7.5'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) :is(.ic_b_views, .ic_eye) { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.5 8S4 3.6 8 3.6 14.5 8 14.5 8 12 12.4 8 12.4 1.5 8 1.5 8z'/%3E%3Ccircle cx='8' cy='8' r='2'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_props { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4h8M6 8h8M6 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_sql { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.5' y='2.5' width='13' height='11' rx='1.6'/%3E%3Cpath d='M4.5 6.2 6.6 8l-2.1 1.8M8.2 10h3.3'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_search { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='7' cy='7' r='4.5'/%3E%3Cpath d='m10.4 10.4 3.1 3.1'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_insrow { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='2' width='12' height='12' rx='2'/%3E%3Cpath d='M8 5.2v5.6M5.2 8h5.6'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) :is(.ic_b_export, .ic_b_tblexport) { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 10V2.5M5 5.5 8 2.5l3 3M2.5 9.5v3a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) :is(.ic_b_import, .ic_b_tblimport) { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2.5V10M5 7l3 3 3-3M2.5 9.5v3a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_tblops { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5h6M11.5 4.5h2M2.5 11.5h2M7.5 11.5h6'/%3E%3Ccircle cx='10' cy='4.5' r='1.5'/%3E%3Ccircle cx='6' cy='11.5' r='1.5'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_status { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.5 8.5h3l2-5 3 9 2-4h3'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_rights { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='5.2' r='2.7'/%3E%3Cpath d='M2.8 13.8c.6-2.7 2.7-4.1 5.2-4.1s4.6 1.4 5.2 4.1'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_replication { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.6 6.6a5.5 5.5 0 0 1 9.9-2.1M13.4 9.4a5.5 5.5 0 0 1-9.9 2.1'/%3E%3Cpath d='M12.7 1.8v2.9H9.8M3.3 14.2v-2.9h2.9'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_vars { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.5 2.5c-1.4 0-2 .7-2 2v1.6c0 1-.6 1.9-1.5 1.9.9 0 1.5.9 1.5 1.9v1.6c0 1.3.6 2 2 2M10.5 2.5c1.4 0 2 .7 2 2v1.6c0 1 .6 1.9 1.5 1.9-.9 0-1.5.9-1.5 1.9v1.6c0 1.3-.6 2-2 2'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_asci { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 12.5 4.9 3.5 8 12.5M2.9 9.4h4'/%3E%3Ccircle cx='11.8' cy='10.2' r='2.3'/%3E%3Cpath d='M14.1 7.9v4.6'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_engine { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='8' height='8' rx='1.2'/%3E%3Cpath d='M6.5 1.8V4M9.5 1.8V4M6.5 12v2.2M9.5 12v2.2M1.8 6.5H4M1.8 9.5H4M12 6.5h2.2M12 9.5h2.2'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_plugin { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.5 1.8v3M10.5 1.8v3M3.5 4.8h9v2.7a4.5 4.5 0 0 1-9 0zM8 12v2.2'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_routines { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 2.5c-2 0-2.8 1-3.1 3l-.9 5.6c-.3 1.9-1 2.6-2.6 2.6M4.8 6.5h5.8'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_events { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='3' width='12' height='11' rx='1.6'/%3E%3Cpath d='M2 6.5h12M5.5 1.8v2.4M10.5 1.8v2.4'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_triggers { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 1.8 3.5 9h4L7 14.2 12.5 7h-4z'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_relations { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.8' y='2.5' width='5' height='4' rx='.8'/%3E%3Crect x='9.2' y='9.5' width='5' height='4' rx='.8'/%3E%3Cpath d='M4.3 6.5v5h4.9'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_b_more { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M3.5 8h.01M8 8h.01M12.5 8h.01'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_cog { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_top { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 13V3M4 7l4-4 4 4'/%3E%3C/svg%3E"); }
+/* ---- one color per icon (tabs + path line), soft tones that read well on the dark bar --- */
+:is(#server-breadcrumb, #topmenucontainer) .ic_s_host        { background-color: #9ca3af !important; }
+:is(#server-breadcrumb, #topmenucontainer) .ic_s_db          { background-color: #5aa9ff !important; } /* Databases, Query */
+:is(#server-breadcrumb, #topmenucontainer) .ic_s_tbl         { background-color: #60a5fa !important; }
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_browse      { background-color: #60a5fa !important; } /* Browse */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_props       { background-color: #818cf8 !important; } /* Structure */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_sql         { background-color: #f08a24 !important; } /* SQL */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_search      { background-color: #fbbf24 !important; } /* Search */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_insrow      { background-color: #41c27f !important; } /* Insert */
+:is(#server-breadcrumb, #topmenucontainer) .ic_s_status      { background-color: #41c27f !important; } /* Status */
+:is(#server-breadcrumb, #topmenucontainer) .ic_s_rights      { background-color: #a78bfa !important; } /* User accounts, Privileges */
+:is(#server-breadcrumb, #topmenucontainer) :is(.ic_b_export, .ic_b_tblexport) { background-color: #2dd4bf !important; } /* Export */
+:is(#server-breadcrumb, #topmenucontainer) :is(.ic_b_import, .ic_b_tblimport) { background-color: #38bdf8 !important; } /* Import */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_tblops      { background-color: #f472b6 !important; } /* Settings, Operations */
+:is(#server-breadcrumb, #topmenucontainer) .ic_s_replication { background-color: #facc15 !important; } /* Replication */
+:is(#server-breadcrumb, #topmenucontainer) .ic_s_vars        { background-color: #fb923c !important; } /* Variables */
+:is(#server-breadcrumb, #topmenucontainer) .ic_s_asci        { background-color: #e879f9 !important; } /* Charsets */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_engine      { background-color: #f87171 !important; } /* Engines */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_plugin      { background-color: #a3e635 !important; } /* Plugins */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_routines    { background-color: #2dd4bf !important; } /* Routines */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_events      { background-color: #fb7185 !important; } /* Events */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_triggers    { background-color: #facc15 !important; } /* Triggers */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_relations   { background-color: #c084fc !important; } /* Designer */
+:is(#server-breadcrumb, #topmenucontainer) :is(.ic_b_views, .ic_eye) { background-color: #67e8f9 !important; } /* Views, Tracking */
+:is(#server-breadcrumb, #topmenucontainer) .ic_b_more        { background-color: #9a9ea7 !important; } /* More */
+
+:is(#server-breadcrumb, #topmenucontainer, #page_nav_icons) .ic_s_lock { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='10' height='7' rx='1.5'/%3E%3Cpath d='M5.5 7V5a2.5 2.5 0 0 1 5 0v2'/%3E%3C/svg%3E"); }

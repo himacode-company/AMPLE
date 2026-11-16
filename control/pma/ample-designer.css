@@ -1,0 +1,189 @@
+/*
+ * AMPLE: phpMyAdmin Designer (database > Designer) redesigned, like a professional diagram tool.
+ *   - the board: warm paper with a dot grid
+ *   - each table: a card with a colored header (one color per table, set by ample-designer.js
+ *     as --ample-tc), column name left, type right, line icons (key, number, text, date ...)
+ *   - the side toolbar: a floating dark toolbar, grouped, line icons (tooltips stay)
+ *   - the tables list: a clean panel
+ * Relationship lines are drawn by ample-designer.js (curves, 2px, arrow at the referenced table).
+ * Every rule starts with #page_content (Designer lives inside it). No phpMyAdmin file is changed.
+ */
+
+/* ---- the board ----------------------------------------------------------------------- */
+/* no board background at all: the page's own background shows through */
+#page_content #canvas_outer, #page_content #osn_tab, #page_content #canvas {
+  background: transparent !important; background-image: none !important; border: 0 !important; box-shadow: none !important;
+}
+
+/* page name ("Untitled *") */
+#page_content #name-panel {
+  display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 6px 14px;
+  background: var(--p-panel); border: 1px solid var(--p-line); border-radius: 20px; box-shadow: var(--p-shadow);
+  font-weight: 600; font-size: 14px; color: var(--p-text);
+}
+#page_content #name-panel #saved_state { color: var(--p-accent); font-weight: 700; }
+
+/* ---- table cards ------------------------------------------------------------------------ */
+#page_content table.designer_tab {
+  --ample-tc: #6b7280;
+  /* the cards stay white with dark text in BOTH modes (the page's dark text colors would turn
+     the text light grey on the white card) */
+  --p-text: #1c1a17; --p-muted: #625d55; --p-soft: rgba(240, 138, 36, .12); --p-accent-ink: #b35a0c;
+  background: #fff !important; border: 0 !important; border-radius: 10px; border-collapse: separate !important; border-spacing: 0;
+  overflow: hidden; min-width: 200px; margin: 0 !important; font-size: 12.5px;
+  box-shadow: 0 0 0 1px rgba(28, 26, 23, .08), 0 2px 4px rgba(28, 26, 23, .06), 0 8px 22px rgba(28, 26, 23, .10) !important;
+  transition: box-shadow .15s;
+}
+/* phpMyAdmin sets "display:block" on each table, so its rows did not stretch (empty space on
+   the right). Back to a real table; hidden tables (display:none) stay hidden. */
+#page_content table.designer_tab:not([style*="display: none"]):not([style*="display:none"]) { display: table !important; }
+#page_content table.designer_tab:hover {
+  box-shadow: 0 0 0 2px rgba(240, 138, 36, .55), 0 10px 26px rgba(28, 26, 23, .16) !important;
+}
+#page_content table.designer_tab > :not(caption) > * > * {
+  padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important;
+}
+/* header: the table's own color, white text */
+#page_content table.designer_tab > thead > tr.header > td {
+  background: var(--ample-tc) !important; color: #fff !important; padding: 8px 6px !important; vertical-align: middle;
+  text-shadow: none !important; border: 0 !important;
+}
+#page_content table.designer_tab > thead > tr.header > td:last-child { padding-right: 12px !important; white-space: nowrap; }
+#page_content table.designer_tab .tab_zag, #page_content table.designer_tab .tab_zag_2 {
+  font: 600 13.5px "Segoe UI", sans-serif; color: #fff !important; cursor: move; text-align: left;
+}
+#page_content table.designer_tab .tab_zag_2 { box-shadow: inset 0 -3px 0 rgba(255, 255, 255, .7) !important; }
+/* the database name before the table name: not needed inside one database (and unreadable on color) */
+#page_content table.designer_tab .owner { display: none; }
+/* show/hide columns ("v") and "see structure" in the header */
+#page_content table.designer_tab td.small_tab {
+  width: 22px; text-align: center; font-size: 0 !important; cursor: pointer; opacity: .85;
+}
+#page_content table.designer_tab td.small_tab::before {
+  content: ""; display: inline-block; width: 14px; height: 14px; background: #fff; vertical-align: -2px;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") center / 14px no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") center / 14px no-repeat;
+}
+#page_content table.designer_tab.ample-collapsed td.small_tab::before { transform: rotate(-90deg); }
+#page_content table.designer_tab td.small_tab:hover, #page_content table.designer_tab td.small_tab_pref:hover { opacity: 1; }
+#page_content table.designer_tab td.small_tab_pref { width: 20px; text-align: center; cursor: pointer; opacity: .8; }
+#page_content table.designer_tab td.small_tab_pref img {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4h8M6 8h8M6 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01'/%3E%3C/svg%3E");
+  width: 14px; height: 14px; vertical-align: -2px;
+}
+/* column rows: icon · name ......... type */
+#page_content table.designer_tab > tbody > tr > td { padding: 0 !important; border-top: 1px solid #f0ece5 !important; }
+#page_content table.designer_tab > tbody > tr:first-child > td { border-top: 0 !important; }
+#page_content table.designer_tab > tbody > tr > td > div {
+  display: flex; align-items: center; gap: 7px; padding: 5px 12px 5px 10px; color: var(--p-text); cursor: pointer;
+}
+#page_content table.designer_tab > tbody > tr:hover > td { background: var(--p-soft) !important; }
+#page_content table.designer_tab .ample-dcol { font-weight: 500; white-space: nowrap; }
+#page_content table.designer_tab .ample-dtype {
+  margin-left: auto; padding-left: 14px; font: 11.5px Consolas, "Cascadia Mono", monospace; color: #9a948a; white-space: nowrap;
+}
+#page_content table.designer_tab tr.tab_field_2 .ample-dcol { font-weight: 700; color: var(--p-accent-ink); }   /* display column */
+#page_content table.designer_tab .ample-fk-badge {
+  font: 700 9.5px "Segoe UI", sans-serif; letter-spacing: .4px; padding: 0 5px; border-radius: 4px;
+  color: #0e7fb5; background: #e3f2fb; border: 1px solid #bfe0f3; line-height: 15px;
+}
+/* column type icons (phpMyAdmin's pictures replaced by line drawings) */
+#page_content table.designer_tab > tbody img { width: 14px; height: 14px; flex: none; }
+#page_content table.designer_tab img[src*="/designer/Field"] {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23b5aea3' stroke-width='1.6'%3E%3Ccircle cx='8' cy='8' r='3'/%3E%3C/svg%3E");
+}
+#page_content table.designer_tab img[src*="FieldKey_small"] {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23e0a400' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='5.5' cy='10.5' r='3'/%3E%3Cpath d='M7.6 8.4 13.5 2.5M11 5l1.8 1.8M12.5 3.5l1.5 1.5'/%3E%3C/svg%3E");
+}
+#page_content table.designer_tab img[src*="Field_small_int"] {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235aa9ff' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M6 2.5 4.5 13.5M11.5 2.5 10 13.5M2.5 6h11M2 10.5h11'/%3E%3C/svg%3E");
+}
+#page_content table.designer_tab img[src*="Field_small_char"] {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23818cf8' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4h10M8 4v9'/%3E%3C/svg%3E");
+}
+#page_content table.designer_tab img[src*="Field_small_date"] {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fb7185' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='3' width='12' height='11' rx='1.6'/%3E%3Cpath d='M2 6.5h12M5.5 1.8v2.4M10.5 1.8v2.4'/%3E%3C/svg%3E");
+}
+#page_content table.designer_tab img[src*="Field_small_decimal"] {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%232dd4bf' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M6 2.5 4.5 13.5M11.5 2.5 10 13.5M2.5 6h11M2 10.5h11'/%3E%3C/svg%3E");
+}
+
+/* ---- the side toolbar ------------------------------------------------------------------- */
+/* never taller than the screen (the console bar must not cover its last buttons); compact */
+#page_content #side_menu {
+  background: #15171c !important; border: 1px solid #2a2e36 !important; border-radius: 12px !important; padding: 5px !important;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .12), 0 10px 26px rgba(0, 0, 0, .22) !important; display: flex; flex-direction: column; gap: 1px;
+  max-height: calc(100vh - 190px); overflow-y: auto !important; overflow-x: hidden; scrollbar-width: thin;
+}
+#page_content #side_menu::-webkit-scrollbar { width: 6px; }
+#page_content #side_menu::-webkit-scrollbar-thumb { background: rgba(240, 138, 36, .5); border-radius: 6px; }
+#page_content #side_menu > a {
+  --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5'%3E%3Ccircle cx='8' cy='8' r='2.5'/%3E%3C/svg%3E");
+  display: flex !important; align-items: center; gap: 10px; min-width: 32px; height: 30px; padding: 0 7px !important; margin: 0 !important; flex: none;
+  border: 0 !important; border-radius: 7px !important; background: transparent !important; color: #d6d3cc !important;
+  text-decoration: none; font-size: 12.5px; white-space: nowrap; box-shadow: none !important; outline: 0 !important;
+}
+/* labels: plain text (no dotted frames) */
+#page_content #side_menu > a span, #page_content #side_menu > a .hidable {
+  border: 0 !important; outline: 0 !important; background: none !important; box-shadow: none !important; text-decoration: none !important;
+  float: none !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;
+}
+#page_content #side_menu > a:hover { background: rgba(255, 255, 255, .08) !important; }
+#page_content #side_menu > a.M_butt_Selected_down, #page_content #side_menu > a.M_butt_Selected_down_IE {
+  background: rgba(240, 138, 36, .18) !important; color: #f5a04f !important;
+}
+#page_content #side_menu > a > img { display: none !important; }
+#page_content #side_menu > a::before {
+  content: ""; width: 18px; height: 18px; flex: none; background: currentColor;
+  -webkit-mask: var(--i) center / 18px 18px no-repeat; mask: var(--i) center / 18px 18px no-repeat;
+}
+#page_content #side_menu > a .hidable { color: inherit; }
+/* group separators: view | pages | tables & relations | layout | display | export */
+#page_content #side_menu > :is(#addOtherDbTables, #delPages, #display_field_button, #ample_auto_arrange, #relLineInvert, #exportPages) {
+  margin-bottom: 7px !important; position: relative;
+}
+#page_content #side_menu > :is(#addOtherDbTables, #delPages, #display_field_button, #ample_auto_arrange, #relLineInvert, #exportPages)::after {
+  content: ""; position: absolute; left: 6px; right: 6px; bottom: -5px; height: 1px; background: #2f343d;
+}
+/* the drawings */
+#page_content #side_menu > #key_Show_left_menu { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='2.5' width='12' height='11' rx='1.6'/%3E%3Cpath d='M10 2.5v11M11.7 5.5h.6M11.7 8h.6'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #toggleFullscreen { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #addOtherDbTables { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='7' cy='3.8' rx='4.5' ry='1.8'/%3E%3Cpath d='M2.5 3.8v7.4c0 1 2 1.8 4.5 1.8M11.5 3.8V7M12.5 9.5v5M10 12h5'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #newPage { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 1.8H4a1.5 1.5 0 0 0-1.5 1.5v9.4A1.5 1.5 0 0 0 4 14.2h4M9 1.8l4 4V8M9 1.8v4h4M12 10v4.5M9.8 12.2h4.5'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #editPage { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12V4.6a1 1 0 0 1 1-1h3l1.5 1.5H12a1 1 0 0 1 1 1V7M2 12l1.6-4.2A1 1 0 0 1 4.5 7.2h9.3a.6.6 0 0 1 .6.8L13 12.3a1 1 0 0 1-1 .7H3a1 1 0 0 1-1-1z'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #savePos { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2.5h8l2.5 2.5v8a1 1 0 0 1-1 1h-9.5a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z'/%3E%3Cpath d='M5 2.5v3.5h5V2.5M5 14v-4h6v4'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #SaveAs { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 14H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h7.5L13 5v3M5 2.5v3.5h4.5V2.5M12.5 10v4.5M10.2 12.2h4.5'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #delPages { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5h11M6.5 4.5V3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1.5M4 4.5l.7 8.6a1 1 0 0 0 1 .9h4.6a1 1 0 0 0 1-.9l.7-8.6'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #StartTableNew { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 13.5H3.6A1.6 1.6 0 0 1 2 11.9V4.1a1.6 1.6 0 0 1 1.6-1.6h8.8A1.6 1.6 0 0 1 14 4.1V8M2 6h12M6.4 6v7.5M12 10.5v4M10 12.5h4'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #rel_button { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.8' y='2.5' width='5' height='4' rx='.8'/%3E%3Crect x='9.2' y='9.5' width='5' height='4' rx='.8'/%3E%3Cpath d='M4.3 6.5v5h4.9'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #display_field_button { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 8.6V3a.5.5 0 0 1 .5-.5h5.6l5 5-6 6z'/%3E%3Ccircle cx='5.5' cy='5.5' r='1'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #reloadPage { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 8a5 5 0 1 1-1.5-3.6'/%3E%3Cpath d='M13 2.5v3h-3'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #ample_auto_arrange { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.8' y='2' width='4.6' height='4' rx='.8'/%3E%3Crect x='9.6' y='2' width='4.6' height='4' rx='.8'/%3E%3Crect x='9.6' y='10' width='4.6' height='4' rx='.8'/%3E%3Cpath d='M6.4 4h3.2M4.1 6v6h5.5'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #angular_direct_button { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12.5c4 0 3-9 6-9s2 9 6 9'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #grid_button { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M2 5.5h12M2 10.5h12M5.5 2v12M10.5 2v12'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #key_SB_all { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 6 8 2.5 11.5 6M4.5 10l3.5 3.5 3.5-3.5'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #SmallTabInvert { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h10M10 2l3 3-3 3M13 11H3M6 8l-3 3 3 3'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #relLineInvert { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 12.5c3-6 7-6 11-9'/%3E%3Cpath d='M2 2.5l12 11' stroke-opacity='.75'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #exportPages { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 10V2.5M5 5.5 8 2.5l3 3M2.5 9.5v3a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #key_Left_Right { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 8h11M5.5 5 2.5 8l3 3M10.5 5l3 3-3 3'/%3E%3C/svg%3E"); }
+#page_content #side_menu > a:not([id]):has(img[src*="help"]) { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M6.3 6.3a1.8 1.8 0 1 1 2.4 1.7c-.5.2-.7.6-.7 1.1'/%3E%3Cpath d='M8 11.3h.01'/%3E%3C/svg%3E"); }
+#page_content #side_menu > #pin_Text { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 2l4 4-2.2.8-2.6 2.6.3 3-1 1L5.6 10.5 2 14M5.6 10.5 2.5 7.4l1-1 3 .3 2.6-2.6z'/%3E%3C/svg%3E"); }
+
+/* ---- the tables list panel (right) --------------------------------------------------- */
+#page_content #layer_menu {
+  background: var(--p-panel) !important; border: 1px solid var(--p-line) !important; border-radius: 12px !important;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .08), 0 10px 26px rgba(0, 0, 0, .14) !important; padding: 8px !important; color: var(--p-text);
+}
+#page_content #layer_menu .scroll_tab table td { padding: 4px 6px !important; border: 0 !important; background: transparent !important; font-size: 13px; }
+#page_content #layer_menu .scroll_tab table tr:hover td { background: var(--p-soft) !important; }
+#page_content #layer_menu input[type="checkbox"] { accent-color: var(--p-accent); }
+#page_content #layer_menu > .text-center:last-of-type { color: var(--p-muted); font-size: 12.5px; padding-top: 6px; border-top: 1px solid var(--p-line); }
+#page_content #layer_menu img#key_HS_all, #page_content #layer_menu img#key_HS {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23625d55' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  width: 18px; height: 18px;
+}
+
+/* (dark mode: the table cards deliberately stay white with dark text, see the top of this file) */
+
+/* hint that follows the mouse, and the "new relation" box */
+#page_content #designer_hint { background: #15171c !important; color: #f1efea !important; border: 0 !important; border-radius: 6px; padding: 4px 8px !important; font-size: 12px; }

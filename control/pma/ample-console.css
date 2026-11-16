@@ -1,0 +1,86 @@
+/*
+ * AMPLE: phpMyAdmin SQL console (bottom bar) in the Ember identity, always dark like the
+ * sidebar and the top bar. Colors only: sizes and positions stay phpMyAdmin's, so
+ * opening, resizing and the side cards keep working.
+ * Every rule starts with #pma_console_container.
+ */
+#pma_console_container {
+  --c-bg: #0f1115; --c-bar: #15171c; --c-card: #1a1d23; --c-line: #2a2e36; --c-text: #e2dfd8; --c-muted: #9a9ea7;
+  --c-amber: #f08a24; --c-soft: rgba(240, 138, 36, .14);
+}
+
+/* ---- the bar ---------------------------------------------------------------------- */
+#pma_console_container #pma_console .toolbar {
+  background: var(--c-bar) !important; border-top: 1px solid var(--c-line) !important; color: var(--c-text);
+  font-size: 13px; line-height: 30px; min-height: 30px;
+}
+#pma_console_container #pma_console .toolbar.collapsed:not(:hover) {
+  border-right: 1px solid var(--c-line) !important; border-top-right-radius: 8px !important;
+}
+#pma_console_container #pma_console .switch_button { padding: 0 12px 0 10px !important; font-weight: 600; letter-spacing: .3px; }
+#pma_console_container #pma_console .toolbar .button { padding: 0 10px !important; border-radius: 6px; color: var(--c-muted); }
+#pma_console_container #pma_console .toolbar .text { color: var(--c-muted); }
+#pma_console_container #pma_console .switch_button:hover,
+#pma_console_container #pma_console .toolbar .button:hover,
+#pma_console_container #pma_console .toolbar .button.active { background: var(--c-soft) !important; color: var(--c-amber); }
+
+/* console icon: a small terminal ">_" in amber */
+#pma_console_container .ic_console {
+  background: var(--c-amber) !important; width: 16px; height: 16px; vertical-align: -3px; margin: 0 6px 0 0 !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.5' y='2.5' width='13' height='11' rx='1.8'/%3E%3Cpath d='M4.5 6.2 6.6 8l-2.1 1.8M8.2 10h3.3'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.5' y='2.5' width='13' height='11' rx='1.8'/%3E%3Cpath d='M4.5 6.2 6.6 8l-2.1 1.8M8.2 10h3.3'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+/* ---- the open console --------------------------------------------------------------- */
+#pma_console_container #pma_console .content,
+#pma_console_container #pma_console .content.console_dark_theme {
+  background: var(--c-bg) !important; color: var(--c-text) !important; border-top: 1px solid var(--c-line) !important;
+}
+#pma_console_container #pma_console .message,
+#pma_console_container #pma_console .query_input { font-family: Consolas, "Cascadia Mono", Monaco, monospace; font-size: 13px; }
+#pma_console_container #pma_console .message { border-bottom: 1px solid #24272e !important; }
+#pma_console_container #pma_console .message.welcome { color: var(--c-muted); }
+#pma_console_container #pma_console .message::before,
+#pma_console_container #pma_console .query_input::before { color: var(--c-amber); font-weight: 700; }
+#pma_console_container #pma_console .message:hover::before { color: #f5a04f; }
+#pma_console_container #pma_console .message.failed::before { color: #f87171 !important; }
+
+/* query actions (Requery, Edit, Explain ...) shown above a message */
+#pma_console_container #pma_console .message .action_content {
+  background: var(--c-card) !important; border: 1px solid var(--c-line) !important; border-radius: 6px 6px 0 0; color: var(--c-text) !important;
+}
+#pma_console_container #pma_console .message .text { background: transparent !important; color: var(--c-muted); }
+#pma_console_container #pma_console .message span.action { border-radius: 4px; }
+#pma_console_container #pma_console .message span.action:hover { background: var(--c-soft) !important; color: var(--c-amber); }
+
+/* side cards: Options, History details, Debug SQL, Bookmarks */
+#pma_console_container #pma_console .card {
+  background: var(--c-bar) !important; color: var(--c-text); border-left: 1px solid var(--c-line) !important;
+}
+#pma_console_container #pma_console .card.show { box-shadow: -8px 0 24px rgba(0, 0, 0, .45) !important; }
+#pma_console_container #pma_console .mid_layer { background: rgba(0, 0, 0, .55) !important; }
+#pma_console_container #pma_console_options .content label { color: var(--c-text); }
+#pma_console_container #pma_console input[type="checkbox"] { accent-color: var(--c-amber); }
+#pma_console_container #pma_console input[type="text"], #pma_console_container #pma_console textarea {
+  background: var(--c-card); color: var(--c-text); border: 1px solid var(--c-line); border-radius: 6px;
+}
+
+/* ---- the SQL editor (CodeMirror) inside the console: colors for a dark background ---- */
+#pma_console_container .CodeMirror,
+#pma_console_container .CodeMirror-wrap { background: transparent !important; color: var(--c-text) !important; }
+#pma_console_container .CodeMirror-cursor { border-left: 2px solid var(--c-amber) !important; }
+#pma_console_container .CodeMirror-selected,
+#pma_console_container .CodeMirror-focused .CodeMirror-selected { background: rgba(240, 138, 36, .25) !important; }
+#pma_console_container .cm-keyword { color: #f5a04f !important; font-weight: 600; }
+#pma_console_container .cm-string, #pma_console_container .cm-string-2 { color: #9ad08a !important; }
+#pma_console_container .cm-number { color: #79b8ff !important; }
+#pma_console_container .cm-comment { color: #7d828c !important; font-style: italic; }
+#pma_console_container .cm-variable-2, #pma_console_container .cm-variable-3 { color: #c792ea !important; }
+#pma_console_container .cm-builtin { color: #5ad1e6 !important; }
+#pma_console_container .cm-atom { color: #e879f9 !important; }
+#pma_console_container .cm-operator, #pma_console_container .cm-bracket, #pma_console_container .cm-punctuation { color: #c9c6bf !important; }
+
+/* scrollbar */
+#pma_console_container #pma_console .content::-webkit-scrollbar { width: 8px; }
+#pma_console_container #pma_console .content::-webkit-scrollbar-track { background: transparent; }
+#pma_console_container #pma_console .content::-webkit-scrollbar-thumb { background: rgba(240, 138, 36, .55); border-radius: 8px; border: 2px solid var(--c-bg); }

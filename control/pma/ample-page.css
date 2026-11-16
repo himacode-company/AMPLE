@@ -1,0 +1,1426 @@
+/*
+ * AMPLE: phpMyAdmin page content (everything right of the sidebar, under the tabs),
+ * light Ember design. The sidebar and the top bar are always dark (ample-nav.css,
+ * ample-top.css).
+ *
+ * Every rule is inside #page_content, except the page background itself (body) and
+ * the hidden "open new window" icon (#selflink).
+ * Colors are variables so the dark mode (phase 2) only has to redefine them.
+ */
+body {
+  --p-bg: #f6f4f0; --p-panel: #ffffff; --p-panel2: #f3f0ea; --p-head: #f1ede6; --p-line: #e3ded5; --p-line2: #d6d0c5;
+  --p-text: #1c1a17; --p-muted: #625d55; --p-accent: #f08a24; --p-accent-ink: #b35a0c;
+  --p-on-accent: #1a1205; --p-soft: rgba(240, 138, 36, .12); --p-shadow: 0 1px 2px rgba(28, 26, 23, .05);
+  background: var(--p-bg) !important;
+}
+
+/* breathing room: away from the sidebar and from the top bar */
+#page_content { color: var(--p-text); padding: 24px 26px 48px !important; }
+/* phpMyAdmin's theme puts a WHITE text-shadow on table cells, buttons, cards, fieldsets and
+   headings: on dark it looks like every word is written twice (and on hover, white text
+   under dark). No text shadows in the content, in either mode. */
+#page_content, #page_content * { text-shadow: none !important; }
+#page_content a, #page_content a:link, #page_content a:visited { color: var(--p-accent-ink); }
+#page_content a:hover { color: var(--p-accent); }
+#page_content code { background: var(--p-panel2); border-radius: 5px; padding: 1px 6px; }
+
+/* ---- cards ---------------------------------------------------------------------- */
+#page_content .card, #page_content .card-footer { text-shadow: none !important; }   /* theme's white text-shadow */
+#page_content .card {
+  background: var(--p-panel); border: 1px solid var(--p-line) !important; border-radius: 12px !important;
+  box-shadow: var(--p-shadow); margin-top: 1.25rem !important; overflow: hidden;
+}
+#page_content .card-header {
+  position: static !important; top: auto !important; margin: 0 !important; width: auto !important; max-width: none !important;
+  /* the header has its own, slightly darker background than the card body */
+  background: var(--p-head) !important; color: var(--p-text) !important; text-shadow: none !important; box-shadow: none !important;
+  border: 0 !important; border-bottom: 1px solid var(--p-line) !important; border-radius: 0 !important;
+  padding: 14px 18px !important; font-size: 15px !important; font-weight: 600 !important;
+  display: flex; align-items: center; gap: 10px;
+}
+#page_content .card-header::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: var(--p-accent); flex: none; }
+#page_content .card-body { padding: 16px 18px; }
+#page_content .list-group-item {
+  background: transparent !important; color: var(--p-text); border-color: var(--p-line) !important; padding: 11px 18px;
+}
+
+/* ---- form fields ---------------------------------------------------------------- */
+#page_content .form-control, #page_content .form-select,
+#page_content input[type="text"], #page_content input[type="password"], #page_content input[type="number"],
+#page_content input[type="search"], #page_content textarea, #page_content select {
+  background-color: var(--p-panel); color: var(--p-text); border: 1px solid var(--p-line2); border-radius: 8px;
+  box-shadow: none !important;
+}
+#page_content .form-control:focus, #page_content .form-select:focus,
+#page_content input:focus, #page_content textarea:focus, #page_content select:focus {
+  border-color: var(--p-accent) !important; outline: 0; box-shadow: 0 0 0 3px var(--p-soft) !important;
+}
+#page_content .col-form-label { color: var(--p-text); }
+
+/* ---- buttons -------------------------------------------------------------------- */
+#page_content .btn { border-radius: 8px !important; text-shadow: none !important; box-shadow: none !important; font-weight: 500; }
+#page_content .btn-primary {
+  background: var(--p-accent) !important; border-color: var(--p-accent) !important; color: var(--p-on-accent) !important; font-weight: 600;
+}
+#page_content .btn-primary:hover { background: #e07b15 !important; border-color: #e07b15 !important; }
+#page_content .btn-secondary, #page_content .btn-outline-secondary {
+  background: var(--p-panel) !important; border: 1px solid var(--p-line2) !important; color: var(--p-text) !important;
+}
+#page_content .btn-secondary:hover, #page_content .btn-outline-secondary:hover { border-color: var(--p-accent) !important; color: var(--p-accent-ink) !important; }
+
+/* ---- tables --------------------------------------------------------------------- */
+#page_content .table { --bs-table-bg: transparent; color: var(--p-text); border-color: var(--p-line); }
+#page_content .table thead th {
+  background: var(--p-panel2) !important; background-image: none !important; color: var(--p-text);
+  border-right: 1px solid var(--p-line) !important; border-bottom: 1px solid var(--p-line2) !important; font-weight: 600;
+}
+#page_content .table td, #page_content .table th { border-color: var(--p-line) !important; }
+#page_content .table-hover tbody tr:hover { background: var(--p-soft) !important; }
+#page_content .table-hover tbody tr:hover > * { --bs-table-accent-bg: transparent; }
+
+/* ---- fieldsets (older phpMyAdmin forms) ----------------------------------------- */
+#page_content fieldset.pma-fieldset {
+  background: var(--p-panel) !important; background-image: none !important; border: 1px solid var(--p-line) !important;
+  border-radius: 12px; box-shadow: var(--p-shadow) !important; text-shadow: none !important;
+}
+/* fieldset = card: its legend becomes a full-width header band (darker, like card headers) */
+#page_content fieldset.pma-fieldset { padding: 0 18px 14px !important; overflow: hidden; }
+#page_content fieldset.pma-fieldset > legend {
+  /* reaches both edges: the fieldset has 18px side padding, so the band is 100% + 36px wide and
+     pulled back by -18px; max-width must be lifted, or it stops 36px short on the right */
+  float: left; width: calc(100% + 36px) !important; max-width: none !important; box-sizing: border-box;
+  margin: 0 -18px 12px !important; padding: 11px 18px !important;
+  background: var(--p-head) !important; color: var(--p-text) !important; border: 0 !important; border-bottom: 1px solid var(--p-line) !important;
+  border-radius: 0 !important; box-shadow: none !important; text-shadow: none !important; font-size: 14.5px !important; font-weight: 600;
+  display: flex; align-items: center; gap: 8px; line-height: 1.4;
+}
+#page_content fieldset.pma-fieldset > legend + * { clear: left; }
+#page_content fieldset.pma-fieldset:not(:has(> legend)) { padding-top: 14px !important; }
+/* bottom bar with the submit button: button on the right */
+#page_content fieldset.tblFooters {
+  background: var(--p-head) !important; border-color: var(--p-line) !important; display: flex; justify-content: flex-end;
+  align-items: center; gap: 8px; padding: 12px 18px !important;
+}
+#page_content fieldset.tblFooters .btn-primary { height: 38px; padding: 0 30px; font-size: 15px; }
+
+/* ---- messages: one design, colored by type (all of them stay visible) -------------- */
+#page_content .alert {
+  --a: #2f7ad1; --a-bg: #eef5fd; --a-line: #c9def6;           /* notice / info: blue */
+  background: var(--a-bg) !important; background-image: none !important; color: var(--p-text) !important;
+  border: 1px solid var(--a-line) !important; border-left: 4px solid var(--a) !important; border-radius: 10px !important;
+  box-shadow: none !important; text-shadow: none !important; padding: 12px 16px 12px 14px !important; line-height: 1.6;
+}
+#page_content .alert-success { --a: #1f8a52; --a-bg: #edf8f1; --a-line: #bfe5cf; }  /* green */
+#page_content .alert-danger  { --a: #d14343; --a-bg: #fdf0f0; --a-line: #f3c9c9; }  /* red */
+#page_content .alert-warning { --a: #e07b15; --a-bg: #fff6ea; --a-line: #f6d7b0; }  /* orange */
+#page_content .alert a { color: var(--a) !important; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+/* line icons instead of phpMyAdmin's images, in the message's color */
+#page_content .alert :is(.ic_s_notice, .ic_s_success, .ic_s_error, .ic_s_attention) {
+  background: var(--a) !important; width: 18px; height: 18px; vertical-align: -4px; margin: 0 8px 0 0 !important;
+  -webkit-mask: var(--i) center / 18px 18px no-repeat; mask: var(--i) center / 18px 18px no-repeat;
+}
+#page_content .alert .ic_s_notice { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M8 7.2v4M8 4.9h.01'/%3E%3C/svg%3E"); }
+#page_content .alert .ic_s_success { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M5.3 8.2 7.2 10l3.5-3.8'/%3E%3C/svg%3E"); }
+#page_content .alert .ic_s_error { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M5.8 5.8l4.4 4.4M10.2 5.8l-4.4 4.4'/%3E%3C/svg%3E"); }
+#page_content .alert .ic_s_attention { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2.2 14.3 13H1.7z'/%3E%3Cpath d='M8 6.5v3M8 11.2h.01'/%3E%3C/svg%3E"); }
+/* a notice-level icon inside a warning box shows the warning triangle */
+#page_content .alert-warning .ic_s_notice { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2.2 14.3 13H1.7z'/%3E%3Cpath d='M8 6.5v3M8 11.2h.01'/%3E%3C/svg%3E"); }
+
+/* ---- pop-up notices (phpMyAdmin's yellow "toast": "No databases selected.", "Loading…") --
+   phpMyAdmin puts them in span.ajax_notification (fixed, top centre) inside #page_content.
+   - with a colored message inside (.alert): no yellow box, the message itself floats
+   - plain text (Loading…, Processing request): a small charcoal bar with an amber spinner
+     (loading = phpMyAdmin did NOT set "background-image: none" on it) */
+@keyframes ample-toast-in { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes ample-spin { to { transform: rotate(360deg); } }
+/* in the middle of the screen: top 50% + "translate" (its own property, so the
+   appear animation on "transform" does not undo the centring) */
+#page_content .ajax_notification {
+  top: 50% !important; translate: 0 -50%; margin: 0 auto !important; width: max-content !important; max-width: min(620px, 90vw);
+  padding: 0 !important; background: none !important; border: 0 !important; border-radius: 14px !important; box-shadow: none !important;
+  text-align: left !important; animation: ample-toast-in .3s cubic-bezier(.16, 1, .3, 1);
+}
+#page_content .ajax_notification .alert {
+  margin: 0 !important; min-width: 380px; padding: 18px 22px 18px 18px !important; font-size: 15px; font-weight: 500;
+  /* black shadow all around (soft halo + deeper below) */
+  border-radius: 14px !important; box-shadow: 0 0 40px rgba(0, 0, 0, .35), 0 24px 60px rgba(0, 0, 0, .45) !important;
+}
+#page_content .ajax_notification .alert :is(.ic_s_notice, .ic_s_success, .ic_s_error, .ic_s_attention) {
+  width: 20px; height: 20px; -webkit-mask-size: 20px 20px; mask-size: 20px 20px; vertical-align: -5px; margin-right: 10px !important;
+}
+#page_content .ajax_notification:not(:has(.alert)):not([style*="display: none"]) {
+  display: flex !important; align-items: center; gap: 12px; padding: 16px 24px 16px 20px !important; min-width: 280px;
+  background: #15171c !important; color: #f1efea !important; border: 1px solid #2a2e36 !important;
+  box-shadow: 0 0 40px rgba(0, 0, 0, .35), 0 24px 60px rgba(0, 0, 0, .45) !important; font-size: 15px; font-weight: 500;
+}
+#page_content .ajax_notification:not(:has(.alert)):not([style*="background-image: none"])::before {
+  content: ""; width: 18px; height: 18px; flex: none; border-radius: 50%;
+  border: 2.5px solid rgba(240, 138, 36, .25); border-top-color: var(--p-accent); animation: ample-spin .7s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { #page_content .ajax_notification { animation: none; } }
+
+/* "Open new phpMyAdmin window" (small icon at the bottom right) and its line: not needed.
+   It sits just outside #page_content, so this is the one other rule outside it. */
+#selflink { display: none !important; }
+
+/* =================================================================================== */
+/* ---- home page: hidden cards ----------------------------------------------------- */
+/* Web server (versions, PHP extensions) and phpMyAdmin (links, version) are not needed;
+   the "phpMyAdmin <version> · GPL License" note is at the bottom of the sidebar (ample-nav.js). */
+#page_content #maincontainer .card:has(#li_mysql_client_version),
+#page_content #maincontainer .card:has(#li_pma_version) { display: none !important; }
+
+/* ---- home page: AMPLE cards (made by ample-page.js) ------------------------------- */
+#page_content .ample-conn { display: grid; grid-template-columns: 1fr 1fr; }
+#page_content .ample-conn > div { padding: 12px 18px; border-bottom: 1px solid var(--p-line); min-width: 0; }
+#page_content .ample-conn > div:nth-child(odd) { border-right: 1px solid var(--p-line); }
+#page_content .ample-conn span { display: block; color: var(--p-muted); font-size: 12.5px; margin-bottom: 3px; }
+#page_content .ample-conn .val { display: flex; align-items: center; gap: 8px; }
+#page_content .ample-conn code { font-size: 13.5px; font-family: Consolas, "Cascadia Mono", monospace; color: var(--p-text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#page_content .ample-conn em { color: var(--p-muted); font-style: normal; font-size: 13px; }
+#page_content .ample-copy { border: 1px solid var(--p-line2); background: var(--p-panel); color: var(--p-muted); border-radius: 6px;
+  padding: 0 7px; font-size: 13px; line-height: 22px; cursor: pointer; flex: none; margin-left: auto; }
+#page_content .ample-copy:hover, #page_content .ample-copy.done { color: var(--p-accent-ink); border-color: var(--p-accent); }
+#page_content .ample-hint { padding: 10px 18px 14px; color: var(--p-muted); font-size: 13px; }
+
+#page_content .ample-actions { display: grid; gap: 10px; padding: 14px 18px 16px; }
+#page_content .ample-actions a {
+  display: flex; align-items: center; gap: 12px; padding: 11px 14px; border: 1px solid var(--p-line); border-radius: 10px;
+  color: var(--p-text) !important; text-decoration: none; transition: border-color .15s, background .15s;
+}
+#page_content .ample-actions a:hover { border-color: var(--p-accent); background: var(--p-soft); }
+#page_content .ample-actions i { width: 30px; height: 30px; border-radius: 8px; flex: none; background: var(--p-soft); position: relative; }
+#page_content .ample-actions i::after { content: ""; position: absolute; inset: 7px; background: var(--p-accent-ink);
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat; }
+#page_content .ample-actions b { display: block; font-weight: 600; }
+#page_content .ample-actions small { display: block; color: var(--p-muted); font-size: 12.5px; }
+#page_content .ample-actions .i-db { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='8' cy='3.6' rx='5' ry='2'/%3E%3Cpath d='M3 3.6v8.8c0 1.1 2.2 2 5 2s5-.9 5-2V3.6M3 8c0 1.1 2.2 2 5 2s5-.9 5-2'/%3E%3C/svg%3E"); }
+#page_content .ample-actions .i-import { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2.5V10M5 7l3 3 3-3M2.5 9.5v3a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3'/%3E%3C/svg%3E"); }
+#page_content .ample-actions .i-home { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 7.5 8 3l5.5 4.5M4 6.5V13h3v-3h2v3h3V6.5'/%3E%3C/svg%3E"); }
+
+/* =================================================================================== */
+/* ---- shared by every page (first used by Databases) -------------------------------- */
+
+/* page title, e.g. "Databases" */
+#page_content > .container-fluid > h2, #page_content h2.ample-title {
+  font-size: 22px; font-weight: 600; color: var(--p-text); margin: 6px 0 14px; display: flex; align-items: center; gap: 8px;
+}
+
+/* tables: one framed block, warm header, soft stripes, readable rows */
+#page_content .table-responsive {
+  background: var(--p-panel); border: 1px solid var(--p-line); border-radius: 12px; box-shadow: var(--p-shadow); margin-bottom: 16px;
+}
+#page_content .table-responsive > .table { margin: 0 !important; }
+#page_content .table {
+  --bs-table-striped-bg: #faf8f4; --bs-table-accent-bg: transparent; --bs-table-hover-bg: var(--p-soft);
+}
+#page_content .table > :not(caption) > * > * { padding: 10px 14px; border-bottom: 1px solid var(--p-line) !important; vertical-align: middle; }
+#page_content .table thead th, #page_content .table tfoot th {
+  background: var(--p-head) !important; color: var(--p-muted) !important; font-size: 12.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .4px; border-right: 0 !important; white-space: nowrap;
+}
+#page_content .table thead th a, #page_content .table thead th a:link, #page_content .table thead th a:visited { color: var(--p-muted) !important; }
+#page_content .table thead th a:hover { color: var(--p-accent-ink) !important; }
+#page_content .table tfoot th { text-transform: none; letter-spacing: 0; font-size: 13px; border-bottom: 0 !important; }
+#page_content .table tbody tr:last-child > * { border-bottom-color: var(--p-line) !important; }
+/* links inside tables: names dark (the important part), actions grey; amber only on hover */
+#page_content .table tbody a, #page_content .table tbody a:link, #page_content .table tbody a:visited { color: var(--p-text) !important; }
+#page_content .table tbody td.tool a, #page_content .table tbody td.tool a:link,
+#page_content .table tbody td.tool a:visited { color: var(--p-muted) !important; }
+#page_content .table tbody a:hover { color: var(--p-accent-ink) !important; }
+#page_content .table td.name a { font-weight: 600; }
+#page_content .table input[type="checkbox"] { accent-color: var(--p-accent); width: 16px; height: 16px; vertical-align: -3px; }
+
+/* a message that is the only content of a card: show the message alone (no box in a box) */
+#page_content .card:has(> .card-body > .alert) { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+#page_content .card:has(> .card-body > .alert) > .card-body { padding: 0 !important; }
+#page_content .card-link {
+  display: inline-block; margin-top: 10px; padding: 6px 14px; border: 1px solid var(--p-line2); border-radius: 8px;
+  background: var(--p-panel); color: var(--p-text) !important; text-decoration: none; font-weight: 500;
+}
+#page_content .card-link:hover { border-color: var(--p-accent); color: var(--p-accent-ink) !important; }
+
+/* a field with an icon in front (e.g. Search): one field, not two boxes */
+#page_content .input-group > .input-group-text {
+  background: var(--p-panel) !important; border: 1px solid var(--p-line2) !important; color: var(--p-muted);
+}
+#page_content .input-group > .input-group-text + .form-control { border-left: 0 !important; }
+#page_content .input-group:has(> .input-group-text + .form-control) > .input-group-text { border-right: 0 !important; padding-right: 4px; }
+#page_content .input-group:focus-within > .input-group-text { border-color: var(--p-accent) !important; }
+#page_content .input-group:focus-within > .input-group-text + .form-control { box-shadow: none !important; }
+
+/* checkbox inside a group (e.g. "Check all") */
+#page_content .input-group-text .form-check-input { accent-color: var(--p-accent); width: 16px; height: 16px; margin-top: 0; vertical-align: -3px;
+  border: 1px solid var(--p-line2); }
+#page_content .input-group-text .form-check-label { color: var(--p-text); font-weight: 500; }
+
+/* line icons in the content (in their own color, like the top bar) */
+#page_content :is(.ic_s_db, .ic_b_newdb, .ic_b_help, .ic_db_drop, .ic_b_drop, .ic_b_search, .ic_s_rights, .ic_s_asc, .ic_s_desc) {
+  background: var(--ic, var(--p-muted)) !important; width: 16px; height: 16px; vertical-align: -3px; margin: 0 2px 0 0 !important;
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat;
+}
+#page_content h2 .ic_s_db { width: 22px; height: 22px; -webkit-mask-size: 22px 22px; mask-size: 22px 22px; vertical-align: -4px; }
+#page_content .ic_s_db { --ic: #5aa9ff; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='8' cy='3.6' rx='5' ry='2'/%3E%3Cpath d='M3 3.6v8.8c0 1.1 2.2 2 5 2s5-.9 5-2V3.6M3 8c0 1.1 2.2 2 5 2s5-.9 5-2'/%3E%3C/svg%3E"); }
+#page_content .ic_b_newdb { --ic: var(--p-accent); --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M8 5.2v5.6M5.2 8h5.6'/%3E%3C/svg%3E"); }
+#page_content .ic_b_help { --ic: #a8a198; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M6.3 6.3a1.8 1.8 0 1 1 2.4 1.7c-.5.2-.7.6-.7 1.1'/%3E%3Cpath d='M8 11.3h.01'/%3E%3C/svg%3E"); }
+#page_content a:hover .ic_b_help { --ic: var(--p-accent); }
+#page_content :is(.ic_db_drop, .ic_b_drop) { --ic: #d14343; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5h11M6.5 4.5V3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1.5M4 4.5l.7 8.6a1 1 0 0 0 1 .9h4.6a1 1 0 0 0 1-.9l.7-8.6M6.8 7v4.5M9.2 7v4.5'/%3E%3C/svg%3E"); }
+#page_content .ic_b_search { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='7' cy='7' r='4.5'/%3E%3Cpath d='m10.4 10.4 3.1 3.1'/%3E%3C/svg%3E"); }
+#page_content .ic_s_rights { --ic: #a78bfa; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='5.2' r='2.7'/%3E%3Cpath d='M2.8 13.8c.6-2.7 2.7-4.1 5.2-4.1s4.6 1.4 5.2 4.1'/%3E%3C/svg%3E"); }
+#page_content .ic_s_asc { --ic: var(--p-accent); --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 10 8 6.5l3.5 3.5'/%3E%3C/svg%3E"); }
+#page_content .ic_s_desc { --ic: var(--p-accent); --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 6 8 9.5 11.5 6'/%3E%3C/svg%3E"); }
+
+/* every plain checkbox / radio in the content (e.g. "Check all" under a table, also its
+   "some selected" state): amber, not the browser's blue */
+#page_content :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--p-accent); }
+
+/* checkboxes (Bootstrap draws them itself): clear border, amber when checked */
+#page_content .form-check-input { width: 17px; height: 17px; border: 1.5px solid #bdb5a8 !important; cursor: pointer; }
+/* on/off switches (Export, Import ...): keep their pill shape (the 17px above would squash them) */
+#page_content .form-switch .form-check-input { width: 2.3em !important; height: 1.25em !important; border-radius: 2em !important; margin-top: .12em; }
+#page_content .form-check-input:checked { background-color: var(--p-accent) !important; border-color: var(--p-accent) !important; }
+#page_content .form-check-input:focus { border-color: var(--p-accent) !important; box-shadow: 0 0 0 3px var(--p-soft) !important; }
+#page_content .form-check-label { color: var(--p-text); cursor: pointer; }
+
+/* bottom bar of a card (e.g. the SQL page's options + Go) */
+#page_content .card-footer {
+  background: var(--p-head) !important; border-top: 1px solid var(--p-line) !important; padding: 12px 18px !important; color: var(--p-text);
+}
+
+/* SQL editors (CodeMirror): dark like a code editor, same colors as the console */
+#page_content .CodeMirror {
+  background: #0f1115 !important; color: #e2dfd8 !important; border: 1px solid #2a2e36 !important; border-radius: 10px;
+  font: 13.5px/1.65 Consolas, "Cascadia Mono", monospace !important;
+}
+/* phpMyAdmin's theme gives every card a white text-shadow (1px 1px 2px #fff): on the dark
+   editor every letter got a blurred white copy. No shadows inside the editor. */
+#page_content .CodeMirror, #page_content .CodeMirror * { text-shadow: none !important; }
+/* phpMyAdmin's theme cancels the trick CodeMirror uses to hide the browser's own scrollbars
+   (margin-right on .CodeMirror-scroll), so two scrollbars showed. Hide the browser's one
+   here; CodeMirror's own (thin, amber, below) stays and scrolling works as before. */
+#page_content .CodeMirror .CodeMirror-scroll { scrollbar-width: none; }
+#page_content .CodeMirror .CodeMirror-scroll::-webkit-scrollbar { display: none; }
+#page_content .CodeMirror-gutters { background: #15171c !important; border-right: 1px solid #24272e !important; }
+#page_content .CodeMirror-linenumber { color: #5b606a !important; padding: 0 8px 0 6px; }
+#page_content .CodeMirror-cursor { border-left: 2px solid #f08a24 !important; }
+#page_content .CodeMirror-selected, #page_content .CodeMirror-focused .CodeMirror-selected { background: rgba(240, 138, 36, .28) !important; }
+#page_content .CodeMirror-matchingbracket { color: #fff !important; background: rgba(240, 138, 36, .3); }
+#page_content .CodeMirror .cm-keyword { color: #f5a04f !important; font-weight: 600; }
+#page_content .CodeMirror :is(.cm-string, .cm-string-2) { color: #9ad08a !important; }
+#page_content .CodeMirror .cm-number { color: #79b8ff !important; }
+#page_content .CodeMirror .cm-comment { color: #7d828c !important; font-style: italic; }
+#page_content .CodeMirror :is(.cm-variable-2, .cm-variable-3) { color: #c792ea !important; }
+#page_content .CodeMirror .cm-builtin { color: #5ad1e6 !important; }
+#page_content .CodeMirror .cm-atom { color: #e879f9 !important; }
+#page_content .CodeMirror :is(.cm-operator, .cm-bracket, .cm-punctuation, .cm-variable) { color: #d5d2cb !important; }
+#page_content .CodeMirror :is(.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler) { background: #0f1115 !important; }
+/* the scrollbar: a visible track (so you can see there is more text) + amber thumb */
+#page_content .CodeMirror :is(.CodeMirror-vscrollbar, .CodeMirror-hscrollbar)::-webkit-scrollbar { width: 10px; height: 10px; }
+#page_content .CodeMirror :is(.CodeMirror-vscrollbar, .CodeMirror-hscrollbar)::-webkit-scrollbar-track {
+  background: #262a32; border-radius: 10px; border: 2px solid #0f1115; }
+#page_content .CodeMirror :is(.CodeMirror-vscrollbar, .CodeMirror-hscrollbar)::-webkit-scrollbar-thumb {
+  background: rgba(240, 138, 36, .75); border-radius: 10px; border: 2px solid #0f1115; min-height: 30px; }
+#page_content .CodeMirror :is(.CodeMirror-vscrollbar, .CodeMirror-hscrollbar)::-webkit-scrollbar-thumb:hover { background: #f08a24; }
+#page_content .CodeMirror :is(.CodeMirror-vscrollbar, .CodeMirror-hscrollbar)::-webkit-scrollbar-button { display: none; }
+
+/* right-click menu in SQL editors (made by ample-page.js): Cut, Copy, Paste, Select all */
+@keyframes ample-ctx-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+#page_content #ample-ctx {
+  position: fixed; z-index: 3000; min-width: 210px; padding: 6px; background: #1f2229; border: 1px solid #2a2e36; border-radius: 10px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, .3), 0 16px 40px rgba(0, 0, 0, .45); transform-origin: top left;
+  animation: ample-ctx-in .14s ease-out; font-size: 13.5px;
+}
+#page_content #ample-ctx button {
+  display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 24px; padding: 7px 10px;
+  background: none; border: 0; border-radius: 6px; color: #e2dfd8; cursor: pointer; text-align: left; font: inherit;
+}
+#page_content #ample-ctx button:hover:not(:disabled) { background: rgba(240, 138, 36, .16); color: #f5a04f; }
+#page_content #ample-ctx button:disabled { opacity: .4; cursor: default; }
+#page_content #ample-ctx kbd { background: none; box-shadow: none; padding: 0; color: #8b9099; font: 12px Consolas, monospace; }
+#page_content #ample-ctx hr { border: 0; border-top: 1px solid #2a2e36; margin: 5px 4px; opacity: 1; }
+
+/* ---- page: SQL ------------------------------------------------------------------------ */
+#page_content #sqlqueryform .btn-toolbar { gap: 8px; margin-top: 12px; }
+#page_content #sqlqueryform .btn-group { gap: 6px; }
+#page_content #sqlqueryform .btn-group > .btn { border-radius: 8px !important; margin-left: 0 !important; }
+#page_content #sqlqueryform .card-footer .row { width: 100%; margin: 0; row-gap: 10px; }
+#page_content #sqlqueryform .card-footer .row > .col-12:last-child { margin-left: auto; }
+#page_content #sqlqueryform #id_sql_delimiter { width: 56px; text-align: center; font-family: Consolas, monospace; }
+#page_content #sqlqueryform .input-group-text { font-size: 13px; color: var(--p-muted); }
+#page_content #button_submit_query { height: 38px; padding: 0 32px; font-size: 15px; }
+
+/* sub-tabs (e.g. Status: Server / Processes / Query statistics ...): an underlined tab bar */
+#page_content .nav-pills {
+  gap: 0; padding: 0 !important; margin: 4px 0 18px; border-bottom: 1px solid var(--p-line); flex-wrap: wrap; width: 100%;
+}
+#page_content .nav-pills .nav-link, #page_content .nav-pills .nav-link:link, #page_content .nav-pills .nav-link:visited {
+  background: none !important; border: 0 !important; border-radius: 0 !important; color: var(--p-muted) !important;
+  padding: 10px 16px !important; font-weight: 500; font-size: 14px; margin-bottom: -1px; transition: color .15s;
+}
+#page_content .nav-pills .nav-link:hover { color: var(--p-text) !important; }
+/* a thin divider between each two tabs (like the top bar) */
+#page_content .nav-pills > .nav-item + .nav-item > .nav-link { border-left: 1px solid var(--p-line) !important; }
+#page_content .nav-pills > .nav-item { display: flex; align-items: center; }
+#page_content .nav-pills .nav-link.active {
+  color: var(--p-text) !important; font-weight: 600; box-shadow: inset 0 -2px 0 var(--p-accent);
+}
+
+/* ---- page: Status (Server) ------------------------------------------------------------ */
+/* title + "running for ..." line: one card (two Bootstrap rows drawn as one box) */
+#page_content .container-fluid > .row:has(> h3) {
+  margin: 0 !important; padding: 16px 20px 2px; background: var(--p-panel); border: 1px solid var(--p-line); border-bottom: 0;
+  border-radius: 12px 12px 0 0; border-left: 4px solid var(--p-accent);
+}
+#page_content .container-fluid > .row:has(> h3) > h3 { font-size: 20px; font-weight: 600; margin: 0; padding: 0; color: var(--p-text); }
+#page_content .container-fluid > .row:has(> h3) + .row:has(> p) {
+  margin: 0 0 16px !important; padding: 4px 20px 16px; background: var(--p-panel); border: 1px solid var(--p-line); border-top: 0;
+  border-radius: 0 0 12px 12px; border-left: 4px solid var(--p-accent); box-shadow: var(--p-shadow);
+}
+#page_content .container-fluid > .row:has(> h3) + .row:has(> p) > p { margin: 0; padding: 0; color: var(--p-muted); }
+
+/* tables placed directly in a row (Status): side by side, full width, each in a frame */
+#page_content .container-fluid > .row.align-items-start:has(> table.table) {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; margin: 0 !important; align-items: start;
+}
+#page_content .container-fluid > .row.align-items-start > table.table {
+  width: 100% !important; max-width: none; padding: 0; margin: 0 !important; background: var(--p-panel);
+  border: 1px solid var(--p-line); border-radius: 12px; border-collapse: separate; border-spacing: 0; overflow: hidden; box-shadow: var(--p-shadow);
+}
+#page_content .container-fluid > .row.align-items-start > table.table tbody th { font-weight: 600; color: var(--p-text); }
+#page_content .container-fluid > .row.align-items-start > table.table td.font-monospace { font-size: 13px; color: var(--p-text); }
+/* the last row ("Total") stands out */
+#page_content .container-fluid > .row.align-items-start > table.table tbody tr:last-child > * {
+  background: var(--p-head) !important; font-weight: 700; border-bottom: 0 !important;
+}
+
+/* ---- page: Status > Query statistics ------------------------------------------------- */
+/* "Questions since startup" card: the averages list (ø per hour / minute / second) as chips */
+#page_content .container-fluid > .row:has(> h3) + .row:has(> ul) {
+  margin: 0 0 16px !important; padding: 6px 20px 16px; background: var(--p-panel); border: 1px solid var(--p-line); border-top: 0;
+  border-radius: 0 0 12px 12px; border-left: 4px solid var(--p-accent); box-shadow: var(--p-shadow);
+}
+#page_content .container-fluid > .row:has(> h3) + .row:has(> ul) > ul {
+  display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0;
+}
+#page_content .container-fluid > .row:has(> h3) + .row:has(> ul) > ul > li {
+  padding: 5px 12px; border-radius: 8px; background: var(--p-panel2); border: 1px solid var(--p-line);
+  font-size: 13px; color: var(--p-muted); font-weight: 500;
+}
+/* statements table (left) + pie chart (right) */
+#page_content .container-fluid > .row:has(> #serverStatusQueriesDetails) {
+  display: grid; grid-template-columns: minmax(360px, 1fr) minmax(360px, 1.15fr); gap: 16px; margin: 0 !important; align-items: start;
+}
+@media (max-width: 1100px) { #page_content .container-fluid > .row:has(> #serverStatusQueriesDetails) { grid-template-columns: 1fr; } }
+#page_content #serverStatusQueriesDetails {
+  width: 100% !important; max-width: none; padding: 0; margin: 0 !important; background: var(--p-panel);
+  border: 1px solid var(--p-line); border-radius: 12px; border-collapse: separate; border-spacing: 0; overflow: hidden; box-shadow: var(--p-shadow);
+}
+#page_content #serverStatusQueriesDetails tbody th { font-weight: 600; font-family: Consolas, "Cascadia Mono", monospace; font-size: 13px; }
+#page_content #serverStatusQueriesDetails td.font-monospace { font-size: 13px; }
+#page_content #serverstatusquerieschart {
+  width: 100% !important; max-width: none; padding: 16px; margin: 0; min-height: 420px; background: var(--p-panel);
+  border: 1px solid var(--p-line); border-radius: 12px; box-shadow: var(--p-shadow);
+}
+/* chart texts (jqPlot) */
+#page_content .jqplot-target { color: var(--p-text); font-family: inherit; }
+#page_content .jqplot-data-label { color: #fff; font-weight: 600; font-size: 12px; text-shadow: 0 1px 2px rgba(0, 0, 0, .35) !important; }
+#page_content table.jqplot-table-legend { border: 0 !important; background: transparent !important; font-size: 13px; }
+#page_content table.jqplot-table-legend td { border: 0 !important; padding: 3px 6px !important; color: var(--p-text); }
+#page_content .jqplot-table-legend-swatch-outline { border: 0 !important; }
+#page_content .jqplot-table-legend-swatch { border-radius: 3px; }
+#page_content .jqplot-highlighter-tooltip, #page_content .jqplot-canvasOverlay-tooltip {
+  background: #15171c !important; color: #f1efea !important; border: 0 !important; border-radius: 6px; padding: 4px 8px !important; font-size: 12.5px;
+}
+
+/* ---- page: Status > Monitor ----------------------------------------------------------- */
+/* command bar: Start/Pause monitor (main, amber), Settings, Instructions, Done dragging */
+#page_content .tabLinks { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px !important; padding: 0 !important; }
+#page_content .tabLinks > a:not(.hide) {
+  display: inline-flex; align-items: center; gap: 6px; width: auto; padding: 7px 14px; border-radius: 8px;
+  background: var(--p-panel); border: 1px solid var(--p-line2); color: var(--p-text) !important; font-weight: 500; text-decoration: none;
+}
+#page_content .tabLinks > a:hover { border-color: var(--p-accent); color: var(--p-accent-ink) !important; }
+#page_content .tabLinks > a[href="#pauseCharts"] {
+  background: var(--p-accent); border-color: var(--p-accent); color: var(--p-on-accent) !important; font-weight: 600;
+}
+#page_content .tabLinks > a[href="#pauseCharts"]:hover { background: #e07b15; border-color: #e07b15; color: var(--p-on-accent) !important; }
+#page_content .tabLinks > a[href="#pauseCharts"] .icon { --ic: var(--p-on-accent); }
+
+/* Settings pop-up */
+#page_content .popupContent {
+  background: var(--p-panel) !important; border: 1px solid var(--p-line) !important; border-radius: 12px !important;
+  box-shadow: 0 0 30px rgba(0, 0, 0, .12), 0 16px 40px rgba(0, 0, 0, .18) !important; padding: 14px 16px !important; color: var(--p-text);
+}
+#page_content .popupContent > a { display: inline-flex; align-items: center; gap: 6px; margin: 0 14px 6px 0; font-weight: 500; }
+
+/* chart grid: each chart is a white card */
+/* phpMyAdmin sizes each chart in pixels from the page width and only subtracts the space
+   between cells, so the card must not add width: no side padding, and the frame is a
+   box-shadow ring (takes no space) instead of a border. #logTable (whose width phpMyAdmin
+   measures) keeps a small safety margin so the last time label is never cut. */
+#page_content #logTable { margin-right: 16px; }
+#page_content #chartGrid { border-collapse: separate; border-spacing: 12px; margin: -12px; }
+#page_content #chartGrid td { padding: 0 !important; vertical-align: top; background: transparent !important; border: 0 !important; }
+#page_content #chartGrid td > div {
+  background: var(--p-panel); border: 0; border-radius: 12px; padding: 10px 0 0;
+  box-shadow: 0 0 0 1px var(--p-line), var(--p-shadow);
+}
+#page_content #chartGrid div.monitorChart { background: transparent !important; border: 0 !important; }
+/* legend under each chart: one tidy line inside the card (it was floating out of it) */
+#page_content #chartGrid td > div > div:last-child:not(.monitorChart) {
+  display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 6px 14px 12px !important; font-size: 13px; color: var(--p-text);
+}
+#page_content #chartGrid td > div > div:last-child:not(.monitorChart) > .float-start {
+  float: none !important; display: inline-flex; align-items: center; gap: 7px;
+}
+#page_content #chartGrid td > div > div:last-child:not(.monitorChart) > .float-start > .float-start {
+  float: none !important;
+}
+#page_content #chartGrid td > div > div:last-child:not(.monitorChart) > .float-start > .float-start:first-child {
+  width: 10px !important; height: 10px !important; border-radius: 3px; flex: none;   /* color swatch */
+}
+#page_content #chartGrid td > div > div:last-child:not(.monitorChart) .clearfloat { display: none; }
+#page_content .jqplot-title { font-size: 14px !important; font-weight: 600; color: var(--p-text) !important; padding-bottom: 6px !important; }
+#page_content .jqplot-axis { color: var(--p-muted) !important; font-size: 11px !important; }
+#page_content #tooltip_editor {
+  background: #15171c; color: #f1efea; border-radius: 8px; padding: 8px 10px; font-size: 12.5px; line-height: 1.5;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .3);
+}
+#page_content #tooltip_editor span { text-shadow: none; }
+
+/* icons of this page (line drawings, like the rest) */
+#page_content :is(.ic_play, .ic_pause, .ic_s_cog, .ic_s_okay, .ic_b_chart, .ic_b_tblops) {
+  background: var(--ic, var(--p-muted)) !important; width: 16px; height: 16px; vertical-align: -3px; margin: 0 2px 0 0 !important;
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat;
+}
+#page_content .ic_play { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'%3E%3Cpath d='M5 3.2v9.6c0 .6.6.9 1.1.6l7.3-4.8a.7.7 0 0 0 0-1.2L6.1 2.6c-.5-.3-1.1 0-1.1.6z'/%3E%3C/svg%3E"); }
+#page_content .ic_pause { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'%3E%3Crect x='4' y='3' width='3' height='10' rx='1'/%3E%3Crect x='9' y='3' width='3' height='10' rx='1'/%3E%3C/svg%3E"); }
+#page_content .ic_s_cog { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+#page_content .ic_s_okay { --ic: #1f8a52; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5 6.5 11.5 12.5 4.5'/%3E%3C/svg%3E"); }
+#page_content .ic_b_chart { --ic: #5aa9ff; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 2.5v11h11M5 10.5l2.5-3 2 2 3.5-4.5'/%3E%3C/svg%3E"); }
+#page_content .ic_b_tblops { --ic: #f472b6; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5h6M11.5 4.5h2M2.5 11.5h2M7.5 11.5h6'/%3E%3Ccircle cx='10' cy='4.5' r='1.5'/%3E%3Ccircle cx='6' cy='11.5' r='1.5'/%3E%3C/svg%3E"); }
+
+/* ---- page: User accounts > Add user account --------------------------------------------- */
+/* Login information: label | choice | field, in straight columns */
+#page_content #fieldset_add_user_login .item {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--p-line);
+}
+#page_content #fieldset_add_user_login .item:last-of-type { border-bottom: 0; }
+#page_content #fieldset_add_user_login .item > label { flex: 0 0 180px; font-weight: 500; margin: 0; }
+#page_content #fieldset_add_user_login .item > .options { flex: 0 0 210px; }
+#page_content #fieldset_add_user_login .item > .options select { width: 100%; }
+#page_content #fieldset_add_user_login .item > :is(input[type="text"], input[type="password"], select) { width: 300px; height: 36px; }
+#page_content #fieldset_add_user_login .item > div:is(#user_exists_warning, #ssl_reqd_warning) { flex-basis: 100%; }
+/* password strength meter: flat colors */
+#page_content meter#password_strength_meter {
+  width: 140px; height: 10px; border-radius: 6px; background: var(--p-panel2); border: 1px solid var(--p-line); overflow: hidden;
+}
+#page_content meter#password_strength_meter::-webkit-meter-bar { background: var(--p-panel2); border: 0; border-radius: 6px; height: 10px; }
+#page_content meter#password_strength_meter::-webkit-meter-optimum-value { background: #1f8a52 !important; border-radius: 6px; }
+#page_content meter#password_strength_meter::-webkit-meter-suboptimum-value { background: #f08a24 !important; border-radius: 6px; }
+#page_content meter#password_strength_meter::-webkit-meter-even-less-good-value { background: #d14343 !important; border-radius: 6px; }
+#page_content #password_strength { font-weight: 600; color: var(--p-muted); }
+
+/* "Database for user account": one choice per line, with space */
+#page_content #fieldset_add_user_database label { margin: 4px 0 4px 6px; }
+
+/* Global privileges: the five groups (Data, Structure, Administration, Resource limits, SSL)
+   as cards side by side, wrapping on narrow screens */
+#page_content #fieldset_user_global_rights { display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch; }
+#page_content #fieldset_user_global_rights > p { flex-basis: 100%; margin: 0; color: var(--p-muted); }
+#page_content #fieldset_user_global_rights > .clearfloat { display: none; }
+#page_content #fieldset_user_global_rights > fieldset.pma-fieldset {
+  float: none !important; flex: 1 1 200px; margin: 0 !important; min-width: 0;
+}
+#page_content #fieldset_user_global_rights > fieldset.pma-fieldset > legend { font-size: 13.5px !important; padding: 9px 14px !important;
+  margin: 0 -18px 8px !important; }
+#page_content #fieldset_user_global_rights .item { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+#page_content #fieldset_user_global_rights .item code { background: none; padding: 0; font-size: 12.5px; color: var(--p-text); }
+#page_content #fieldset_user_global_rights .item dfn { font-style: normal; border: 0; text-decoration: none; cursor: help; }
+#page_content #fieldset_user_global_rights input[type="checkbox"],
+#page_content #fieldset_user_global_rights input[type="radio"],
+#page_content #fieldset_add_user_database input[type="checkbox"] { accent-color: var(--p-accent); width: 16px; height: 16px; flex: none; }
+#page_content #fieldset_user_global_rights legend label { margin: 0; font-weight: 600; }
+/* resource limits: name on the left, small number field on the right */
+#page_content #fieldset_user_global_rights .item:has(> input[type="number"]) { justify-content: space-between; }
+#page_content #fieldset_user_global_rights .item > input[type="number"] { width: 80px; height: 32px; text-align: right; }
+#page_content #fieldset_user_global_rights #specified_div { padding-left: 24px !important; }
+#page_content #fieldset_user_global_rights #specified_div input[type="text"] { width: 100%; }
+
+/* ---- page: Plugins ---------------------------------------------------------------------- */
+/* jump links (AUTHENTICATION, DAEMON ...): quiet outlined chips instead of 6 amber buttons */
+#page_content #plugins_plugins > .card { background: transparent !important; border: 0 !important; box-shadow: none !important; margin: 0 0 14px !important; }
+#page_content #plugins_plugins > .card > .card-body { padding: 0 !important; display: flex; flex-wrap: wrap; gap: 8px; }
+#page_content #plugins_plugins > .card .btn-primary {
+  background: var(--p-panel) !important; border: 1px solid var(--p-line2) !important; color: var(--p-muted) !important;
+  font-size: 12px; font-weight: 600; letter-spacing: .5px; padding: 5px 12px; border-radius: 20px !important;
+}
+#page_content #plugins_plugins > .card .btn-primary:hover { border-color: var(--p-accent) !important; color: var(--p-accent-ink) !important; }
+
+/* one framed table per type, all full width with the same columns */
+#page_content #plugins_plugins > .row { margin: 0 0 18px !important; }
+#page_content #plugins_plugins > .row > .table-responsive { padding: 0 !important; }
+#page_content #plugins_plugins .table.w-auto { width: 100% !important; table-layout: fixed; }
+#page_content #plugins_plugins .table { scroll-margin-top: 80px; }   /* jump lands below the top bar */
+#page_content #plugins_plugins .table th:nth-child(1) { width: 22%; }
+#page_content #plugins_plugins .table th:nth-child(2) { width: 38%; }
+#page_content #plugins_plugins .table th:nth-child(3) { width: 9%; }
+#page_content #plugins_plugins .table th:nth-child(4) { width: 21%; }
+#page_content #plugins_plugins .table th:nth-child(5) { width: 10%; }
+#page_content #plugins_plugins .table :is(td, th) { word-break: break-word; }
+#page_content #plugins_plugins .table tbody th { font-family: Consolas, "Cascadia Mono", monospace; font-size: 13px; font-weight: 600; }
+#page_content #plugins_plugins .table tbody td { color: var(--p-muted); font-size: 13.5px; }
+/* the type name: a header band inside the frame, like a card header */
+#page_content #plugins_plugins .table > caption {
+  caption-side: top; padding: 12px 14px !important; background: var(--p-head); color: var(--p-text) !important;
+  font-size: 15px; font-weight: 600; border-bottom: 1px solid var(--p-line); display: table-caption;
+}
+#page_content #plugins_plugins .table > caption::before {
+  content: ""; display: inline-block; width: 4px; height: 15px; border-radius: 2px; background: var(--p-accent); margin-right: 10px; vertical-align: -2px;
+}
+/* "disabled" badge */
+#page_content .badge.bg-danger {
+  background: #fdf0f0 !important; color: #c03535 !important; border: 1px solid #f3c9c9; font-weight: 600; border-radius: 10px; padding: 3px 9px;
+}
+
+/* ---- page: Database > Structure (list of tables) --------------------------------------- */
+/* row actions: grey text, line icons in their own color; red on hover for Drop */
+#page_content #tablesForm td.text-center a, #page_content #tablesForm td.text-center a:link,
+#page_content #tablesForm td.text-center a:visited { color: var(--p-muted) !important; font-size: 13px; text-decoration: none; }
+#page_content #tablesForm td.text-center a:hover { color: var(--p-accent-ink) !important; }
+#page_content #tablesForm td.text-center a.drop_table_anchor:hover { color: #c03535 !important; }
+/* the list uses the full width of its frame (it was only as wide as its text) */
+#page_content #tablesForm .table.w-auto { width: 100% !important; }
+/* number columns (Rows, Size, Overhead): heading on the right, above its numbers. Found by
+   their sort link, not by position (optional columns can be switched on in the settings) */
+#page_content #tablesForm thead th:has(a[href*="sort=records"]),
+#page_content #tablesForm thead th:has(a[href*="sort=size"]),
+#page_content #tablesForm thead th:has(a[href*="sort=overhead"]) { text-align: right !important; }
+#page_content #tablesForm .table > :not(caption) > * > * { padding: 8px 10px; }
+#page_content #tablesForm tbody th a { font-weight: 600; }
+/* filter card: label and field on one line */
+#page_content #tableFilter .card-body { padding: 12px 18px !important; }
+/* "With selected:": a tidy row, without the old arrow picture */
+#page_content #tablesForm > .clearfloat { display: flex; align-items: center; gap: 10px; margin: 4px 0 18px; }
+#page_content #tablesForm > .clearfloat img.selectallarrow { display: none; }
+#page_content #tablesForm > .clearfloat select { width: auto; min-width: 200px; height: 34px; }
+/* Print + Data dictionary: real buttons */
+#page_content #tableslistcontainer + hr { display: none; }
+#page_content p.d-print-none:has(.jsPrintButton) { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+#page_content p.d-print-none:has(.jsPrintButton) > :is(.jsPrintButton, a) {
+  display: inline-flex; align-items: center; padding: 7px 14px !important; border-radius: 8px !important; text-decoration: none;
+  background: var(--p-panel) !important; border: 1px solid var(--p-line2) !important; color: var(--p-text) !important; font-weight: 500;
+}
+#page_content p.d-print-none:has(.jsPrintButton) > :is(.jsPrintButton, a):hover { border-color: var(--p-accent) !important; color: var(--p-accent-ink) !important; }
+
+/* more line icons (row actions, print, data dictionary, new table, favorites) */
+#page_content :is(.ic_b_browse, .ic_bd_browse, .ic_b_props, .ic_b_select, .ic_bd_select, .ic_b_insrow, .ic_b_empty, .ic_bd_empty,
+  .ic_b_no_favorite, .ic_b_favorite, .ic_b_print, .ic_b_tblanalyse, .ic_b_table_add, .ic_b_edit) {
+  background: var(--ic, var(--p-muted)) !important; width: 16px; height: 16px; vertical-align: -3px; margin: 0 2px 0 0 !important;
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat;
+}
+#page_content :is(.ic_b_browse, .ic_bd_browse) { --ic: #5aa9ff; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='2.5' width='12' height='11' rx='1.6'/%3E%3Cpath d='M2 6h12M2 9.6h12M6.4 6v7.5'/%3E%3C/svg%3E"); }
+#page_content .ic_b_props { --ic: #818cf8; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4h8M6 8h8M6 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01'/%3E%3C/svg%3E"); }
+#page_content :is(.ic_b_select, .ic_bd_select) { --ic: #e0a400; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='7' cy='7' r='4.5'/%3E%3Cpath d='m10.4 10.4 3.1 3.1'/%3E%3C/svg%3E"); }
+#page_content .ic_b_insrow { --ic: #1f8a52; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='2' width='12' height='12' rx='2'/%3E%3Cpath d='M8 5.2v5.6M5.2 8h5.6'/%3E%3C/svg%3E"); }
+#page_content :is(.ic_b_empty, .ic_bd_empty) { --ic: #e07b15; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 2.5 13.5 6.5M8.2 3.8l4 4-5.4 5.4H3.5v-3.3z'/%3E%3Cpath d='M6 13.2h7.5'/%3E%3C/svg%3E"); }
+/* "bd_" = the table is empty: nothing to browse / search / empty -> greyed */
+#page_content :is(.ic_bd_browse, .ic_bd_select, .ic_bd_empty) { --ic: #c9c2b6; }
+#page_content .ic_b_no_favorite { --ic: #b8b0a3; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z'/%3E%3C/svg%3E"); }
+#page_content .ic_b_favorite { --ic: var(--p-accent); --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black' stroke='black' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z'/%3E%3C/svg%3E"); }
+#page_content .ic_b_print { --ic: var(--p-text); --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 6V2.5h7V6M4.5 11.5h-2v-5h11v5h-2'/%3E%3Crect x='4.5' y='9.5' width='7' height='4' rx='.6'/%3E%3C/svg%3E"); }
+#page_content .ic_b_tblanalyse { --ic: #a78bfa; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2.5h7.5a1.5 1.5 0 0 1 1.5 1.5v9.5H5a2 2 0 0 1-2-2z'/%3E%3Cpath d='M3 11.5a2 2 0 0 1 2-2h7M6 5.5h3.5'/%3E%3C/svg%3E"); }
+#page_content .ic_b_table_add { --ic: var(--p-accent); --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 13.5H3.6A1.6 1.6 0 0 1 2 11.9V4.1a1.6 1.6 0 0 1 1.6-1.6h8.8A1.6 1.6 0 0 1 14 4.1V8M2 6h12M6.4 6v7.5M12 10.5v4M10 12.5h4'/%3E%3C/svg%3E"); }
+#page_content .ic_b_edit { --ic: var(--p-muted); --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.5 2.5l3 3L6 13H3v-3z'/%3E%3C/svg%3E"); }
+
+/* ---- page: Table > Browse (query results) ---------------------------------------------- */
+/* the query that ran: ONE card in three bands, each with its own background:
+     top:    the result message (its own color)
+     middle: the SQL, dark like the SQL editor
+     bottom: the tools (Profiling, Edit inline, Edit ...)                                 */
+#page_content .result_query {
+  margin-bottom: 14px; border: 1px solid var(--p-line); border-radius: 12px; overflow: hidden;
+  background: var(--p-panel); box-shadow: var(--p-shadow);
+}
+#page_content .result_query > .alert {
+  margin: 0 !important; border: 0 !important; border-left: 4px solid var(--a) !important; border-radius: 0 !important;
+}
+/* the card's top band: a deeper tint than messages elsewhere */
+#page_content .result_query > .alert-success { --a-bg: #d6eedf; }
+#page_content .result_query > .alert-danger  { --a-bg: #f6dcdc; }
+#page_content .result_query > .alert-warning { --a-bg: #fbe8d0; }
+#page_content .result_query > .alert:not(.alert-success, .alert-danger, .alert-warning) { --a-bg: #dce8f7; }
+#page_content .result_query > .sqlOuter { margin: 0 !important; border: 0 !important; border-radius: 0 !important; }
+#page_content .result_query > .tools {
+  padding: 16px 20px !important; background: var(--p-head) !important; border-top: 1px solid var(--p-line) !important;
+}
+#page_content .sqlOuter {
+  background: #22262e !important; border: 1px solid #2f343d; border-radius: 10px; padding: 12px 16px; margin: 0 0 8px;
+  color: #e2dfd8; overflow-x: auto;   /* a softer charcoal than pure black */
+}
+#page_content .sqlOuter :is(code, pre) {
+  background: none !important; color: #e2dfd8 !important; margin: 0; padding: 0; white-space: pre-wrap;
+  font: 13.5px/1.6 Consolas, "Cascadia Mono", monospace !important; text-shadow: none !important;
+}
+#page_content .sqlOuter a { color: inherit !important; text-decoration: none !important; }
+#page_content .sqlOuter .cm-keyword, #page_content .sqlOuter .cm-keyword a { color: #f5a04f !important; font-weight: 600; }
+#page_content .sqlOuter :is(.cm-string, .cm-string-2) { color: #9ad08a !important; }
+#page_content .sqlOuter .cm-number { color: #79b8ff !important; }
+#page_content .sqlOuter .cm-comment { color: #7d828c !important; }
+#page_content .sqlOuter :is(.cm-variable-2, .cm-variable-3) { color: #c792ea !important; }
+#page_content .sqlOuter .cm-builtin { color: #5ad1e6 !important; }
+#page_content .sqlOuter :is(.cm-operator, .cm-bracket, .cm-punctuation, .cm-variable) { color: #d5d2cb !important; }
+
+/* tools under the query: no "[ ]" text, small framed buttons (font-size 0 drops the brackets) */
+#page_content .result_query > .tools {
+  font-size: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0;
+  /* the card's bottom band (see "ONE card in three bands" above): room above and below */
+  padding: 16px 20px !important; background: var(--p-head) !important; border: 0 !important; border-top: 1px solid var(--p-line) !important;
+}
+#page_content .result_query > .tools > * { font-size: 13px; }
+/* "Profiling" (an option), then a thin divider, then the commands */
+#page_content .result_query > .tools > form {
+  display: inline-flex; align-items: center; gap: 6px; margin-right: 8px; padding-right: 14px; border-right: 1px solid var(--p-line2);
+}
+/* commands: light buttons (no frame, no fill), so the row stays calm */
+#page_content .result_query > .tools > a {
+  padding: 4px 10px; border: 0; border-radius: 6px; background: transparent;
+  color: var(--p-muted) !important; text-decoration: none; font-weight: 500;
+}
+#page_content .result_query > .tools > a:hover { background: var(--p-panel); color: var(--p-accent-ink) !important; }
+#page_content .result_query > .tools input[type="checkbox"] { accent-color: var(--p-accent); width: 16px; height: 16px; }
+
+/* paging bar (Show all / Number of rows / Filter rows / Sort by key), top and bottom */
+/* the same warm shade as the card footers above it (a bit darker than white); fields stay white */
+#page_content table.navigation {
+  background: #dcd5c8 !important; background-image: none !important; border: 1px solid #cbc3b4 !important;
+  border-radius: 10px; border-collapse: separate; border-spacing: 0; margin: 0 0 12px; box-shadow: var(--p-shadow); text-shadow: none !important;
+}
+#page_content table.navigation td { padding: 8px 10px !important; vertical-align: middle; border: 0 !important; background: none !important; }
+#page_content table.navigation .navigation_separator { font-size: 0; width: 1px; padding: 0 !important; background: var(--p-line2) !important; }
+#page_content table.navigation td:has(> .navigation_separator) { padding: 0 4px !important; }
+#page_content table.navigation :is(select, input[type="text"]) {
+  height: 32px; margin-left: 6px; background-color: #fff !important; color: var(--p-text) !important;
+}
+#page_content table.navigation label, #page_content table.navigation span, #page_content table.navigation form { color: var(--p-text); }
+#page_content table.navigation input[type="checkbox"] { accent-color: var(--p-accent); width: 16px; height: 16px; vertical-align: -3px; }
+
+/* page buttons (<<  <  [page]  >  >>): one joined group. Each sits in its own cell, so the
+   cells lose their padding; the group's ends are found by what is actually there (page 1
+   has no << <, the last page no > >>), not by button names (they are translated). */
+#page_content table.navigation td:has(> form > :is(input[type="submit"][name="navig"], select.pageselector)) { padding: 8px 0 !important; }
+#page_content table.navigation :is(input[type="submit"][name="navig"], select.pageselector) {
+  height: 34px; min-width: 38px; margin: 0 0 0 -1px !important; border-radius: 0 !important; position: relative;
+  background: var(--p-panel) !important; background-image: none !important; border: 1px solid var(--p-line2) !important;
+  color: var(--p-text) !important; font-weight: 600; box-shadow: none !important; text-shadow: none !important; padding: 0 10px;
+}
+#page_content table.navigation select.pageselector { min-width: 70px; text-align: center; font-weight: 600; }
+#page_content table.navigation :is(input[type="submit"][name="navig"], select.pageselector):hover {
+  border-color: var(--p-accent) !important; color: var(--p-accent-ink) !important; z-index: 1;
+}
+/* first and last of the group get the rounded corners */
+#page_content table.navigation td:not(:has(> form > :is(input[type="submit"][name="navig"], select.pageselector)))
+  + td:has(> form > :is(input[type="submit"][name="navig"], select.pageselector))
+  :is(input[type="submit"][name="navig"], select.pageselector) { border-radius: 8px 0 0 8px !important; margin-left: 10px !important; }
+#page_content table.navigation td:has(> form > :is(input[type="submit"][name="navig"], select.pageselector)):not(:has(+ td > form > :is(input[type="submit"][name="navig"], select.pageselector)))
+  :is(input[type="submit"][name="navig"], select.pageselector) { border-radius: 0 8px 8px 0 !important; margin-right: 10px !important; }
+
+/* the results grid: framed like every table; full width when it has few columns */
+/* Bootstrap's .table-responsive-md only scrolls below 768px; on a wide screen a wide table
+   pushed the whole page sideways (and out of its card). Scroll inside the card, always. */
+#page_content .table-responsive-md {
+  background: var(--p-panel); border: 1px solid var(--p-line); border-radius: 12px; box-shadow: var(--p-shadow); margin-bottom: 12px;
+  /* sideways only: allowing x makes the browser allow y too, and phpMyAdmin's hidden grid
+     helpers (column resize handles, drag pointer) then caused a small vertical scrollbar */
+  overflow-x: auto; overflow-y: hidden;
+}
+/* phpMyAdmin makes the header row sticky at the top bar's height; inside a scrolling card
+   that offset pushed it down over the first rows. Here it stays in its normal place. */
+#page_content .table-responsive-md th.position-sticky { top: 0 !important; }
+/* the table sits in an extra div.data (12px bottom margin) and has Bootstrap's own bottom
+   margin: both made the white strip under the last row */
+#page_content .table-responsive-md .table, #page_content .table-responsive-md > div.data { margin: 0 !important; }
+#page_content .table-responsive-md::-webkit-scrollbar { height: 10px; }
+#page_content .table-responsive-md::-webkit-scrollbar-track { background: var(--p-panel2); border-radius: 0 0 12px 12px; }
+#page_content .table-responsive-md::-webkit-scrollbar-thumb { background: rgba(240, 138, 36, .6); border-radius: 10px; border: 2px solid var(--p-panel2); }
+#page_content .table-responsive-md::-webkit-scrollbar-thumb:hover { background: var(--p-accent); }
+#page_content table.table_results.w-auto { width: auto !important; min-width: 100%; }
+/* column names are your data: keep their real case */
+#page_content table.table_results thead th { text-transform: none; letter-spacing: 0; font-size: 13px; }
+/* a thin white divider between header cells (shows where each column ends); bottom line unchanged */
+#page_content table.table_results thead th:not(:last-child) { border-right: 1px solid #fff !important; }
+#page_content table.table_results thead th a.sortlink { color: var(--p-text) !important; font-weight: 600; }
+#page_content table.table_results td.d-print-none a, #page_content table.table_results td.d-print-none a:link,
+#page_content table.table_results td.d-print-none a:visited { color: var(--p-muted) !important; font-size: 13px; text-decoration: none; }
+#page_content table.table_results td.d-print-none a:hover { color: var(--p-accent-ink) !important; }
+#page_content table.table_results td.d-print-none a.delete_row:hover { color: #c03535 !important; }
+/* row actions (Edit / Copy / Delete): icons only, close together (the word is in a tooltip,
+   added by ample-page.js); the checkbox column stays as it is */
+#page_content table.table_results tbody td.d-print-none:has(> span > a, > a) { padding: 6px 2px !important; width: 1%; }
+#page_content table.table_results tbody td.d-print-none :is(a, a .text-nowrap) { font-size: 0 !important; }
+#page_content table.table_results tbody td.d-print-none a {
+  display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 7px; transition: background .15s;
+}
+#page_content table.table_results tbody td.d-print-none a:hover { background: var(--p-panel2); }
+#page_content table.table_results tbody td.d-print-none a.delete_row:hover { background: #fdf0f0; }
+#page_content table.table_results tbody td.d-print-none a .icon { width: 17px; height: 17px; margin: 0 !important; -webkit-mask-size: 17px 17px; mask-size: 17px 17px; }
+#page_content table.table_results td.data { font-size: 13.5px; }
+/* floating ◀ ▶ buttons for wide tables (made by ample-page.js): half outside the card's
+   edges, in the middle of the part of the table you can see */
+#page_content .ample-hscroll {
+  position: fixed; z-index: 40; width: 38px; height: 38px; border-radius: 50%; border: 1px solid #2a2e36;
+  background: #15171c; color: #f08a24; display: grid; place-items: center; cursor: pointer; padding: 0;
+  box-shadow: 0 0 18px rgba(0, 0, 0, .18), 0 8px 18px rgba(0, 0, 0, .25); transition: opacity .15s, background .15s, transform .1s;
+  user-select: none; -webkit-user-select: none; touch-action: none;
+}
+#page_content .ample-hscroll:hover { background: #f08a24; color: #1a1205; border-color: #f08a24; }
+#page_content .ample-hscroll:active { transform: scale(.94); }
+#page_content .ample-hscroll svg { width: 18px; height: 18px; display: block; pointer-events: none; }
+#page_content .ample-hscroll.is-off { opacity: 0; pointer-events: none; }
+@media print { #page_content .ample-hscroll { display: none; } }
+
+/* column visibility list (arrow in the action column's header): above everything, our card
+   look. ample-page.js pins it to the screen while open, so the card never cuts it off. */
+#page_content .cList {
+  z-index: 60 !important; background: var(--p-panel) !important; border: 1px solid var(--p-line) !important; border-radius: 10px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, .12), 0 16px 40px rgba(0, 0, 0, .2) !important; padding: 6px; min-width: 220px; text-shadow: none;
+}
+#page_content .cList .lDiv div { padding: 6px 10px !important; border-radius: 6px; display: flex; align-items: center; gap: 8px; color: var(--p-text); }
+#page_content .cList .lDiv div:hover { background: var(--p-soft) !important; }
+#page_content .cList input[type="checkbox"] { accent-color: var(--p-accent); width: 16px; height: 16px; margin: 0; }
+#page_content .cList > div:not(.lDiv) { padding: 6px 10px; border-top: 1px solid var(--p-line); margin-top: 4px; }
+#page_content .cDrop { z-index: 61; }
+/* The list lives inside a sticky header cell, and a sticky element is a closed layer: the
+   list's own z-index can't lift it above the row icons (each mask icon is a layer too, and
+   they come later in the page). Lift the header cells themselves. */
+#page_content table.table_results thead th { z-index: 3; }
+/* cell editor (pinned to the screen by ample-page.js so it can grow outside the card) */
+#page_content .cEdit { z-index: 70 !important; }
+
+/* "show full texts" button in the corner: the old picture becomes a line icon */
+#page_content img.fulltext {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 16' fill='none' stroke='%239a948a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 3h6M12 3v10M1.5 8h5M4 5.5 1.5 8 4 10.5M22.5 8h-5M20 5.5 22.5 8 20 10.5'/%3E%3C/svg%3E");
+  width: 24px; height: 16px;
+}
+
+/* "With selected:" row under the grid */
+#page_content form > div.d-print-none:has(> .checkall_box) { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 16px; }
+#page_content form > div.d-print-none:has(> .checkall_box) > img.selectallarrow { display: none; }
+#page_content form > div.d-print-none:has(> .checkall_box) > label { margin-right: 10px; }
+#page_content em.with-selected { font-style: normal; color: var(--p-muted); margin-right: 4px; }
+#page_content .mult_submit.btn-link {
+  padding: 4px 11px !important; border: 1px solid var(--p-line2) !important; border-radius: 7px !important;
+  background: var(--p-panel) !important; color: var(--p-text) !important; text-decoration: none; font-size: 13px;
+}
+#page_content .mult_submit.btn-link:hover { border-color: var(--p-accent) !important; color: var(--p-accent-ink) !important; }
+#page_content .mult_submit.btn-link[value="delete"] { color: #c03535 !important; border-color: #f0c4c4 !important; }
+#page_content .mult_submit.btn-link[value="delete"]:hover { background: #fdf0f0 !important; border-color: #d14343 !important; }
+
+/* "Query results operations": framed buttons in one row */
+#page_content fieldset.pma-fieldset:has(> .jsPrintButton) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+#page_content fieldset.pma-fieldset:has(> .jsPrintButton) > legend { flex-basis: 100%; }
+#page_content fieldset.pma-fieldset:has(> .jsPrintButton) :is(.btn, .btn-link) {
+  display: inline-flex; align-items: center; padding: 6px 13px !important; border: 1px solid var(--p-line2) !important;
+  border-radius: 8px !important; background: var(--p-panel) !important; color: var(--p-text) !important; text-decoration: none; font-size: 13.5px;
+}
+#page_content fieldset.pma-fieldset:has(> .jsPrintButton) :is(.btn, .btn-link):hover { border-color: var(--p-accent) !important; color: var(--p-accent-ink) !important; }
+
+/* icons of these pages: Copy (two sheets, where "insrow" means copy), Export, Create view */
+#page_content :is(.ic_b_tblexport, .ic_b_view_add, .ic_b_export) {
+  background: var(--ic, var(--p-muted)) !important; width: 16px; height: 16px; vertical-align: -3px; margin: 0 2px 0 0 !important;
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat;
+}
+#page_content :is(.ic_b_tblexport, .ic_b_export) { --ic: #2dd4bf; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 10V2.5M5 5.5 8 2.5l3 3M2.5 9.5v3a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3'/%3E%3C/svg%3E"); }
+#page_content .ic_b_view_add { --ic: #67c4d8; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.5 7.5S3.8 3.5 7.5 3.5s6 4 6 4M5.5 7.5a2 2 0 1 1 4 0'/%3E%3Cpath d='M12 10v4.5M9.8 12.2h4.5'/%3E%3C/svg%3E"); }
+#page_content :is(table.table_results, .mult_submit, #copyToClipBoard) .ic_b_insrow {
+  --ic: #1f8a52; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5.5' y='5.5' width='8' height='8' rx='1.5'/%3E%3Cpath d='M10.5 5.5V3.8a1.3 1.3 0 0 0-1.3-1.3H3.8a1.3 1.3 0 0 0-1.3 1.3v5.4a1.3 1.3 0 0 0 1.3 1.3h1.7'/%3E%3C/svg%3E");
+}
+
+/* ---- page: Table > Structure ------------------------------------------------------------- */
+/* the two tabs (Table structure / Relation view): a segmented toggle */
+#page_content ul.nav-pills:has(#table_structure_id) {
+  display: inline-flex; width: auto; gap: 4px; padding: 4px !important; margin: 0 0 18px !important;
+  background: var(--p-panel2); border: 1px solid var(--p-line) !important; border-radius: 12px;
+}
+#page_content ul.nav-pills:has(#table_structure_id) > .nav-item + .nav-item > .nav-link { border-left: 0 !important; }
+#page_content ul.nav-pills:has(#table_structure_id) .nav-link {
+  border-radius: 9px !important; padding: 8px 16px !important; margin: 0 !important; color: var(--p-muted) !important;
+  display: inline-flex; align-items: center; box-shadow: none !important;
+}
+#page_content ul.nav-pills:has(#table_structure_id) .nav-link:hover { color: var(--p-text) !important; background: rgba(255, 255, 255, .55) !important; }
+#page_content ul.nav-pills:has(#table_structure_id) .nav-link.active {
+  background: var(--p-panel) !important; color: var(--p-text) !important; font-weight: 600;
+  box-shadow: 0 1px 2px rgba(28, 26, 23, .08), 0 0 0 1px var(--p-line) !important;
+}
+#page_content ul.nav-pills:has(#table_structure_id) .nav-link:not(.active) .icon { --ic: #b0a99e; }
+
+/* buttons under the columns table + "Add column(s)" row */
+#page_content #structure_content form > hr, #page_content #structure_content > hr { display: none; }
+#page_content #structure-action-links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; }
+#page_content #structure-action-links > :is(a, button):not(:has(> .ic_b_help)) {
+  display: inline-flex; align-items: center; padding: 7px 14px !important; border-radius: 8px !important; text-decoration: none;
+  background: var(--p-panel) !important; border: 1px solid var(--p-line2) !important; color: var(--p-text) !important; font-weight: 500; margin: 0 !important;
+}
+#page_content #structure-action-links > :is(a, button):hover { border-color: var(--p-accent) !important; color: var(--p-accent-ink) !important; }
+#page_content #addColumns {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; margin: 0 0 18px;
+  background: var(--p-panel); border: 1px solid var(--p-line); border-radius: 12px; box-shadow: var(--p-shadow);
+}
+#page_content #addColumns input[type="number"] { width: 70px; height: 34px; text-align: center; }
+#page_content #addColumns select { width: auto; min-width: 200px; height: 34px; }
+#page_content .mult_submit.btn-link[formaction*="drop"] { color: #c03535 !important; border-color: #f0c4c4 !important; }
+#page_content .mult_submit.btn-link[formaction*="drop"]:hover { background: #fdf0f0 !important; border-color: #d14343 !important; }
+
+/* a table inside a fieldset card (e.g. Indexes, Users having access): part of the card, no
+   second frame. It touches the title band (the band's own gap is removed: a negative top
+   margin would be ignored after the floated title) and, only when it is the card's last
+   item, its bottom edge; otherwise what follows it (e.g. "Check all") keeps its place. */
+#page_content fieldset.pma-fieldset .table-responsive {
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important; margin: 0 -18px !important; background: transparent;
+}
+#page_content fieldset.pma-fieldset > legend:has(+ .table-responsive) { margin-bottom: 0 !important; }
+#page_content fieldset.pma-fieldset > .table-responsive:last-child { margin-bottom: -14px !important; }
+/* "Check all / With selected" rows wherever they are: one tidy line, without the old arrow */
+#page_content div:has(> input.checkall_box) {
+  float: none !important; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-top: 12px; clear: both;
+}
+#page_content div:has(> input.checkall_box) > img.selectallarrow { display: none; }
+#page_content div:has(> input.checkall_box) > label { margin: 0 10px 0 0; }
+#page_content fieldset.pma-fieldset .table-responsive > .table.w-auto { width: 100% !important; }
+#page_content #table_index tbody th { font: 600 13px Consolas, "Cascadia Mono", monospace; }
+#page_content #table_index td.d-print-none a, #page_content #table_index td.d-print-none a:link,
+#page_content #table_index td.d-print-none a:visited { color: var(--p-muted) !important; font-size: 13px; text-decoration: none; }
+#page_content #table_index td.d-print-none a:hover { color: var(--p-accent-ink) !important; }
+#page_content #table_index td.d-print-none a.drop_primary_key_index_anchor:hover { color: #c03535 !important; }
+#page_content #index_div fieldset.tblFooters { justify-content: flex-start; }
+#page_content fieldset.tblFooters > form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
+#page_content fieldset.tblFooters input[type="number"] { width: 70px; height: 34px; text-align: center; margin: 0 !important; }
+#page_content fieldset.tblFooters .btn { height: 34px; padding: 0 20px; font-size: 14px; }
+
+/* Information: "Space usage" and "Row statistics" as two small cards side by side */
+#page_content #tablestatistics > fieldset.pma-fieldset {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; align-items: start;
+}
+#page_content #tablestatistics > fieldset.pma-fieldset > legend { grid-column: 1 / -1; }
+#page_content #tablestatistics > fieldset.pma-fieldset > a#showusage { display: none; }
+#page_content #tablestatistics table.table {
+  width: 100% !important; margin: 0 !important; border: 1px solid var(--p-line); border-radius: 10px;
+  border-collapse: separate; border-spacing: 0; overflow: hidden;
+}
+#page_content #tablestatistics table.table > caption {
+  caption-side: top; padding: 10px 14px !important; background: var(--p-head); color: var(--p-text) !important;
+  font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--p-line);
+}
+#page_content #tablestatistics th.name { color: var(--p-muted); font-weight: 500; text-transform: none; }
+#page_content #tablestatistics td.value { font: 13px Consolas, "Cascadia Mono", monospace; color: var(--p-text); text-align: right; }
+#page_content #tablestatistics td.value dfn { font-style: normal; border: 0; text-decoration: none; }
+#page_content #tablestatistics td.unit { color: var(--p-muted); width: 44px; padding-left: 0 !important; }
+#page_content #tablestatistics tfoot th { background: var(--p-panel) !important; text-align: center; padding: 10px !important; }
+#page_content #tablestatistics tfoot a {
+  display: inline-flex; align-items: center; padding: 6px 14px; border: 1px solid var(--p-line2); border-radius: 8px;
+  color: var(--p-text) !important; text-decoration: none; font-weight: 500; text-transform: none; letter-spacing: 0;
+}
+#page_content #tablestatistics tfoot a:hover { border-color: var(--p-accent); color: var(--p-accent-ink) !important; }
+
+/* drop-down menus in the content (e.g. "More" on each column: Primary, Unique, Index ...) */
+#page_content .dropdown-toggle.btn-link { color: var(--p-muted) !important; text-decoration: none; font-size: 13px; }
+#page_content .dropdown-toggle.btn-link:hover, #page_content .dropdown-toggle.btn-link.show { color: var(--p-accent-ink) !important; }
+#page_content .dropdown-toggle::after { border-top-color: var(--p-accent); vertical-align: 2px; margin-left: 6px; }
+#page_content .dropdown-menu {
+  background: var(--p-panel) !important; border: 1px solid var(--p-line) !important; border-radius: 10px !important;
+  box-shadow: 0 0 30px rgba(0, 0, 0, .12), 0 16px 40px rgba(0, 0, 0, .2) !important; padding: 6px !important; min-width: 200px;
+  font-size: 13.5px;
+}
+#page_content .dropdown-menu > li > :is(.dropdown-item, .dropdown-item-text) {
+  display: flex; align-items: center; padding: 7px 10px !important; border-radius: 6px !important; color: var(--p-text) !important;
+  text-decoration: none; background: transparent;
+}
+#page_content .dropdown-menu > li > .dropdown-item:hover { background: var(--p-soft) !important; color: var(--p-accent-ink) !important; }
+/* not available for this column: faded, not clickable */
+#page_content .dropdown-menu > li > .dropdown-item-text.disabled { color: #b5aea3 !important; cursor: not-allowed; }
+/* "Distinct values" is not an index: separated by a thin line */
+#page_content .dropdown-menu > li.browse { margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--p-line); }
+
+/* icons of this page */
+#page_content :is(.ic_b_relations, .ic_b_rename, .ic_b_primary, .ic_bd_primary, .ic_b_unique, .ic_bd_unique, .ic_b_index, .ic_bd_index,
+  .ic_b_spatial, .ic_bd_spatial, .ic_b_ftext, .ic_bd_ftext, .ic_b_move, .ic_normalize, .ic_b_tbloptimize) {
+  background: var(--ic, var(--p-muted)) !important; width: 16px; height: 16px; vertical-align: -3px; margin: 0 2px 0 0 !important;
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat;
+}
+#page_content .ic_b_relations { --ic: #a78bfa; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.8' y='2.5' width='5' height='4' rx='.8'/%3E%3Crect x='9.2' y='9.5' width='5' height='4' rx='.8'/%3E%3Cpath d='M4.3 6.5v5h4.9'/%3E%3C/svg%3E"); }
+#page_content .ic_b_rename { --ic: var(--p-muted); --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 3.5h7M6 3.5v9M10.5 13.5l3-3-1.5-1.5-3 3v1.5z'/%3E%3C/svg%3E"); }
+#page_content :is(.ic_b_primary, .ic_bd_primary) { --ic: #e0a400; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='5.5' cy='10.5' r='3'/%3E%3Cpath d='M7.6 8.4 13.5 2.5M11 5l1.8 1.8M12.5 3.5l1.5 1.5'/%3E%3C/svg%3E"); }
+#page_content :is(.ic_b_unique, .ic_bd_unique) { --ic: #a78bfa; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M6.8 6.2 8.3 5v6'/%3E%3C/svg%3E"); }
+#page_content :is(.ic_b_index, .ic_bd_index) { --ic: #5aa9ff; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4h7M2.5 8h7M2.5 12h4M12.5 3v10M10.5 11l2 2 2-2'/%3E%3C/svg%3E"); }
+#page_content :is(.ic_b_spatial, .ic_bd_spatial) { --ic: #2dd4bf; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M2 8h12M8 2c2 2 2 10 0 12M8 2c-2 2-2 10 0 12'/%3E%3C/svg%3E"); }
+#page_content :is(.ic_b_ftext, .ic_bd_ftext) { --ic: #f472b6; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3.5h10M8 3.5v9M5.5 12.5h5'/%3E%3C/svg%3E"); }
+#page_content :is(.ic_bd_primary, .ic_bd_unique, .ic_bd_index, .ic_bd_spatial, .ic_bd_ftext) { --ic: #c9c2b6; }   /* not available */
+#page_content .ic_b_move { --ic: var(--p-muted); --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2v12M5 4.5 8 1.8l3 2.7M5 11.5l3 2.7 3-2.7'/%3E%3C/svg%3E"); }
+#page_content .ic_normalize { --ic: #818cf8; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='2.5' width='5' height='11' rx='1'/%3E%3Crect x='9' y='2.5' width='5' height='5' rx='1'/%3E%3Crect x='9' y='9.5' width='5' height='4' rx='1'/%3E%3C/svg%3E"); }
+#page_content .ic_b_tbloptimize { --ic: #1f8a52; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2.5l1.3 3.2 3.2 1.3-3.2 1.3L8 11.5 6.7 8.3 3.5 7l3.2-1.3z'/%3E%3Cpath d='M12.5 11v3M11 12.5h3'/%3E%3C/svg%3E"); }
+
+/* ---- every scrollbar inside the content: AMPLE style (light track, amber thumb, no arrows)
+   Applies to whatever element scrolls (tables, boxes ...). The dark SQL editor and console keep
+   their own, more specific scrollbar rules. Firefox only understands colors (@supports). */
+#page_content ::-webkit-scrollbar { width: 10px; height: 10px; }
+#page_content ::-webkit-scrollbar-button { display: none; }
+#page_content ::-webkit-scrollbar-track { background: var(--p-panel2); border-radius: 10px; }
+#page_content ::-webkit-scrollbar-thumb { background: rgba(240, 138, 36, .6); border-radius: 10px; border: 2px solid var(--p-panel2); }
+#page_content ::-webkit-scrollbar-thumb:hover { background: var(--p-accent); }
+#page_content ::-webkit-scrollbar-corner { background: transparent; }
+@supports not selector(::-webkit-scrollbar) {
+  #page_content, #page_content * { scrollbar-color: rgba(240, 138, 36, .6) var(--p-panel2); }
+}
+
+/* ---- page: Table > Change column / Add column / Create table (#table_columns) ------------ */
+/* One card per column instead of one very wide row (no sideways scrolling at all).
+   ample-page.js adds .ample-colform to the table, a label on every cell (data-label), marks
+   checkbox-only cells (.ample-toggle: Null, A_I ...) and gives each card a title (data-title).
+   Card layout (grid, 4 fields per line, fewer on narrower screens):
+     Column: id
+     NAME  TYPE  LENGTH/VALUES  DEFAULT
+     COLLATION  ATTRIBUTES  COMMENTS  VIRTUALITY ...
+     ───────────────────────────────
+     ☐ Null   ☑ A_I   ☑ Adjust privileges     MOVE COLUMN [..]                         */
+#page_content .responsivetable:has(> #table_columns.ample-colform) { overflow: visible; margin-bottom: 14px; }
+#page_content #table_columns.ample-colform { display: block; width: 100%; margin: 0 !important; background: transparent; }
+#page_content #table_columns.ample-colform > tbody { display: block; }
+#page_content #table_columns.ample-colform tr.ample-colhead { display: none; }
+/* the "Structure" title above the cards */
+#page_content #table_columns.ample-colform > caption.tblHeaders {
+  display: flex; align-items: center; gap: 10px; padding: 0 0 12px !important; background: none !important; background-image: none !important;
+  color: var(--p-text) !important; font-size: 18px; font-weight: 600; text-shadow: none !important; border: 0;
+}
+/* a card per column */
+#page_content #table_columns.ample-colform tr.ample-colcard {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 16px; align-items: start;
+  background: var(--p-panel) !important; border: 1px solid var(--p-line); border-radius: 12px; box-shadow: var(--p-shadow);
+  padding: 0 18px 16px; margin: 0 0 14px; overflow: hidden;
+}
+@media (max-width: 1250px) { #page_content #table_columns.ample-colform tr.ample-colcard { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 950px)  { #page_content #table_columns.ample-colform tr.ample-colcard { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px)  { #page_content #table_columns.ample-colform tr.ample-colcard { grid-template-columns: 1fr; } }
+/* card title "Column: id" (a full-width band) */
+#page_content #table_columns.ample-colform tr.ample-colcard::before {
+  content: attr(data-title); grid-column: 1 / -1; order: -1; margin: 0 -18px 2px; padding: 11px 18px;
+  background: var(--p-head); border-bottom: 1px solid var(--p-line); border-left: 4px solid var(--p-accent);
+  font: 600 14px Consolas, "Cascadia Mono", monospace; color: var(--p-text);
+}
+/* the line between the fields and the on/off options */
+#page_content #table_columns.ample-colform tr.ample-colcard::after {
+  content: ""; grid-column: 1 / -1; order: 9; height: 1px; background: var(--p-line); margin: 2px 0;
+}
+#page_content #table_columns.ample-colform tr.ample-colcard > td {
+  display: block; padding: 0 !important; border: 0 !important; background: transparent !important; text-align: left !important; min-width: 0;
+  /* Bootstrap 5.3 paints table stripes as an inset box-shadow on every cell, not a background */
+  box-shadow: none !important; --bs-table-accent-bg: transparent; --bs-table-bg-type: transparent; --bs-table-bg-state: transparent;
+}
+/* a field: its label above it */
+#page_content #table_columns.ample-colform td.ample-field::before {
+  content: attr(data-label); display: block; margin-bottom: 5px; font-size: 11.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .5px; color: var(--p-muted);
+}
+#page_content #table_columns.ample-colform td.ample-field :is(input[type="text"], select, textarea) { width: 100%; height: 36px; }
+#page_content #table_columns.ample-colform td.ample-field textarea { min-height: 36px; resize: vertical; padding: 7px 10px; }
+#page_content #table_columns.ample-colform input[name^="field_name"] { font: 600 13.5px Consolas, "Cascadia Mono", monospace; }
+#page_content #table_columns.ample-colform td.ample-field > :is(select, input) + :is(select, input) { margin-top: 6px; }   /* Default / Virtuality pairs */
+#page_content #table_columns.ample-colform .enum_notice { margin: 4px 0 0; font-size: 12px; }
+/* on/off options (Null, A_I, Adjust privileges ...): chips after the line; "Move column" after them */
+#page_content #table_columns.ample-colform td.ample-toggle {
+  order: 10; display: flex !important; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 9px;
+  padding: 8px 12px !important; border: 1px solid var(--p-line) !important; border-radius: 9px; background: transparent !important;
+  align-self: end;
+}
+#page_content #table_columns.ample-colform td.ample-toggle::before {
+  content: attr(data-label); font-size: 13px; font-weight: 600; color: var(--p-text);
+}
+#page_content #table_columns.ample-colform td.ample-toggle input[type="checkbox"] { accent-color: var(--p-accent); width: 17px; height: 17px; margin: 0; }
+#page_content #table_columns.ample-colform td.ample-field:last-child { order: 11; }
+/* bottom bar: "Online transaction" lined up with Preview SQL / Save */
+#page_content form.append_fields_form fieldset.tblFooters input[type="checkbox"] { accent-color: var(--p-accent); width: 16px; height: 16px; margin: 0 2px 0 0; }
+#page_content form.append_fields_form fieldset.tblFooters a[target="mysql_doc"] { margin-right: 12px; }
+
+/* ---- page: Database > Create table -------------------------------------------------------- */
+/* "Table name / Add N column(s)": phpMyAdmin's theme pins it to the screen (position:fixed,
+   full width, white) so it floated over the page. Here: a normal card in its place. */
+#page_content #table_name_col_no_outer { margin: 0 0 14px; }
+#page_content #table_name_col_no {
+  position: static !important; top: auto !important; width: auto !important; display: block; margin: 0 !important;
+  background: var(--p-panel) !important; border: 1px solid var(--p-line); border-radius: 12px; box-shadow: var(--p-shadow); padding: 14px 18px;
+}
+#page_content #table_name_col_no tr { display: flex !important; float: none !important; flex-wrap: wrap; align-items: center; gap: 12px 32px; }
+#page_content #table_name_col_no td {
+  display: flex; align-items: center; gap: 8px; padding: 0 !important; border: 0 !important; background: transparent !important;
+  box-shadow: none !important; font-weight: 600; color: var(--p-text);
+}
+#page_content #table_name_col_no input[name="table"] { width: 320px; height: 38px; font: 600 14px Consolas, "Cascadia Mono", monospace; }
+#page_content #table_name_col_no input#added_fields { width: 70px; height: 36px; text-align: center; }
+#page_content #table_name_col_no .btn { height: 36px; padding: 0 16px; }
+
+/* table options under the columns (comments, collation, engine, connection, partitions): a card */
+#page_content form.create_table_form > .responsivetable:not(:has(#table_columns)) {
+  background: var(--p-panel); border: 1px solid var(--p-line); border-radius: 12px; box-shadow: var(--p-shadow);
+  padding: 16px 18px 4px; margin: 0 0 14px; overflow-x: auto;
+}
+#page_content form.create_table_form > .responsivetable:not(:has(#table_columns)) > table { width: 100% !important; margin: 0 !important; }
+#page_content form.create_table_form > .responsivetable:not(:has(#table_columns)) > table > tbody > tr > :is(th, td) {
+  background: transparent !important; border: 0 !important; box-shadow: none !important; text-align: left; vertical-align: top;
+}
+#page_content form.create_table_form > .responsivetable:not(:has(#table_columns)) > table > tbody > tr > th {
+  padding: 0 0 6px !important; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--p-muted);
+}
+#page_content form.create_table_form > .responsivetable:not(:has(#table_columns)) > table > tbody > tr > td { padding: 0 0 16px !important; }
+#page_content form.create_table_form > .responsivetable:not(:has(#table_columns)) :is(input[type="text"], input[type="number"], select) { width: 100%; min-width: 180px; height: 36px; }
+#page_content #partition_table td { padding: 0 12px 8px 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
+#page_content #partition_table :is(input, select) { min-width: 140px !important; width: auto !important; }
+
+/* ---- page: Table > Insert (and Edit row): a form card per record ------------------------
+   ample-page.js marks: .ample-ins-card (the record's box, data-title "Row N"), .ample-ins
+   (its table), .ample-ins-field (one column), and the parts .ins-name .ins-type .ins-null
+   .ins-func .ins-value; .ins-wide = a long text field (full width).
+   Each field:   name  [type]  ................  ☐ NULL   FUNCTION [ — ▾]
+                 [ value ........................................... ]                   */
+#page_content #insertForm > br, #page_content #insertForm > .clearfloat { display: none; }
+#page_content .ample-ins-card {
+  position: relative; background: var(--p-panel); border: 1px solid var(--p-line); border-radius: 12px; box-shadow: var(--p-shadow);
+  margin: 0 0 16px; padding: 0 18px 18px; overflow: visible !important; transition: opacity .2s;
+}
+#page_content .ample-ins-card::before {
+  content: attr(data-title); display: block; margin: 0 -18px 16px; padding: 12px 18px; background: var(--p-head);
+  border-bottom: 1px solid var(--p-line); border-left: 4px solid var(--p-accent); border-radius: 12px 12px 0 0;
+  font-size: 15px; font-weight: 600; color: var(--p-text);
+}
+#page_content .ample-ins-card.is-ignored { opacity: .5; }
+#page_content .ample-ins-card.is-ignored::before { border-left-color: #b5aea3; }
+/* "Ignore" (this record will not be saved): in the card's header, on the right */
+#page_content .ample-ins-card > .ample-ignore {
+  position: absolute; top: 10px; right: 16px; display: inline-flex; align-items: center; gap: 7px; margin: 0;
+  padding: 4px 10px; border: 1px solid var(--p-line2); border-radius: 8px; background: var(--p-panel);
+  font-size: 13px; font-weight: 600; color: var(--p-text); cursor: pointer; opacity: 1;
+}
+#page_content .ample-ins-card > .ample-ignore input { accent-color: var(--p-accent); width: 16px; height: 16px; margin: 0; }
+/* the fields: ONE compact line per column (a 20-column table = ~20 lines); everything else
+   first, the value field last (it takes the rest of the line):
+     name          ☐ NULL   [ fn ▾ ]   [ value ................................ ]
+     type (small)                                                                        */
+#page_content table.ample-ins { display: block; width: 100% !important; margin: 0 !important; background: transparent; }
+#page_content table.ample-ins > :is(thead, tfoot) { display: none; }
+#page_content table.ample-ins > tbody { display: block; }
+#page_content table.ample-ins tr.ample-ins-field {
+  display: grid; grid-template-columns: minmax(150px, 210px) auto auto minmax(0, 1fr);
+  grid-template-areas: "name null func value" "type null func value";
+  align-items: center; gap: 0 14px; padding: 9px 0; border-bottom: 1px solid var(--p-line);
+  background: transparent !important; min-width: 0;
+}
+#page_content table.ample-ins tr.ample-ins-field:last-child { border-bottom: 0; padding-bottom: 0; }
+@media (max-width: 760px) {
+  #page_content table.ample-ins tr.ample-ins-field {
+    grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "name null func" "type null func" "value value value";
+  }
+}
+#page_content table.ample-ins tr.ample-ins-field > td {
+  display: block; padding: 0 !important; border: 0 !important; background: transparent !important; text-align: left !important;
+  box-shadow: none !important; --bs-table-accent-bg: transparent; --bs-table-bg-type: transparent; --bs-table-bg-state: transparent; min-width: 0;
+}
+#page_content table.ample-ins td.ins-name {
+  grid-area: name; align-self: end; font: 600 13.5px Consolas, "Cascadia Mono", monospace; color: var(--p-text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+#page_content table.ample-ins td.ins-type { grid-area: type; align-self: start; line-height: 1.3; }
+#page_content table.ample-ins td.ins-type .column_type { font: 11.5px Consolas, "Cascadia Mono", monospace; color: var(--p-muted); }
+#page_content table.ample-ins td.ins-null { grid-area: null; }
+#page_content table.ample-ins td.ins-null.no-null { display: none; }
+#page_content table.ample-ins td.ins-null.has-null { display: inline-flex; align-items: center; gap: 6px; }
+#page_content table.ample-ins td.ins-null.has-null::after { content: "NULL"; font-size: 11.5px; font-weight: 700; letter-spacing: .5px; color: var(--p-muted); }
+#page_content table.ample-ins td.ins-null input { accent-color: var(--p-accent); width: 16px; height: 16px; margin: 0; }
+#page_content table.ample-ins td.ins-func { grid-area: func; display: inline-flex; align-items: center; gap: 6px; }
+/* Function: just the small select (its name is in its tooltip) */
+#page_content table.ample-ins td.ins-func select { height: 32px; width: 120px; font-size: 12.5px; padding: 2px 6px; color: var(--p-muted); }
+#page_content table.ample-ins td.ins-value { grid-area: value; display: flex !important; align-items: center; gap: 6px; }
+#page_content table.ample-ins td.ins-value > :is(input[type="text"], input[type="number"], input[type="file"], textarea, select) { flex: 1; width: 100%; min-width: 0; }
+#page_content table.ample-ins td.ins-value :is(input[type="text"], select:not([multiple])) { height: 36px; }
+/* text boxes are one line by default (varchar, char ...); only long-text types start at 2 lines */
+#page_content table.ample-ins td.ins-value textarea { height: 36px; min-height: 36px; resize: vertical; padding: 7px 10px; line-height: 1.4; }
+#page_content table.ample-ins td.ins-value:is([data-type*="text"], [data-type*="blob"], [data-type="json"]) textarea { height: 62px; }
+#page_content table.ample-ins td.ins-value img.ui-datepicker-trigger { cursor: pointer; opacity: .7; }
+
+/* the action bar (Insert as … and then … / Preview SQL / Reset / Go): stays at the bottom
+   of the screen while you fill the form */
+#page_content #actions_panel {
+  position: sticky; bottom: 40px; z-index: 30; display: block; margin: 0 0 14px !important; padding: 12px 18px !important;
+  box-shadow: 0 0 24px rgba(0, 0, 0, .1), 0 10px 30px rgba(0, 0, 0, .14) !important; border-left: 4px solid var(--p-accent) !important;
+}
+#page_content #actions_panel > table, #page_content #actions_panel > table > tbody {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; width: 100%; margin: 0 !important;
+}
+#page_content #actions_panel tr { display: flex; align-items: center; gap: 8px; }
+#page_content #actions_panel td { padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
+#page_content #actions_panel select { height: 36px; width: auto; }
+#page_content #actions_panel strong { font-weight: 500; color: var(--p-muted); }
+#page_content #actions_panel .btn { height: 38px; padding: 0 18px; }
+#page_content #actions_panel #buttonYes { padding: 0 32px; font-size: 15px; }
+/* "Continue insertion with [2] rows" */
+#page_content #continueForm { display: flex; align-items: center; gap: 8px; color: var(--p-muted); margin: 4px 0 0; }
+#page_content #continueForm input[type="number"] { width: 70px; height: 34px; text-align: center; }
+
+/* ---- pages: Export / Import / Operations / Privileges / Triggers (small touches) --------- */
+/* Export: section titles inside the option cards */
+#page_content .card-title { font-size: 15px; font-weight: 600; color: var(--p-text); }
+#page_content .card-text { color: var(--p-muted); }
+/* Import: the "Choose file" button */
+#page_content input[type="file"] { font-size: 13.5px; color: var(--p-muted); }
+#page_content input[type="file"]::file-selector-button {
+  margin-right: 10px; padding: 7px 14px; border: 1px solid var(--p-line2); border-radius: 8px; background: var(--p-panel);
+  color: var(--p-text); font: inherit; font-weight: 500; cursor: pointer;
+}
+#page_content input[type="file"]::file-selector-button:hover { border-color: var(--p-accent); color: var(--p-accent-ink); }
+/* Operations: dangerous actions in red, maintenance actions highlight on hover */
+#page_content .list-group-item a.text-danger, #page_content .list-group-item a.text-danger:link {
+  color: #c03535 !important; font-weight: 600; text-decoration: none;
+}
+#page_content .list-group-item a.text-danger:hover { text-decoration: underline; }
+#page_content .list-group-item:has(> a.maintain_action):hover, #page_content .list-group-item:has(> a.text-danger):hover { background: var(--p-panel2) !important; }
+#page_content a.maintain_action { color: var(--p-text) !important; text-decoration: none; }
+#page_content a.maintain_action:hover { color: var(--p-accent-ink) !important; }
+#page_content .card-footer.text-end { display: flex; justify-content: flex-end; }
+/* Triggers: the "Add trigger" button */
+#page_content a.add_anchor.btn-primary { display: inline-flex; align-items: center; gap: 4px; }
+#page_content a.add_anchor.btn-primary .icon { --ic: var(--p-on-accent); }
+/* User accounts: the account phpMyAdmin is connected with (marked by ample-page.js) */
+#page_content #userRightsTable tr.ample-me > * { background: rgba(240, 138, 36, .1) !important; box-shadow: none !important; }
+#page_content #userRightsTable tr.ample-me > :first-child { box-shadow: inset 4px 0 0 var(--p-accent) !important; }
+#page_content #userRightsTable tr.ample-me td:nth-child(2) a { font-weight: 700; }
+#page_content .ample-me-badge {
+  display: inline-block; margin-left: 8px; padding: 1px 9px; border-radius: 10px; background: var(--p-accent); color: var(--p-on-accent);
+  font-size: 11px; font-weight: 700; letter-spacing: .3px; vertical-align: 1px; cursor: help;
+}
+#page_content .ic_s_lock {
+  background: var(--p-muted) !important; width: 16px; height: 16px; vertical-align: -3px; margin: 0 2px 0 0 !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='10' height='7' rx='1.5'/%3E%3Cpath d='M5.5 7V5a2.5 2.5 0 0 1 5 0v2'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='10' height='7' rx='1.5'/%3E%3Cpath d='M5.5 7V5a2.5 2.5 0 0 1 5 0v2'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+/* icons: users (Privileges), triggers */
+/* ON/OFF switch (made by ample-page.js; phpMyAdmin's own toggle stays, hidden, and does the work).
+   Hidden with visibility (not display:none) so phpMyAdmin can still measure it. */
+#page_content .toggleButton.ample-proxied { position: absolute !important; left: -9999px; visibility: hidden; }
+#page_content .ample-switch {
+  display: inline-flex; align-items: center; gap: 10px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: 600 13px "Segoe UI", sans-serif; color: var(--p-muted);
+}
+#page_content .ample-switch-track {
+  position: relative; width: 46px; height: 26px; border-radius: 13px; background: #cfc8bc; transition: background .2s; flex: none;
+}
+#page_content .ample-switch-knob {
+  position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .25); transition: left .2s;
+}
+#page_content .ample-switch.is-on .ample-switch-track { background: #1f8a52; }
+#page_content .ample-switch.is-on .ample-switch-knob { left: 23px; }
+#page_content .ample-switch.is-on { color: #1f8a52; }
+#page_content .ample-switch.is-busy { opacity: .6; cursor: progress; }
+#page_content .ample-switch:focus-visible .ample-switch-track { box-shadow: 0 0 0 3px var(--p-soft); }
+
+/* Events / Routines icons */
+#page_content .ic_b_events { --ic: #fb7185; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='3' width='12' height='11' rx='1.6'/%3E%3Cpath d='M2 6.5h12M5.5 1.8v2.4M10.5 1.8v2.4'/%3E%3C/svg%3E"); }
+#page_content .ic_b_event_add { --ic: #fb7185; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 14H3.6A1.6 1.6 0 0 1 2 12.4V4.6A1.6 1.6 0 0 1 3.6 3h8.8A1.6 1.6 0 0 1 14 4.6V8M2 6.5h12M5.5 1.8v2.4M10.5 1.8v2.4M12.5 10v4.5M10.2 12.2h4.5'/%3E%3C/svg%3E"); }
+#page_content a.add_anchor.btn-primary .ic_b_event_add { --ic: var(--p-on-accent); }
+#page_content .ic_b_nextpage { --ic: #1f8a52; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'%3E%3Cpath d='M5 3.2v9.6c0 .6.6.9 1.1.6l7.3-4.8a.7.7 0 0 0 0-1.2L6.1 2.6c-.5-.3-1.1 0-1.1.6z'/%3E%3C/svg%3E"); }
+#page_content .ic_b_routines { --ic: #2dd4bf; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 2.5c-2 0-2.8 1-3.1 3l-.9 5.6c-.3 1.9-1 2.6-2.6 2.6M4.8 6.5h5.8'/%3E%3C/svg%3E"); }
+#page_content .ic_b_routine_add { --ic: #2dd4bf; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 2.5c-1.7 0-2.4.9-2.7 2.6l-.8 4.8c-.3 1.6-.9 2.3-2.3 2.3M3.6 6h5M12.5 9.5v5M10 12h5'/%3E%3C/svg%3E"); }
+#page_content a.add_anchor.btn-primary .ic_b_routine_add { --ic: var(--p-on-accent); }
+#page_content :is(.ic_b_usredit, .ic_b_usradd, .ic_b_usrcheck, .ic_b_usrdrop, .ic_b_triggers, .ic_b_trigger_add, .ic_b_routines, .ic_b_routine_add,
+  .ic_b_events, .ic_b_event_add, .ic_b_nextpage) {
+  background: var(--ic, var(--p-muted)) !important; width: 16px; height: 16px; vertical-align: -3px; margin: 0 2px 0 0 !important;
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat;
+}
+#page_content .ic_b_usredit { --ic: #a78bfa; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6.5' cy='5' r='2.6'/%3E%3Cpath d='M1.8 13.5c.5-2.6 2.4-4 4.7-4 .9 0 1.7.2 2.4.6M10.5 13.8l3.6-3.6-1.4-1.4-3.6 3.6v1.4z'/%3E%3C/svg%3E"); }
+#page_content .ic_b_usradd { --ic: #1f8a52; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6.5' cy='5' r='2.6'/%3E%3Cpath d='M1.8 13.5c.5-2.6 2.4-4 4.7-4s4.2 1.4 4.7 4M13 6v4M11 8h4'/%3E%3C/svg%3E"); }
+#page_content .ic_b_usrcheck { --ic: #5aa9ff; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6.5' cy='5' r='2.6'/%3E%3Cpath d='M1.8 13.5c.5-2.6 2.4-4 4.7-4 1 0 1.9.3 2.6.8M10.5 11.5l1.5 1.5 3-3'/%3E%3C/svg%3E"); }
+#page_content .ic_b_usrdrop { --ic: #d14343; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6.5' cy='5' r='2.6'/%3E%3Cpath d='M1.8 13.5c.5-2.6 2.4-4 4.7-4s4.2 1.4 4.7 4M11 8h4'/%3E%3C/svg%3E"); }
+#page_content .ic_b_triggers { --ic: #e0a400; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 1.8 3.5 9h4L7 14.2 12.5 7h-4z'/%3E%3C/svg%3E"); }
+#page_content .ic_b_trigger_add { --ic: #e0a400; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.5 1.8 2.5 8.5h3.8L6 13 9.5 8.3M12.5 9.5v5M10 12h5'/%3E%3C/svg%3E"); }
+
+/* ---- page: Table > Relation view (foreign keys): phpMyAdmin's own table, our look -------- */
+/* the table is part of its fieldset card (no second frame), full width, scrolls sideways */
+#page_content fieldset.pma-fieldset > .table-responsive-md:has(> table.relationalTable) {
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important; margin: -12px -18px -14px !important; background: transparent;
+}
+#page_content table.relationalTable.w-auto { width: 100% !important; }
+#page_content table.relationalTable > :not(caption) > * > * { vertical-align: top; padding: 12px 14px; }
+/* the two header rows: the second (Database / Table / Column) a bit quieter */
+#page_content table.relationalTable thead tr:nth-child(2) th { font-size: 11.5px; padding-top: 0 !important; color: #8a847b !important; }
+#page_content table.relationalTable thead tr:first-child th { border-bottom: 0 !important; }
+/* fields */
+#page_content table.relationalTable .formelement { float: none !important; display: block; margin: 0 0 8px !important; }
+#page_content table.relationalTable .formelement:last-child { margin-bottom: 0 !important; }
+#page_content table.relationalTable :is(select, input[type="text"]) { width: 100%; min-width: 150px; height: 34px; }
+#page_content table.relationalTable input[name^="constraint_name"] { font: 600 13px Consolas, "Cascadia Mono", monospace; min-width: 260px; }
+/* ON DELETE / ON UPDATE: side by side, small label + select */
+#page_content table.relationalTable .float-start { float: none !important; display: flex; flex-wrap: wrap; gap: 8px 16px; }
+#page_content table.relationalTable .float-start > .formelement {
+  display: inline-flex; align-items: center; gap: 8px; margin: 0 !important;
+  font-size: 11.5px; font-weight: 600; letter-spacing: .4px; color: var(--p-muted);
+}
+#page_content table.relationalTable .float-start > .formelement select { width: 140px; min-width: 0; height: 32px; font-size: 13px; color: var(--p-text); }
+/* Drop: red outlined button; "+ Add column": small amber link */
+#page_content table.relationalTable a.drop_foreign_key_anchor {
+  display: inline-flex; align-items: center; padding: 5px 12px; border: 1px solid #f0c4c4; border-radius: 8px;
+  color: #c03535 !important; background: var(--p-panel); text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap;
+}
+#page_content table.relationalTable a.drop_foreign_key_anchor:hover { background: #fdf0f0; border-color: #d14343; }
+#page_content table.relationalTable a.add_foreign_key_field { display: inline-block; font-size: 12.5px; color: var(--p-accent-ink) !important; text-decoration: none; }
+#page_content table.relationalTable a.add_foreign_key_field:hover { text-decoration: underline; }
+/* "+ Add constraint": a dashed button across the table */
+#page_content table.relationalTable tr:has(> th > a.add_foreign_key) > th { background: var(--p-panel) !important; padding: 12px 14px !important; }
+#page_content table.relationalTable a.add_foreign_key {
+  display: block; padding: 10px; border: 1px dashed var(--p-line2); border-radius: 10px; text-align: center; float: none;
+  color: var(--p-accent-ink) !important; font-weight: 600; text-decoration: none; text-transform: none; letter-spacing: 0; font-size: 14px;
+}
+#page_content table.relationalTable a.add_foreign_key:hover { border-color: var(--p-accent); background: var(--p-soft); }
+
+/* ---- page: Database > Data dictionary (marked .ample-dd by ample-page.js) --------------- */
+#page_content .ample-dd > h1 { font-size: 26px; font-weight: 700; margin: 4px 0 2px; font-family: Consolas, "Cascadia Mono", monospace; }
+#page_content .ample-dd-sub { color: var(--p-muted); margin: 0 0 14px; font-size: 14px; }
+#page_content .ample-dd-toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 20px; }
+#page_content .ample-dd-toc a {
+  padding: 3px 10px; border-radius: 14px; background: var(--p-panel); border: 1px solid var(--p-line);
+  font: 12.5px Consolas, "Cascadia Mono", monospace; color: var(--p-muted) !important; text-decoration: none;
+}
+#page_content .ample-dd-toc a:hover { border-color: var(--p-accent); color: var(--p-accent-ink) !important; }
+#page_content .ample-dd-card {
+  background: var(--p-panel); border: 1px solid var(--p-line); border-radius: 12px; box-shadow: var(--p-shadow);
+  margin: 0 0 18px; overflow: hidden; scroll-margin-top: 80px;
+}
+#page_content .ample-dd-card > h2 {
+  margin: 0; padding: 12px 18px; background: var(--p-head); border-bottom: 1px solid var(--p-line);
+  font: 600 16px Consolas, "Cascadia Mono", monospace; color: var(--p-text); display: flex; align-items: center; gap: 10px;
+}
+#page_content .ample-dd-card > h2::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: var(--p-accent); flex: none; }
+#page_content .ample-dd-card > p { margin: 10px 18px; color: var(--p-muted); font-size: 13.5px; }
+#page_content .ample-dd-card > h3 {
+  margin: 6px 0 0; padding: 12px 18px 8px; font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--p-muted); border-top: 1px solid var(--p-line);
+}
+#page_content .ample-dd-card > .table { margin: 0 !important; width: 100%; }
+#page_content .ample-dd-card > .table :is(td, th):first-child { padding-left: 18px; }
+#page_content .ample-dd-card > .table tbody tr:last-child > * { border-bottom: 0 !important; }
+#page_content .ample-dd-card > .table:first-of-type tbody td:first-child { font: 600 13px Consolas, "Cascadia Mono", monospace; }
+#page_content .ample-dd-card > .table:first-of-type tbody td[lang] { font: 13px Consolas, "Cascadia Mono", monospace; color: #5b6bd8; }
+#page_content .ample-dd-card em { color: var(--p-muted); }
+#page_content .ample-dd-card .ample-pk {
+  display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 5px; font: 700 10.5px "Segoe UI", sans-serif; letter-spacing: .4px;
+  color: var(--p-accent-ink); background: var(--p-soft); border: 1px solid rgba(240, 138, 36, .35); vertical-align: 1px; font-style: normal;
+}
+@media print {
+  #page_content .ample-dd-toc { display: none; }
+  #page_content .ample-dd-card { box-shadow: none; break-inside: avoid; }
+}
+
+/* ---- page: Databases ---------------------------------------------------------------- */
+/* create row: field, collation and button all the same height */
+#page_content #create_database_form .form-control,
+#page_content #create_database_form .form-select { height: 38px; min-width: 240px; }
+#page_content #create_database_form .btn { height: 38px; padding: 0 22px; }
+
+/* the list uses the full width (it was only as wide as its text) */
+#page_content #dbStatsForm .table.w-auto { width: 100% !important; }
+#page_content #dbStatsForm td.value { text-align: left !important; }
+/* everything left-aligned (headers, numbers, the "Total" row), so each number sits under its
+   own heading, also with "Enable statistics" on; units (KiB, MiB) stay close to their number */
+#page_content #dbStatsForm .table :is(th, td) { text-align: left !important; }
+#page_content #dbStatsForm .table :is(td, th).value { padding-right: 4px; }
+#page_content #dbStatsForm .table :is(td, th).unit { padding-left: 2px; color: var(--p-muted); }
+#page_content #dbStatsForm .table tfoot th.value { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12.5px; }
+#page_content #dbStatsForm td.value dfn { font-style: normal; font-family: Consolas, "Cascadia Mono", monospace; font-size: 12.5px;
+  color: var(--p-muted); border: 0; text-decoration: none; cursor: help; }
+#page_content #dbStatsForm .table > :not(caption) > * > *:first-child { width: 44px; text-align: center; }
+
+/* "Check all" and "Drop": two separate buttons with a small gap (Bootstrap joins them) */
+#page_content .input-group:has(> #bulkActionDropButton) { gap: 6px; }
+#page_content .input-group:has(> #bulkActionDropButton) > * { border-radius: 8px !important; margin-left: 0 !important; }
+
+/* "Drop" is destructive: red */
+#page_content #bulkActionDropButton {
+  background: var(--p-panel) !important; border: 1px solid #f0c4c4 !important; color: #c03535 !important; font-weight: 600;
+}
+#page_content #bulkActionDropButton:hover { background: #fdf0f0 !important; border-color: #d14343 !important; }
+
+/* MariaDB's own databases (marked by ample-page.js): greyed, with a "System" badge */
+#page_content tr.ample-sys-row td.name a { color: var(--p-muted) !important; font-weight: 500; }
+#page_content .ample-badge {
+  display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 9px; font-size: 11px; font-weight: 600;
+  letter-spacing: .3px; color: var(--p-muted); background: var(--p-panel2); border: 1px solid var(--p-line); vertical-align: 1px;
+}
+
+/* =================================================================================== */
+/* ==== DARK MODE (page content only; sidebar, top bar and console are always dark) ====
+   On when <html data-theme="dark"> (set by the ◐ button / Windows, see ample-nav.js).
+   1. our own color variables get dark values (most of the design follows by itself)
+   2. Bootstrap's variables, so its parts (fields, cards, lists, tables) follow too
+   3. the few colors written directly above get dark versions                          */
+html[data-theme="dark"] body {
+  --p-bg: #1b1e24; --p-panel: #23272f; --p-panel2: #2a2f38; --p-head: #2b3039; --p-line: #353a45; --p-line2: #424855;
+  --p-text: #e8e5de; --p-muted: #a3a7b0; --p-accent-ink: #f5a04f; --p-soft: rgba(240, 138, 36, .16);
+  --p-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+html[data-theme="dark"] #page_content {
+  color-scheme: dark;
+  --bs-body-color: #e8e5de; --bs-body-bg: #23272f; --bs-emphasis-color: #fff; --bs-heading-color: #e8e5de;
+  --bs-secondary-color: #a3a7b0; --bs-secondary-bg: #2a2f38; --bs-tertiary-color: #8b9099; --bs-tertiary-bg: #2a2f38;
+  --bs-border-color: #424855; --bs-border-color-translucent: rgba(255, 255, 255, .12);
+  --bs-link-color: #f5a04f; --bs-link-color-rgb: 245, 160, 79; --bs-link-hover-color: #f08a24; --bs-link-hover-color-rgb: 240, 138, 36;
+  --bs-code-color: #f5a04f; --bs-highlight-bg: #4a3a1c;
+  --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23a3a7b0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+/* fields: a shade darker than the cards, so they stand out */
+html[data-theme="dark"] #page_content :is(.form-control, .form-select, input[type="text"], input[type="password"], input[type="number"],
+  input[type="search"], input[type="email"], input[type="url"], input[type="date"], input[type="datetime-local"], textarea, select) {
+  background-color: #1b1e24 !important; color: var(--p-text) !important; border-color: var(--p-line2) !important;
+}
+html[data-theme="dark"] #page_content :is(input, textarea)::placeholder { color: #7d828c; }
+html[data-theme="dark"] #page_content .form-check-input { background-color: #1b1e24; border-color: #5a606c !important; }
+/* messages: dark tints, brighter accent colors */
+html[data-theme="dark"] #page_content .alert { --a: #5aa9ff; --a-bg: #172a40; --a-line: #23446a; }
+html[data-theme="dark"] #page_content .alert-success { --a: #41c27f; --a-bg: #17301f; --a-line: #24533a; }
+html[data-theme="dark"] #page_content .alert-danger  { --a: #f87171; --a-bg: #3a1d1f; --a-line: #5c2c2f; }
+html[data-theme="dark"] #page_content .alert-warning { --a: #f5a04f; --a-bg: #3a2a14; --a-line: #5c4220; }
+html[data-theme="dark"] #page_content .result_query > .alert-success { --a-bg: #1c3a27; }
+html[data-theme="dark"] #page_content .result_query > .alert-danger  { --a-bg: #45222a; }
+html[data-theme="dark"] #page_content .result_query > .alert-warning { --a-bg: #45321a; }
+html[data-theme="dark"] #page_content .result_query > .alert:not(.alert-success, .alert-danger, .alert-warning) { --a-bg: #1b3350; }
+/* tables */
+html[data-theme="dark"] #page_content .table {
+  --bs-table-color: var(--p-text); --bs-table-striped-bg: #262a33; --bs-table-striped-color: var(--p-text);
+  /* the text of the row under the mouse: phpMyAdmin's theme makes it black */
+  --bs-table-hover-color: var(--p-text); --bs-table-active-color: var(--p-text);
+}
+/* rows under the mouse, or highlighted by phpMyAdmin (class "hover"): light text on dark */
+html[data-theme="dark"] #page_content table :is(tr:hover, tr.hover) > :is(td, th) {
+  color: var(--p-text) !important; --bs-table-color-state: var(--p-text);
+}
+html[data-theme="dark"] #page_content table.table_results thead th:not(:last-child) { border-right-color: var(--p-panel) !important; }
+html[data-theme="dark"] #page_content table tr.marked > * { background: rgba(240, 138, 36, .22) !important; color: var(--p-text) !important; }
+/* the paging bar under / above results */
+html[data-theme="dark"] #page_content table.navigation { background: #2b3039 !important; border-color: #424855 !important; }
+html[data-theme="dark"] #page_content table.navigation :is(select, input[type="text"]) { background-color: #1b1e24 !important; }
+/* red (destructive) buttons and links */
+html[data-theme="dark"] #page_content :is(#bulkActionDropButton, .mult_submit.btn-link[value="delete"], .mult_submit.btn-link[formaction*="drop"],
+  table.relationalTable a.drop_foreign_key_anchor) { color: #f87171 !important; border-color: rgba(248, 113, 113, .45) !important; }
+html[data-theme="dark"] #page_content :is(#bulkActionDropButton, .mult_submit.btn-link[value="delete"], .mult_submit.btn-link[formaction*="drop"],
+  table.relationalTable a.drop_foreign_key_anchor, table.table_results tbody td.d-print-none a.delete_row):hover {
+  background: rgba(248, 113, 113, .14) !important; border-color: #f87171 !important;
+}
+html[data-theme="dark"] #page_content :is(.list-group-item a.text-danger, .badge.bg-danger) { color: #f87171 !important; }
+html[data-theme="dark"] #page_content .badge.bg-danger { background: rgba(248, 113, 113, .14) !important; border-color: rgba(248, 113, 113, .4); }
+/* text phpMyAdmin's theme colors fixed BLACK (stayed black on dark): "Profiling" and the tools
+   under a query (div.tools), captions, fieldset titles, lists, code, labels, errors ... */
+html[data-theme="dark"] #page_content :is(caption, select, code, kbd, label, .form-check-label, .pma-fieldset legend, div.tools,
+  .tblFooters, .navigation .btn-link, .tblHeaders, .error, .confirmation, .config-form fieldset th small,
+  .config-form fieldset th .small, .bg-secondary, .input_tab, .select_all) { color: var(--p-text) !important; }
+/* small details */
+html[data-theme="dark"] #page_content .ample-switch-track { background: #4a505c; }
+html[data-theme="dark"] #page_content :is(table.ample-ins td.ins-type .column_type, .ample-dd-card > .table:first-of-type tbody td[lang]) { color: #9aa5ff; }
+html[data-theme="dark"] #page_content :is(.ic_bd_browse, .ic_bd_select, .ic_bd_empty, .ic_bd_primary, .ic_bd_unique, .ic_bd_index, .ic_bd_spatial, .ic_bd_ftext) { --ic: #5a606c; }
+html[data-theme="dark"] #page_content .dropdown-menu > li > .dropdown-item-text.disabled { color: #6b7180 !important; }

@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Only AMPLE's own files may run or style this page: nothing inline, nothing remote. -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>AMPLE</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <!-- ======== title bar (drag area; Windows draws its own buttons on the right) ======== -->
+  <header class="titlebar" dir="ltr">
+    <svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="28 78 456 348" aria-hidden="true">
+      <g fill="#f08a24" stroke="#f08a24" stroke-width="6" stroke-linejoin="round">
+        <path d="M206.3 105 Q214 91 228 91 L280.5 91 Q294.4 91 302.1 105 L404.1 290.9 L322.8 290.9 L288.6 228 C266.8 187.9 240.2 187.9 218.6 228 L184.6 290.9 L104.2 290.9 Z"/>
+        <path d="M90.2 316.5 L205 316.5 L205 343.3 L180 343.3 Q157 343.3 138.9 375 L124.1 401 Q117.9 411.9 105 411.9 L37.8 411.9 Z"/>
+        <path d="M300 316.5 L418.2 316.5 L470.6 411.9 L401 411.9 Q388.1 411.9 381.9 401 L367.1 375 Q349 343.3 325 343.3 L300 343.3 Z"/>
+      </g>
+      <path d="M172 330.5 L177.6 330.5 Q191.6 330.5 198 343 L210.9 368.3 Q218.2 382.5 222.6 367.1 L249.3 273.2 Q254.8 254 261.5 272.8 L289 349.5 Q293.7 362.7 298.8 351.9 L304.7 339.5 Q309 330.5 319 330.5 L324 330.5" fill="none" stroke="#f08a24" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="app-name">AMPLE</span>
+  </header>
+
+  <!-- ======== sidebar ======== -->
+  <nav class="sidebar" aria-label="Sections">
+    <button class="nav active" data-page="home">
+      <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>
+      <span data-i18n="nav.home">Home</span>
+    </button>
+    <button class="nav" data-page="sites">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/></svg>
+      <span data-i18n="nav.sites">Sites</span>
+    </button>
+    <button class="nav" data-page="databases">
+      <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+      <span data-i18n="nav.databases">Databases</span>
+    </button>
+    <button class="nav" data-page="php">
+      <svg viewBox="0 0 24 24"><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/><path d="m13.5 4-3 16"/></svg>
+      <span data-i18n="nav.php">PHP</span>
+    </button>
+    <button class="nav" data-page="mail">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 7 8.5-7"/></svg>
+      <span data-i18n="nav.mail">Mail</span><b id="nav-unread" class="count unread" hidden></b>
+    </button>
+    <button class="nav" data-page="doctor">
+      <svg viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg>
+      <span data-i18n="nav.doctor">Log Doctor</span><b id="nav-problems" class="count" hidden></b>
+    </button>
+    <button class="nav" data-page="settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      <span data-i18n="nav.settings">Settings</span><b id="nav-updates" class="count unread" hidden></b>
+    </button>
+    <div class="side-help">
+      <button class="side-link" type="button" data-open="docs">
+        <svg viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5z"/><path d="M14 4v5h5M8 13h8M8 17h6"/></svg>
+        <span data-i18n="side.docs">Documentation</span>
+      </button>
+      <button class="side-link" type="button" data-open="guides">
+        <svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 7h6"/></svg>
+        <span data-i18n="side.guides">How-to Guides</span>
+      </button>
+    </div>
+    <div class="side-foot">
+      <span id="side-foot">AMPLE 1.0</span>
+      <button class="side-by" type="button" data-open="himacode"><span data-i18n="side.by">by</span> <b>HimaCode</b></button>
+    </div>
+  </nav>
+
+  <!-- ======== content ======== -->
+  <main class="content">
+    <!-- Home -->
+    <section id="page-home" class="page">
+      <div class="share-banner" data-share-banner hidden></div>
+      <div id="banner" class="banner is-loading">
+        <div class="banner-icon" aria-hidden="true"></div>
+        <div class="banner-text">
+          <div id="banner-title" class="banner-title" data-i18n="banner.checking">Checking services…</div>
+          <div id="banner-sub" class="banner-sub"></div>
+        </div>
+        <div id="banner-actions" class="banner-actions"></div>
+      </div>
+
+      <div id="services" class="services" aria-live="polite"></div>
+
+      <button id="problems" class="problems" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>
+        <span id="problems-text"></span>
+        <span class="problems-go" data-i18n="problems.view">View</span>
+      </button>
+
+      <div class="quick">
+        <button class="q" data-open="localhost">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/></svg>
+          <span><b>localhost</b><small data-i18n="quick.localhost">Your sites</small></span>
+        </button>
+        <button class="q" data-open="phpmyadmin">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+          <span><b>phpMyAdmin</b><small data-i18n="quick.phpmyadmin">Databases</small></span>
+        </button>
+        <button class="q" data-open="mailpit">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 7 8.5-7"/></svg>
+          <span><b>Mailpit</b><small data-i18n="quick.mailpit">Emails PHP sent</small></span>
+        </button>
+        <button class="q" data-open="htdocs">
+          <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span><b>htdocs</b><small data-i18n="quick.htdocs">Open the folder</small></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Log Doctor -->
+    <section id="page-doctor" class="page" hidden>
+      <div class="page-head">
+        <div>
+          <h1 data-i18n="nav.doctor">Log Doctor</h1>
+          <div id="doc-sub" class="page-sub" data-i18n="doc.reading">Reading the logs…</div>
+        </div>
+        <div class="head-actions">
+          <div class="seg" id="doc-hours" role="group">
+            <button data-hours="24" class="on" data-i18n="doc.h24">24 hours</button>
+            <button data-hours="72" data-i18n="doc.h72">3 days</button>
+            <button data-hours="168" data-i18n="doc.h168">7 days</button>
+          </div>
+          <button class="btn" id="doc-folder" data-i18n="doc.folder">Open logs folder</button>
+          <button class="btn danger" id="doc-clear" data-i18n="doc.clear">Clear logs</button>
+        </div>
+      </div>
+      <div class="filters" id="doc-filters"></div>
+      <div id="doc-list" class="doc-list"></div>
+    </section>
+
+    <!-- Sites -->
+    <section id="page-sites" class="page" hidden>
+      <div class="page-head">
+        <div>
+          <h1 data-i18n="nav.sites">Sites</h1>
+          <div class="page-sub" data-i18n="sites.sub"></div>
+        </div>
+        <div class="head-actions">
+          <button class="btn" id="sites-htdocs" data-i18n="sites.htdocs"></button>
+          <button class="btn primary" id="sites-new" data-i18n="sites.new"></button>
+        </div>
+      </div>
+      <div class="share-banner" data-share-banner hidden></div>
+      <div id="sites-pending" class="pending" hidden>
+        <span id="sites-pending-text"></span>
+        <button class="btn primary" id="sites-apply" data-i18n="sites.apply"></button>
+      </div>
+      <div id="sites-list" class="site-list"></div>
+      <div id="sites-skipped"></div>
+      <div id="sites-own"></div>
+
+      <div class="set-group https-card">
+        <div class="set-row">
+          <div class="set-text"><b>HTTPS</b><small data-i18n="https.sub"></small></div>
+          <button class="switch" id="https-switch" role="switch" aria-checked="false"><span></span></button>
+        </div>
+        <div class="set-row" id="https-trust-row">
+          <div class="set-text"><b id="https-trust-title"></b><small id="https-trust-sub"></small></div>
+          <div class="head-actions">
+            <button class="btn" id="https-untrust" data-i18n="https.untrust" hidden></button>
+            <button class="btn primary" id="https-trust" data-i18n="https.trust"></button>
+          </div>
+        </div>
+        <p class="set-note" data-i18n="https.safe"></p>
+      </div>
+    </section>
+
+    <!-- Databases -->
+    <section id="page-databases" class="page" hidden>
+      <div class="page-head">
+        <div>
+          <h1 data-i18n="nav.databases">Databases</h1>
+          <div class="page-sub" id="db-sub" dir="ltr"></div>
+        </div>
+        <div class="head-actions">
+          <button class="btn" id="db-new" data-i18n="db.new"></button>
+          <button class="btn" id="db-import" data-i18n="db.import"></button>
+          <button class="btn primary" id="db-backup-all" data-i18n="db.backupAll"></button>
+        </div>
+      </div>
+
+      <div id="db-off" class="pending" hidden>
+        <span data-i18n="db.off"></span>
+        <button class="btn primary" id="db-start" data-i18n="db.start"></button>
+      </div>
+
+      <div id="db-progress" class="progress-card" hidden>
+        <div class="progress-head"><b id="db-progress-title"></b><span id="db-progress-pct" dir="ltr"></span></div>
+        <div class="bar"><span id="db-progress-bar"></span></div>
+        <div class="progress-sub" id="db-progress-sub" dir="ltr"></div>
+      </div>
+
+      <div id="db-list" class="site-list"></div>
+
+      <div class="sub-row">
+        <div class="sub-title" data-i18n="db.backups"></div>
+        <button class="btn" id="db-backups-folder" data-i18n="db.backupsFolder"></button>
+      </div>
+      <div id="db-backups" class="site-list"></div>
+
+      <div class="set-group xampp-card">
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="xa.title"></b><small id="xa-sub" dir="auto"></small></div>
+          <div class="head-actions">
+            <button class="btn" id="xa-pick" data-i18n="xa.pick"></button>
+            <button class="btn primary" id="xa-find" data-i18n="xa.find"></button>
+          </div>
+        </div>
+        <div id="xa-warn" class="set-warn" hidden></div>
+        <div class="xa-bar" id="xa-bar" hidden>
+          <span id="xa-count"></span>
+          <button class="btn" id="xa-all" data-i18n="xa.all"></button>
+          <button class="btn" id="xa-none" data-i18n="xa.noneSel"></button>
+        </div>
+        <div id="xa-list" class="xa-list"></div>
+        <label class="check" id="xa-projects-row" hidden><input type="checkbox" id="xa-projects"><span id="xa-projects-text"></span></label>
+        <div class="set-actions" id="xa-actions" hidden>
+          <span class="set-note" data-i18n="xa.note"></span>
+          <button class="btn primary" id="xa-go" data-i18n="xa.go"></button>
+        </div>
+        <pre id="xa-log" class="up-log" dir="ltr" hidden></pre>
+        <div id="xa-result" class="pc-list"></div>
+      </div>
+
+      <div class="set-group rescue-card">
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="db.rescue"></b><small data-i18n="db.rescueSub"></small></div>
+          <button class="btn danger" id="db-rescue" data-i18n="db.rescueRun"></button>
+        </div>
+        <pre id="db-rescue-log" class="up-log" dir="ltr" hidden></pre>
+        <div id="db-rescue-result" class="pc-list"></div>
+      </div>
+    </section>
+
+    <!-- PHP -->
+    <section id="page-php" class="page" hidden>
+      <div class="page-head">
+        <div>
+          <h1>PHP</h1>
+          <div class="page-sub" id="php-sub"></div>
+        </div>
+        <div class="head-actions">
+          <button class="btn" id="php-info">phpinfo()</button>
+        </div>
+      </div>
+
+      <div class="sub-title" data-i18n="php.installed"></div>
+      <div id="php-versions" class="site-list"></div>
+      <pre id="php-report" class="up-log" dir="ltr" hidden></pre>
+
+      <div class="sub-row">
+        <div class="sub-title" data-i18n="php.download"></div>
+        <button class="btn" id="php-available" data-i18n="php.showAvailable"></button>
+      </div>
+      <div id="php-download" class="site-list"></div>
+      <pre id="php-log" class="up-log" dir="ltr" hidden></pre>
+
+      <div class="set-group php-group">
+        <h2 data-i18n="php.settings"></h2>
+        <div class="ports-grid" id="php-ini" dir="ltr"></div>
+        <div class="set-actions">
+          <span class="set-note" id="php-ini-note" data-i18n="php.settingsNote"></span>
+          <button class="btn primary" id="php-ini-save" data-i18n="set.save" disabled></button>
+        </div>
+      </div>
+
+      <div class="set-group">
+        <h2 data-i18n="php.extensions"></h2>
+        <p class="set-note ext-note" data-i18n="php.extNote"></p>
+        <div id="php-ext" class="ext-grid" dir="ltr"></div>
+      </div>
+
+      <div class="set-group">
+        <div class="set-row">
+          <div class="set-text"><b>Xdebug</b><small id="xdebug-sub"></small></div>
+          <button class="switch" id="xdebug-switch" role="switch" aria-checked="false"><span></span></button>
+        </div>
+        <div id="xdebug-help" hidden>
+          <p class="set-note" data-i18n="php.xdebugHow"></p>
+          <div class="code-box">
+            <pre id="xdebug-json" dir="ltr"></pre>
+            <button class="btn" id="xdebug-copy" data-i18n="php.copy"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mail -->
+    <section id="page-mail" class="page" hidden>
+      <div class="page-head">
+        <div>
+          <h1 data-i18n="nav.mail">Mail</h1>
+          <div class="page-sub" id="mail-sub" data-i18n="mail.sub"></div>
+        </div>
+        <div class="head-actions">
+          <button class="btn danger" id="mail-clear" data-i18n="mail.clear"></button>
+          <button class="btn" id="mail-test" data-i18n="mail.test"></button>
+          <button class="btn primary" id="mail-open" data-i18n="mail.open"></button>
+        </div>
+      </div>
+
+      <div id="mail-off" class="pending" hidden>
+        <span data-i18n="mail.off"></span>
+        <button class="btn primary" id="mail-start" data-i18n="mail.start"></button>
+      </div>
+
+      <div id="mail-list" class="mail-list"></div>
+
+      <div class="set-group mail-conn">
+        <h2 data-i18n="mail.conn"></h2>
+        <p class="set-note" id="mail-conn-text"></p>
+        <div class="code-box">
+          <pre id="mail-env" dir="ltr"></pre>
+          <button class="btn" id="mail-copy" data-i18n="php.copy"></button>
+        </div>
+        <div class="set-actions">
+          <span class="set-note" data-i18n="mail.guideNote"></span>
+          <button class="btn" id="mail-guide" data-i18n="mail.guide"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="page-settings" class="page" hidden>
+      <div class="page-head">
+        <div>
+          <h1 data-i18n="set.title">Settings</h1>
+          <div class="page-sub" data-i18n="set.sub">Changes are saved right away.</div>
+        </div>
+      </div>
+
+      <div class="set-group">
+        <h2 data-i18n="st.title">Startup</h2>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="st.windows"></b><small data-i18n="st.windowsSub"></small></div>
+          <button class="switch" id="st-windows" role="switch" aria-checked="false"><span></span></button>
+        </div>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="st.services"></b><small data-i18n="st.servicesSub"></small></div>
+          <button class="switch" id="st-services" role="switch" aria-checked="false"><span></span></button>
+        </div>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="st.safe"></b><small data-i18n="st.safeSub"></small></div>
+          <button class="switch" id="st-safe" role="switch" aria-checked="false"><span></span></button>
+        </div>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="st.desktop"></b><small data-i18n="st.desktopSub"></small></div>
+          <button class="switch" id="st-desktop" role="switch" aria-checked="false"><span></span></button>
+        </div>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="st.start"></b><small data-i18n="st.startSub"></small></div>
+          <button class="switch" id="st-start" role="switch" aria-checked="false"><span></span></button>
+        </div>
+      </div>
+
+      <div class="set-group">
+        <h2 data-i18n="set.look">Look and language</h2>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="set.appearance">Appearance</b><small data-i18n="set.appearanceSub"></small></div>
+          <div class="seg" id="set-appearance" role="group">
+            <button data-v="system" data-i18n="set.system">Follow Windows</button>
+            <button data-v="dark" data-i18n="set.dark">Dark</button>
+            <button data-v="light" data-i18n="set.light">Light</button>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="set.language">Language</b><small data-i18n="set.languageSub"></small></div>
+          <div class="seg" id="set-language" role="group">
+            <button data-v="en">English</button>
+            <button data-v="ar" lang="ar">العربية</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="set-group">
+        <h2 data-i18n="set.design">Design</h2>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="set.pma">phpMyAdmin</b><small data-i18n="set.pmaSub"></small></div>
+          <div class="seg" id="set-design-phpmyadmin" data-tool="phpmyadmin" role="group">
+            <button data-v="ample" data-i18n="set.ample">AMPLE</button>
+            <button data-v="original" data-i18n="set.original">Original</button>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="set.mailpit">Mailpit</b><small data-i18n="set.mailpitSub"></small></div>
+          <div class="seg" id="set-design-mailpit" data-tool="mailpit" role="group">
+            <button data-v="ample" data-i18n="set.ample">AMPLE</button>
+            <button data-v="original" data-i18n="set.original">Original</button>
+          </div>
+        </div>
+        <p class="set-note" id="set-design-note" data-i18n="set.designNote"></p>
+      </div>
+
+      <div class="set-group">
+        <h2 data-i18n="set.terminal">Terminal</h2>
+        <div class="set-row">
+          <div class="set-text"><b data-i18n="set.path"></b><small data-i18n="set.pathSub"></small></div>
+          <button class="switch" id="set-path" role="switch" aria-checked="false"><span></span></button>
+        </div>
+        <div id="set-path-warn" class="set-warn" hidden></div>
+      </div>
+
+      <div class="set-group">
+        <h2 data-i18n="set.ports">Ports</h2>
+        <div class="ports-grid" id="set-ports" dir="ltr"></div>
+        <div class="set-actions">
+          <span class="set-note" data-i18n="set.portsNote"></span>
+          <button class="btn primary" id="set-ports-save" data-i18n="set.save" disabled>Save</button>
+        </div>
+      </div>
+
+      <div class="set-group">
+        <h2 data-i18n="set.password">MariaDB password</h2>
+        <div class="pw-grid">
+          <label><span data-i18n="set.pwNew"></span><input type="password" id="pw1" class="input" dir="ltr" autocomplete="new-password" maxlength="128"></label>
+          <label><span data-i18n="set.pwAgain"></span><input type="password" id="pw2" class="input" dir="ltr" autocomplete="new-password" maxlength="128"></label>
+        </div>
+        <label class="check"><input type="checkbox" id="pw-show"><span data-i18n="set.pwShow"></span></label>
+        <div class="set-actions">
+          <span class="set-note" id="pw-note"></span>
+          <button class="btn primary" id="pw-save" data-i18n="set.pwSave" disabled></button>
+        </div>
+      </div>
+
+      <div class="set-group">
+        <h2 data-i18n="set.pc">This computer</h2>
+        <div class="set-actions top">
+          <span class="set-note" id="pc-note" data-i18n="set.pcNote"></span>
+          <button class="btn" id="pc-run" data-i18n="set.pcRun"></button>
+        </div>
+        <div id="pc-list" class="pc-list"></div>
+      </div>
+
+      <div class="set-group">
+        <h2 data-i18n="set.updates">Updates</h2>
+        <div class="set-actions top">
+          <span class="set-note" id="up-note" data-i18n="set.upNote"></span>
+          <button class="btn" id="up-check" data-i18n="set.upCheck"></button>
+          <button class="btn primary" id="up-all" data-i18n="set.upAll" hidden></button>
+        </div>
+        <div id="up-list" class="up-list"></div>
+        <pre id="up-log" class="up-log" dir="ltr" hidden></pre>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Welcome: the first time the panel opens -->
+  <div id="welcome" class="welcome" hidden>
+    <div class="welcome-box">
+      <svg class="welcome-mark" xmlns="http://www.w3.org/2000/svg" viewBox="28 78 456 348" aria-hidden="true">
+        <g fill="#f08a24" stroke="#f08a24" stroke-width="6" stroke-linejoin="round">
+          <path d="M206.3 105 Q214 91 228 91 L280.5 91 Q294.4 91 302.1 105 L404.1 290.9 L322.8 290.9 L288.6 228 C266.8 187.9 240.2 187.9 218.6 228 L184.6 290.9 L104.2 290.9 Z"/>
+          <path d="M90.2 316.5 L205 316.5 L205 343.3 L180 343.3 Q157 343.3 138.9 375 L124.1 401 Q117.9 411.9 105 411.9 L37.8 411.9 Z"/>
+          <path d="M300 316.5 L418.2 316.5 L470.6 411.9 L401 411.9 Q388.1 411.9 381.9 401 L367.1 375 Q349 343.3 325 343.3 L300 343.3 Z"/>
+        </g>
+        <path d="M172 330.5 L177.6 330.5 Q191.6 330.5 198 343 L210.9 368.3 Q218.2 382.5 222.6 367.1 L249.3 273.2 Q254.8 254 261.5 272.8 L289 349.5 Q293.7 362.7 298.8 351.9 L304.7 339.5 Q309 330.5 319 330.5 L324 330.5" fill="none" stroke="#f08a24" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1 data-i18n="wel.title">Welcome to AMPLE</h1>
+      <p class="welcome-sub" data-i18n="wel.sub"></p>
+
+      <div class="welcome-check" id="wel-check"><span class="lvl info">i</span><span data-i18n="set.pcRunning"></span></div>
+
+      <div class="welcome-opts">
+        <div class="set-row"><div class="set-text"><b data-i18n="set.language"></b></div>
+          <div class="seg" id="wel-language" role="group"><button data-v="en">English</button><button data-v="ar" lang="ar">العربية</button></div></div>
+        <div class="set-row"><div class="set-text"><b data-i18n="st.desktop"></b></div><button class="switch" data-wel="desktop" role="switch" aria-checked="true"><span></span></button></div>
+        <div class="set-row"><div class="set-text"><b data-i18n="st.start"></b></div><button class="switch" data-wel="start" role="switch" aria-checked="true"><span></span></button></div>
+        <div class="set-row"><div class="set-text"><b data-i18n="st.windows"></b><small data-i18n="st.windowsSub"></small></div><button class="switch" data-wel="windows" role="switch" aria-checked="false"><span></span></button></div>
+        <div class="set-row"><div class="set-text"><b data-i18n="set.path"></b><small data-i18n="wel.pathSub"></small></div><button class="switch" data-wel="path" role="switch" aria-checked="false"><span></span></button></div>
+        <div class="set-row"><div class="set-text"><b>HTTPS</b><small data-i18n="https.sub"></small></div><button class="switch" data-wel="https" role="switch" aria-checked="false"><span></span></button></div>
+      </div>
+      <button class="btn primary welcome-go" id="wel-go" data-i18n="wel.go"></button>
+      <p class="set-note" data-i18n="wel.later"></p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <!-- "Are you sure?" box -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h2 id="modal-title"></h2>
+      <p id="modal-text"></p>
+      <div class="modal-actions">
+        <button class="btn" id="modal-cancel" data-i18n="modal.cancel">Cancel</button>
+        <button class="btn primary" id="modal-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share a site publicly -->
+  <div id="sharebox" class="modal" hidden>
+    <div class="modal-box share-box" role="dialog" aria-modal="true" aria-labelledby="sharebox-title">
+      <h2 id="sharebox-title"></h2>
+      <ul class="share-points">
+        <li data-i18n="share.p1"></li>
+        <li data-i18n="share.p2"></li>
+        <li data-i18n="share.p3"></li>
+        <li data-i18n="share.p4"></li>
+      </ul>
+      <label class="check"><input type="checkbox" id="sharebox-pw-on"><span data-i18n="share.pwOn"></span></label>
+      <input type="password" id="sharebox-pw" class="input" dir="ltr" maxlength="128" autocomplete="new-password" hidden>
+      <div id="sharebox-pw-hint" class="namebox-hint" hidden></div>
+      <p class="set-note share-fw" data-i18n="share.fwNote"></p>
+      <div class="modal-actions">
+        <button class="btn" id="sharebox-cancel" data-i18n="modal.cancel">Cancel</button>
+        <button class="btn primary" id="sharebox-ok" data-i18n="share.go"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New site / rename: a name -->
+  <div id="namebox" class="modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="namebox-title">
+      <h2 id="namebox-title"></h2>
+      <p id="namebox-text"></p>
+      <input id="namebox-input" class="input" dir="ltr" maxlength="63" spellcheck="false" autocomplete="off">
+      <div id="namebox-hint" class="namebox-hint" dir="ltr"></div>
+      <div class="modal-actions">
+        <button class="btn" id="namebox-cancel" data-i18n="modal.cancel">Cancel</button>
+        <button class="btn primary" id="namebox-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+# AMPLE: only the code is versioned. setup.cmd downloads everything else.
+
+# Downloaded components (setup.cmd / ample setup fetch them, checksums in control/components.json)
+/apache/
+/php/
+/mariadb/
+/phpmyadmin/
+/mailpit/
+/electron/
+/cloudflared/
+# the built installer (AMPLE-Setup-<version>.exe) is published on ample.himacode.com, not in the repo
+/dist/
+# made from the SVG logo by the control panel (for shortcuts)
+/control/assets/logo/ample.ico
+/control/runtime/
+
+# Generated on every start
+/bin/
+
+# Your data and secrets: never commit these
+/ample.json
+/htdocs/*
+!/htdocs/index.php
+/backups/
+
+# Logs and temporary files
+/logs/
+/tmp/
+
+# Developer tools: they stay on the developer's PC (only bootstrap.ps1 is public: setup.cmd runs it)
+/control/tools/*
+!/control/tools/bootstrap.ps1

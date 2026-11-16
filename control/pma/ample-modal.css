@@ -1,0 +1,268 @@
+/*
+ * AMPLE: every phpMyAdmin pop-up window in the Ember identity.
+ * Two kinds exist: jQuery UI dialogs (.ui-dialog, e.g. Settings from the sidebar) and
+ * Bootstrap modals (.modal, e.g. Create view, ENUM editor).
+ *   - title bar: charcoal like the sidebar and the top bar, white title, amber marker
+ *   - body: light (phase 1), with our fields, checkboxes, tabs and buttons
+ *   - the page behind: dimmed with a slight blur
+ * Every rule starts with .ui-dialog, .ui-widget-overlay, .modal or .modal-backdrop.
+ * jQuery UI dialogs live outside #page_content, so their content is styled here too.
+ */
+
+/* ---- smooth open and close -------------------------------------------------------------
+   Open: a CSS animation restarts each time the window goes from hidden to shown.
+   Close: ample-page.js holds the close for a moment, adds .ample-closing (the animations
+   below), then lets jQuery UI close it. The dimmed page fades with it. */
+@keyframes ample-dialog-in  { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes ample-dialog-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(8px) scale(.98); } }
+@keyframes ample-overlay-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ample-overlay-out { from { opacity: 1; } to { opacity: 0; } }
+.ui-dialog { animation: ample-dialog-in .38s cubic-bezier(.16, 1, .3, 1) both; }
+.ui-widget-overlay { animation: ample-overlay-in .32s ease-out both; }
+.ui-dialog.ample-closing { animation: ample-dialog-out .22s cubic-bezier(.4, 0, 1, 1) both; pointer-events: none; }
+.ui-widget-overlay.ample-closing { animation: ample-overlay-out .22s ease-in both; }
+@media (prefers-reduced-motion: reduce) {
+  .ui-dialog, .ui-widget-overlay, .ui-dialog.ample-closing, .ui-widget-overlay.ample-closing { animation: none; }
+}
+
+/* ---- the page behind ---------------------------------------------------------------- */
+.ui-widget-overlay { background: rgba(12, 13, 16, .55) !important; opacity: 1 !important; backdrop-filter: blur(2px); }
+.modal-backdrop { background: #0c0d10 !important; }
+.modal-backdrop.show { opacity: .55 !important; }
+
+/* ======================================================================================= */
+/* ---- jQuery UI dialogs --------------------------------------------------------------- */
+.ui-dialog {
+  --m-panel: #ffffff; --m-soft-bg: #f6f4f0; --m-head: #f1ede6; --m-line: #e3ded5; --m-line2: #d6d0c5;
+  --m-text: #1c1a17; --m-muted: #625d55; --m-amber: #f08a24; --m-ink: #b35a0c; --m-soft: rgba(240, 138, 36, .12);
+  background: var(--m-panel) !important; color: var(--m-text) !important; padding: 0 !important;
+  border: 1px solid #2a2e36 !important; border-radius: 14px !important; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .35) !important;
+}
+.ui-dialog .ui-dialog-titlebar {
+  background: #15171c !important; background-image: none !important; color: #f1efea !important;
+  border: 0 !important; border-radius: 0 !important; padding: 13px 52px 13px 18px !important;
+}
+.ui-dialog .ui-dialog-title { display: flex !important; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; margin: 0 !important; }
+.ui-dialog .ui-dialog-title::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: var(--m-amber); flex: none; }
+
+/* close button: a line ✕ (the button keeps its size; the drawing is its ::before) */
+.ui-dialog .ui-dialog-titlebar-close {
+  width: 30px !important; height: 30px !important; margin-top: -15px !important; right: 12px !important; padding: 0 !important;
+  background: transparent !important; border: 0 !important; border-radius: 8px !important; opacity: 1 !important;
+  font-size: 0 !important; color: transparent !important; box-shadow: none !important; text-indent: 0 !important;
+}
+.ui-dialog .ui-dialog-titlebar-close > * { display: none !important; }
+.ui-dialog .ui-dialog-titlebar-close::before {
+  content: ""; position: absolute; inset: 7px; background: #c9c6bf;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M4 4l8 8M12 4l-8 8'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M4 4l8 8M12 4l-8 8'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+.ui-dialog .ui-dialog-titlebar-close:hover { background: rgba(240, 138, 36, .16) !important; }
+.ui-dialog .ui-dialog-titlebar-close:hover::before { background: var(--m-amber); }
+
+.ui-dialog .ui-dialog-content { background: var(--m-panel) !important; color: var(--m-text) !important; padding: 16px 18px !important; }
+/* never taller than the screen: the title bar and the buttons stay visible, a long form
+   scrolls inside (title ~55px + buttons ~60px + breathing room) */
+.ui-dialog .ui-dialog-content { max-height: calc(100vh - 170px) !important; overflow-y: auto !important; }
+.ui-dialog .ui-dialog-content::-webkit-scrollbar { width: 10px; }
+.ui-dialog .ui-dialog-content::-webkit-scrollbar-button { display: none; }
+.ui-dialog .ui-dialog-content::-webkit-scrollbar-track { background: var(--m-soft-bg); }
+.ui-dialog .ui-dialog-content::-webkit-scrollbar-thumb { background: rgba(240, 138, 36, .6); border-radius: 10px; border: 2px solid var(--m-soft-bg); }
+.ui-dialog .ui-dialog-content::-webkit-scrollbar-thumb:hover { background: var(--m-amber); }
+.ui-dialog .ui-dialog-buttonpane {
+  background: var(--m-soft-bg) !important; border-top: 1px solid var(--m-line) !important; margin: 0 !important; padding: 10px 14px !important;
+}
+.ui-dialog .ui-dialog-buttonpane button { margin: 0 0 0 8px !important; }
+
+/* ---- content inside jQuery UI dialogs ------------------------------------------------ */
+.ui-dialog a { color: var(--m-ink); }
+.ui-dialog a:hover { color: var(--m-amber); }
+
+/* tabs (e.g. Navigation panel / Navigation tree / Servers / Databases / Tables) */
+.ui-dialog .nav-tabs { border-bottom: 1px solid var(--m-line) !important; gap: 0; flex-wrap: wrap; }
+.ui-dialog .nav-tabs .nav-item + .nav-item .nav-link { border-left: 1px solid var(--m-line) !important; }
+.ui-dialog .nav-tabs .nav-link {
+  color: var(--m-muted) !important; background: transparent !important; border: 0 !important; border-radius: 0 !important;
+  padding: 9px 14px !important; margin: 0 !important; font-size: 13.5px;
+}
+.ui-dialog .nav-tabs .nav-link:hover { color: var(--m-text) !important; background: var(--m-soft-bg) !important; }
+.ui-dialog .nav-tabs .nav-link.active { color: var(--m-text) !important; font-weight: 600; box-shadow: inset 0 -2px 0 var(--m-amber); }
+
+/* cards and setting groups */
+.ui-dialog .card { background: var(--m-panel) !important; border: 0 !important; box-shadow: none !important; margin: 0 !important; }
+.ui-dialog .card-body { padding: 14px 0 0 !important; }
+.ui-dialog .card-subtitle { color: var(--m-muted) !important; font-size: 13px; margin-bottom: 12px !important; }
+.ui-dialog fieldset.optbox, .ui-dialog fieldset.pma-fieldset {
+  background: var(--m-panel) !important; background-image: none !important; border: 1px solid var(--m-line) !important;
+  border-radius: 12px !important; padding: 0 !important; margin: 0 0 12px !important; box-shadow: none !important; overflow: hidden;
+}
+.ui-dialog fieldset.optbox > legend, .ui-dialog fieldset.pma-fieldset > legend {
+  float: none; width: 100%; margin: 0 !important; padding: 10px 14px !important; font-size: 14px !important; font-weight: 600;
+  background: var(--m-head) !important; color: var(--m-text) !important; border: 0 !important; border-bottom: 1px solid var(--m-line) !important;
+  border-radius: 0 !important; box-shadow: none !important; text-shadow: none !important;
+}
+.ui-dialog fieldset .table { margin: 0 !important; --bs-table-bg: transparent; color: var(--m-text); }
+.ui-dialog fieldset .table th, .ui-dialog fieldset .table td {
+  background: transparent !important; border: 0 !important; border-top: 1px solid var(--m-line) !important; padding: 11px 14px !important;
+  vertical-align: middle;
+}
+.ui-dialog fieldset .table tr:first-child th, .ui-dialog fieldset .table tr:first-child td { border-top: 0 !important; }
+.ui-dialog fieldset .table th { font-weight: 500; width: 60%; }
+.ui-dialog fieldset .table th small { display: block; color: var(--m-muted); font-weight: 400; font-size: 12.5px; margin-top: 2px; }
+/* a vertical divider between the question (left) and its answer: checkbox / field (right) */
+.ui-dialog fieldset .table td { white-space: nowrap; border-left: 1px solid var(--m-line) !important; }
+
+/* fields */
+.ui-dialog input[type="text"], .ui-dialog input[type="number"], .ui-dialog input[type="password"],
+.ui-dialog select, .ui-dialog textarea, .ui-dialog .form-control, .ui-dialog .form-select {
+  background-color: var(--m-panel) !important; color: var(--m-text) !important; border: 1px solid var(--m-line2) !important;
+  border-radius: 8px !important; padding: 5px 9px; box-shadow: none !important;
+}
+.ui-dialog input:focus, .ui-dialog select:focus, .ui-dialog textarea:focus {
+  border-color: var(--m-amber) !important; outline: 0; box-shadow: 0 0 0 3px var(--m-soft) !important;
+}
+.ui-dialog input[type="checkbox"], .ui-dialog input[type="radio"] { accent-color: var(--m-amber); width: 16px; height: 16px; vertical-align: -3px; }
+
+/* buttons */
+.ui-dialog .btn, .ui-dialog .ui-dialog-buttonpane button {
+  border-radius: 8px !important; text-shadow: none !important; box-shadow: none !important; font-weight: 500; padding: 6px 16px;
+  background: var(--m-panel) !important; background-image: none !important; border: 1px solid var(--m-line2) !important; color: var(--m-text) !important;
+}
+.ui-dialog .btn:hover, .ui-dialog .ui-dialog-buttonpane button:hover { border-color: var(--m-amber) !important; color: var(--m-ink) !important; }
+.ui-dialog .btn-primary, .ui-dialog .ui-dialog-buttonpane button.btn-primary {
+  background: var(--m-amber) !important; border-color: var(--m-amber) !important; color: #1a1205 !important; font-weight: 600;
+}
+.ui-dialog .btn-primary:hover, .ui-dialog .ui-dialog-buttonpane button.btn-primary:hover { background: #e07b15 !important; border-color: #e07b15 !important; color: #1a1205 !important; }
+
+/* icons: help (?) and "restore default value" (↺), as line drawings */
+.ui-dialog :is(.ic_b_help, .ic_s_reload) {
+  background: #9a948a !important; width: 16px; height: 16px; vertical-align: -3px; margin: 0 0 0 4px !important; transition: background .15s;
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat;
+}
+.ui-dialog a:hover :is(.ic_b_help, .ic_s_reload) { background: var(--m-amber) !important; }
+.ui-dialog .ic_b_help { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M6.3 6.3a1.8 1.8 0 1 1 2.4 1.7c-.5.2-.7.6-.7 1.1'/%3E%3Cpath d='M8 11.3h.01'/%3E%3C/svg%3E"); }
+.ui-dialog .ic_s_reload { --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8a5 5 0 1 0 1.5-3.6'/%3E%3Cpath d='M3 2.5v3h3'/%3E%3C/svg%3E"); }
+
+/* ---- Add / Edit trigger, routine, event (".rte_form"): a wider, tidy form -------------- */
+/* jQuery UI measures the width when it opens, so a CSS width here is still centered */
+.ui-dialog:has(.rte_form) { width: min(760px, 94vw) !important; }
+/* card headers inside any dialog (e.g. "Details  ?"): phpMyAdmin's theme draws them as a raised
+   badge (top:-1rem, shadow, border, width of its text). Reset all of it: a plain title line. */
+.ui-dialog .card-header {
+  position: static !important; top: auto !important; width: auto !important; max-width: none !important; margin: 0 !important;
+  box-shadow: none !important; text-shadow: none !important; background: none !important; background-image: none !important;
+  border: 0 !important; border-bottom: 1px solid var(--m-line) !important; border-radius: 0 !important;
+  padding: 0 0 8px !important; display: flex; align-items: center; gap: 6px;
+  font-weight: 600; font-size: 14px; color: var(--m-text) !important;
+}
+.ui-dialog .card-header a { display: inline-flex; background: none !important; border: 0 !important; box-shadow: none !important; }
+.ui-dialog .rte_form > .card > .card-body { padding: 10px 0 0 !important; }
+.ui-dialog table.rte_table { width: 100%; margin: 0; --bs-table-bg: transparent; }
+/* only the form's own rows (not the Parameters table inside it): label | field */
+.ui-dialog table.rte_table > tbody > tr > td { padding: 7px 0 !important; border: 0 !important; background: transparent !important; vertical-align: middle; }
+.ui-dialog table.rte_table > tbody > tr > td:first-child {
+  width: 150px; padding-right: 14px !important; font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .4px; color: var(--m-muted); white-space: nowrap; vertical-align: top; padding-top: 15px !important;
+}
+.ui-dialog table.rte_table > tbody > tr > td > :is(input[type="text"], select, textarea) { width: 100%; height: 36px; }
+.ui-dialog table.rte_table > tbody > tr > td > div > select { width: 100%; height: 36px; margin-bottom: 6px; }
+.ui-dialog table.rte_table textarea { height: auto; min-height: 120px; }
+.ui-dialog table.rte_table input[type="checkbox"] { accent-color: var(--m-amber); width: 17px; height: 17px; margin-top: 4px; }
+
+/* Add / Edit routine: wider (the Parameters table has 6 columns) */
+.ui-dialog:has(.routine_params_table) { width: min(920px, 95vw) !important; }
+/* the Parameters table: a small framed table */
+.ui-dialog table.routine_params_table {
+  width: 100%; margin: 0; border: 1px solid var(--m-line); border-radius: 10px; border-collapse: separate; border-spacing: 0; overflow: hidden;
+}
+.ui-dialog table.routine_params_table thead :is(th, td) {
+  background: var(--m-head) !important; padding: 8px 8px !important; font-size: 11.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .4px; color: var(--m-muted); border-bottom: 1px solid var(--m-line) !important; white-space: nowrap;
+}
+.ui-dialog table.routine_params_table tbody td { padding: 8px 6px !important; border: 0 !important; background: transparent !important; vertical-align: middle; }
+.ui-dialog table.routine_params_table tbody tr + tr td { border-top: 1px solid var(--m-line) !important; }
+.ui-dialog table.routine_params_table :is(input[type="text"], select) { width: 100%; min-width: 80px; height: 32px; font-size: 13px; }
+/* drag handle (reorder parameters): a grip instead of jQuery UI's old arrow picture */
+.ui-dialog table.routine_params_table td.dragHandle { width: 22px; cursor: grab; text-align: center; }
+.ui-dialog table.routine_params_table td.dragHandle .ui-icon { background: none !important; text-indent: 0; width: auto; height: auto; overflow: visible; }
+.ui-dialog table.routine_params_table td.dragHandle .ui-icon::before { content: "⋮⋮"; color: #b5aea3; font-size: 14px; letter-spacing: -3px; }
+.ui-dialog table.routine_params_table .routine_param_remove_anchor { color: #c03535 !important; font-weight: 600; font-size: 13px; text-decoration: none; white-space: nowrap; }
+.ui-dialog table.routine_params_table .enum_hint { display: inline-block; margin-top: 4px; }
+/* "Add parameter": a secondary, dashed button (not a loud orange one) */
+.ui-dialog #addRoutineParameterButton {
+  background: transparent !important; border: 1px dashed var(--m-line2) !important; color: var(--m-ink) !important; font-weight: 600;
+}
+.ui-dialog #addRoutineParameterButton:hover { border-color: var(--m-amber) !important; background: var(--m-soft) !important; }
+.ui-dialog #addRoutineParameterButton::before { content: "+ "; }
+/* line icons inside dialogs: edit (pencil), drop (red bin) */
+.ui-dialog :is(.ic_b_edit, .ic_b_drop) {
+  width: 16px; height: 16px; vertical-align: -3px; margin: 0 2px 0 0 !important;
+  -webkit-mask: var(--i) center / 16px 16px no-repeat; mask: var(--i) center / 16px 16px no-repeat;
+}
+.ui-dialog .ic_b_edit { background: #9a948a !important; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.5 2.5l3 3L6 13H3v-3z'/%3E%3C/svg%3E"); }
+.ui-dialog .ic_b_drop { background: #d14343 !important; --i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5h11M6.5 4.5V3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1.5M4 4.5l.7 8.6a1 1 0 0 0 1 .9h4.6a1 1 0 0 0 1-.9l.7-8.6M6.8 7v4.5M9.2 7v4.5'/%3E%3C/svg%3E"); }
+/* the SQL editor (Definition) in a dialog: dark, same colors as the SQL page */
+.ui-dialog .CodeMirror {
+  background: #0f1115 !important; color: #e2dfd8 !important; border: 1px solid #2a2e36 !important; border-radius: 10px;
+  font: 13.5px/1.65 Consolas, "Cascadia Mono", monospace !important; height: 220px;
+}
+.ui-dialog .CodeMirror, .ui-dialog .CodeMirror * { text-shadow: none !important; }
+.ui-dialog .CodeMirror-gutters { background: #15171c !important; border-right: 1px solid #24272e !important; }
+.ui-dialog .CodeMirror-linenumber { color: #5b606a !important; }
+.ui-dialog .CodeMirror-cursor { border-left: 2px solid #f08a24 !important; }
+.ui-dialog .CodeMirror-selected, .ui-dialog .CodeMirror-focused .CodeMirror-selected { background: rgba(240, 138, 36, .28) !important; }
+.ui-dialog .CodeMirror .cm-keyword { color: #f5a04f !important; font-weight: 600; }
+.ui-dialog .CodeMirror :is(.cm-string, .cm-string-2) { color: #9ad08a !important; }
+.ui-dialog .CodeMirror .cm-number { color: #79b8ff !important; }
+.ui-dialog .CodeMirror .cm-comment { color: #7d828c !important; font-style: italic; }
+.ui-dialog .CodeMirror :is(.cm-variable-2, .cm-variable-3) { color: #c792ea !important; }
+.ui-dialog .CodeMirror .cm-builtin { color: #5ad1e6 !important; }
+.ui-dialog .CodeMirror :is(.cm-operator, .cm-bracket, .cm-punctuation, .cm-variable) { color: #d5d2cb !important; }
+.ui-dialog .CodeMirror .CodeMirror-scroll { scrollbar-width: none; }
+.ui-dialog .CodeMirror .CodeMirror-scroll::-webkit-scrollbar { display: none; }
+.ui-dialog .CodeMirror :is(.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler) { background: #0f1115 !important; }
+
+/* no text shadows in windows either (phpMyAdmin's theme adds a white one: doubled text on dark) */
+.ui-dialog, .ui-dialog *, .modal, .modal * { text-shadow: none !important; }
+
+/* ---- DARK MODE (html data-theme="dark", see ample-nav.js): the windows follow the content -- */
+html[data-theme="dark"] .ui-dialog :is(caption, select, code, label, legend, th, td, small, .error, .confirmation) { color: var(--m-text); }
+html[data-theme="dark"] .ui-dialog {
+  --m-panel: #23272f; --m-soft-bg: #1f2329; --m-head: #2b3039; --m-line: #353a45; --m-line2: #424855;
+  --m-text: #e8e5de; --m-muted: #a3a7b0; --m-ink: #f5a04f; --m-soft: rgba(240, 138, 36, .16);
+  color-scheme: dark; --bs-body-bg: #23272f; --bs-body-color: #e8e5de; --bs-border-color: #424855; --bs-secondary-color: #a3a7b0;
+}
+html[data-theme="dark"] .ui-dialog :is(input[type="text"], input[type="number"], input[type="password"], select, textarea, .form-control, .form-select) {
+  background-color: #1b1e24 !important;
+}
+html[data-theme="dark"] .ui-dialog .btn-primary, html[data-theme="dark"] .ui-dialog .ui-dialog-buttonpane button.btn-primary { color: #1a1205 !important; }
+html[data-theme="dark"] .modal {
+  color-scheme: dark; --bs-body-bg: #23272f; --bs-body-color: #e8e5de; --bs-border-color: #424855; --bs-secondary-color: #a3a7b0;
+}
+html[data-theme="dark"] .modal .modal-content { background: #23272f !important; color: #e8e5de; }
+html[data-theme="dark"] .modal .modal-footer { background: #1f2329 !important; border-top-color: #353a45 !important; }
+html[data-theme="dark"] .modal .modal-footer .btn-secondary { background: #2a2f38 !important; border-color: #424855 !important; color: #e8e5de !important; }
+
+/* ======================================================================================= */
+/* ---- Bootstrap modals ---------------------------------------------------------------- */
+.modal .modal-content {
+  border: 1px solid #2a2e36 !important; border-radius: 14px !important; overflow: hidden; background: #fff !important; color: #1c1a17;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .35) !important;
+}
+.modal .modal-header {
+  background: #15171c !important; background-image: none !important; color: #f1efea !important; border-bottom: 0 !important;
+  border-radius: 0 !important; padding: 13px 18px !important;
+}
+.modal .modal-title { display: flex; align-items: center; gap: 10px; font-size: 15px !important; font-weight: 600; color: #f1efea !important; }
+.modal .modal-title::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: #f08a24; flex: none; }
+.modal .modal-header .btn-close { filter: invert(1) brightness(.85); opacity: .8; box-shadow: none !important; }
+.modal .modal-header .btn-close:hover { opacity: 1; }
+.modal .modal-body { padding: 16px 18px !important; }
+.modal .modal-footer { background: #f6f4f0 !important; border-top: 1px solid #e3ded5 !important; padding: 10px 14px !important; }
+.modal .modal-footer .btn { border-radius: 8px !important; text-shadow: none !important; box-shadow: none !important; }
+.modal .modal-footer .btn-primary { background: #f08a24 !important; border-color: #f08a24 !important; color: #1a1205 !important; font-weight: 600; }
+.modal .modal-footer .btn-secondary {
+  background: #fff !important; background-image: none !important; border: 1px solid #d6d0c5 !important; color: #1c1a17 !important;
+}
+.modal .modal-footer .btn-secondary:hover { border-color: #f08a24 !important; color: #b35a0c !important; }

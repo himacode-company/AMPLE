@@ -1,0 +1,380 @@
+/*
+ * AMPLE: Mailpit (the inbox at /mailpit/) in the Ember identity. Apache adds this file to
+ * Mailpit's pages only (control/templates/httpd.conf.tpl); no Mailpit file is changed.
+ * Mailpit is built on Bootstrap 5 and has its own light/dark mode (data-bs-theme), so this
+ * mostly sets Bootstrap's own color variables, for both modes:
+ *   - top bar: charcoal (like phpMyAdmin's), "BY AMPLE" next to the Mailpit logo
+ *   - main color: AMPLE amber instead of Mailpit's navy (buttons, links, icons, selection)
+ *   - backgrounds / cards / borders: AMPLE's warm light colors, or its dark ones
+ */
+:root, [data-bs-theme="light"] {
+  --bs-primary: #f08a24; --bs-primary-rgb: 240, 138, 36;
+  --bs-link-color: #b35a0c; --bs-link-color-rgb: 179, 90, 12; --bs-link-hover-color: #f08a24; --bs-link-hover-color-rgb: 240, 138, 36;
+  --bs-body-bg: #f6f4f0; --bs-body-bg-rgb: 246, 244, 240; --bs-body-color: #1c1a17; --bs-body-color-rgb: 28, 26, 23;
+  --bs-secondary-color: #625d55; --bs-secondary-bg: #ece7df; --bs-tertiary-bg: #f1ede6; --bs-tertiary-bg-rgb: 241, 237, 230;
+  --bs-border-color: #e3ded5; --bs-focus-ring-color: rgba(240, 138, 36, .25);
+  --ample-card: #ffffff; --ample-soft: rgba(240, 138, 36, .12); --ample-unread: #fffaf2;
+}
+[data-bs-theme="dark"] {
+  --bs-primary: #f08a24; --bs-primary-rgb: 240, 138, 36;
+  --bs-link-color: #f5a04f; --bs-link-color-rgb: 245, 160, 79; --bs-link-hover-color: #f08a24; --bs-link-hover-color-rgb: 240, 138, 36;
+  --bs-body-bg: #1b1e24; --bs-body-bg-rgb: 27, 30, 36; --bs-body-color: #e8e5de; --bs-body-color-rgb: 232, 229, 222;
+  --bs-secondary-color: #a3a7b0; --bs-secondary-bg: #2a2f38; --bs-tertiary-bg: #2b3039; --bs-tertiary-bg-rgb: 43, 48, 57;
+  --bs-border-color: #353a45; --bs-focus-ring-color: rgba(240, 138, 36, .3);
+  --ample-card: #23272f; --ample-soft: rgba(240, 138, 36, .16); --ample-unread: #282c35;
+}
+body { font-family: "Segoe UI", Tahoma, system-ui, sans-serif; }
+
+/* ---- top bar ------------------------------------------------------------------------- */
+.navbar.bg-primary { background: #15171c !important; border-bottom: 1px solid #2a2e36; }
+.navbar-brand::after {
+  content: "BY AMPLE"; margin-left: 8px; font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px; color: #f08a24; vertical-align: middle;
+}
+.navbar .form-control, .navbar .form-select {
+  background-color: #1f2229 !important; border-color: #2a2e36 !important; color: #e2dfd8 !important;
+}
+.navbar .form-control::placeholder { color: #8b9099; }
+.navbar .btn { border-color: #2a2e36; }
+/* the one-click light/dark button (added by ample-mailpit.js), right end of the top bar */
+#ample-mp-theme {
+  float: right; margin-left: 8px; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+  background: #1f2229; border: 1px solid #2a2e36; border-radius: 8px; color: #f08a24; font-size: 16px; cursor: pointer;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+#ample-mp-theme:hover { background: #f08a24; border-color: #f08a24; color: #1a1205; }
+
+/* an open message: the top bar buttons, each in the color of what it does. Soft (see-through
+   color) at rest, filled with that color on hover / while open. */
+.navbar button[title="Mark unread"] { --tone: 74, 158, 234; }          /* blue   */
+.navbar button[title="Release message"] { --tone: 61, 184, 122; }      /* green  */
+.navbar button[title="Delete message"] { --tone: 240, 96, 90; }        /* red    */
+.navbar #DownloadBtn > .btn, .navbar button[title="Return to messages"] { --tone: 240, 138, 36; } /* amber */
+.navbar :is(button[title="Mark unread"], button[title="Release message"], button[title="Delete message"], button[title="Return to messages"], #DownloadBtn > .btn) {
+  --bs-btn-color: rgb(var(--tone)); --bs-btn-bg: rgba(var(--tone), .12); --bs-btn-border-color: rgba(var(--tone), .45);
+  --bs-btn-hover-color: #15171c; --bs-btn-hover-bg: rgb(var(--tone)); --bs-btn-hover-border-color: rgb(var(--tone));
+  --bs-btn-active-color: #15171c; --bs-btn-active-bg: rgb(var(--tone)); --bs-btn-active-border-color: rgb(var(--tone));
+  border-color: var(--bs-btn-border-color); border-radius: 8px; height: 38px; font-weight: 600;
+  display: inline-flex; align-items: center; transition: background-color .15s, color .15s, border-color .15s;
+}
+/* previous / next: one joined pair, amber arrows */
+.navbar :is(a[title="View previous message"], a[title="View next message"]) {
+  --bs-btn-color: #f08a24; --bs-btn-bg: #1f2229; --bs-btn-border-color: #2a2e36;
+  --bs-btn-hover-color: #15171c; --bs-btn-hover-bg: #f08a24; --bs-btn-hover-border-color: #f08a24;
+  --bs-btn-active-color: #15171c; --bs-btn-active-bg: #e07b15; --bs-btn-active-border-color: #e07b15;
+  --bs-btn-disabled-color: #50555f; --bs-btn-disabled-bg: #1a1c21; --bs-btn-disabled-border-color: #2a2e36; --bs-btn-disabled-opacity: 1;
+  border-color: var(--bs-btn-border-color); height: 38px; display: inline-flex; align-items: center;
+}
+.navbar a[title="View previous message"] { border-radius: 8px 0 0 8px; margin-right: 0 !important; }
+.navbar a[title="View next message"] { border-radius: 0 8px 8px 0; margin-left: -1px; }
+/* the Download menu */
+#DownloadBtn .dropdown-menu {
+  --bs-dropdown-bg: #1f2229; --bs-dropdown-border-color: #2a2e36; --bs-dropdown-color: #d6d2ca;
+  --bs-dropdown-link-color: #d6d2ca; --bs-dropdown-link-hover-color: #f5a04f; --bs-dropdown-link-hover-bg: rgba(240, 138, 36, .14);
+  --bs-dropdown-link-active-color: #1a1205; --bs-dropdown-link-active-bg: #f08a24;
+  --bs-dropdown-header-color: #8b9099; --bs-dropdown-divider-bg: #2a2e36;
+  border-radius: 10px; padding: 6px; box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+}
+#DownloadBtn .dropdown-item { border-radius: 6px; }
+#DownloadBtn .dropdown-item .text-muted { color: #8b9099 !important; }
+
+/* ---- buttons ------------------------------------------------------------------------- */
+.btn-primary {
+  --bs-btn-bg: #f08a24; --bs-btn-border-color: #f08a24; --bs-btn-color: #1a1205;
+  --bs-btn-hover-bg: #e07b15; --bs-btn-hover-border-color: #e07b15; --bs-btn-hover-color: #1a1205;
+  --bs-btn-active-bg: #d06d10; --bs-btn-active-border-color: #d06d10; --bs-btn-active-color: #1a1205;
+  --bs-btn-disabled-bg: #f08a24; --bs-btn-disabled-border-color: #f08a24; --bs-btn-disabled-color: #1a1205;
+  font-weight: 600;
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--bs-link-color); --bs-btn-border-color: #f08a24;
+  --bs-btn-hover-bg: #f08a24; --bs-btn-hover-border-color: #f08a24; --bs-btn-hover-color: #1a1205;
+  --bs-btn-active-bg: #e07b15; --bs-btn-active-color: #1a1205;
+}
+
+/* ---- lists (folders, messages): the selected one with a soft amber band, not solid navy -- */
+.list-group {
+  --bs-list-group-bg: var(--ample-card); --bs-list-group-border-color: var(--bs-border-color);
+  --bs-list-group-action-hover-bg: var(--ample-soft); --bs-list-group-action-active-bg: var(--ample-soft);
+  --bs-list-group-active-bg: var(--ample-soft); --bs-list-group-active-color: var(--bs-body-color); --bs-list-group-active-border-color: var(--bs-border-color);
+}
+.list-group-item.active { box-shadow: inset 3px 0 0 #f08a24; font-weight: 600; }
+
+/* ---- cards, tabs, forms, pagination ---------------------------------------------------- */
+.card { --bs-card-bg: var(--ample-card); --bs-card-border-color: var(--bs-border-color); --bs-card-border-radius: 12px; }
+.nav-tabs { --bs-nav-tabs-link-active-color: var(--bs-body-color); --bs-nav-tabs-link-active-bg: var(--ample-card); }
+.nav-link { --bs-nav-link-color: var(--bs-secondary-color); --bs-nav-link-hover-color: #f08a24; }
+.nav-tabs .nav-link.active { box-shadow: inset 0 -2px 0 #f08a24; }
+.form-control:focus, .form-select:focus { border-color: #f08a24 !important; box-shadow: 0 0 0 .2rem var(--bs-focus-ring-color) !important; }
+.form-check-input:checked { background-color: #f08a24; border-color: #f08a24; }
+.form-check-input:focus { border-color: #f08a24; box-shadow: 0 0 0 .2rem var(--bs-focus-ring-color); }
+.pagination {
+  --bs-pagination-active-bg: #f08a24; --bs-pagination-active-border-color: #f08a24; --bs-pagination-active-color: #1a1205;
+  --bs-pagination-color: var(--bs-link-color); --bs-pagination-hover-color: #f08a24;
+}
+.progress, .progress-stacked { --bs-progress-bar-bg: #f08a24; }
+/* Mailpit's "medium" score badge (HTML check %) is yellow with text-primary: navy in Mailpit,
+   but amber here, which melts into the yellow; dark text instead */
+.badge.bg-warning.text-primary { color: #2b1d05 !important; }
+
+/* ---- inbox / search / an open message: the left column (Inbox, Mark all read, Delete all, tags, About) is a
+   full-height sidebar, ALWAYS dark like phpMyAdmin's, from the top bar to the bottom of the
+   screen. (#offcanvas = the same menu on a narrow window.) Bootstrap's own variables are set
+   on it, so everything inside follows. ------------------------------------------------- */
+.row.flex-fill > .flex-column, #offcanvas {
+  --bs-body-bg: #15171c; --bs-body-bg-rgb: 21, 23, 28; --bs-body-color: #d6d2ca; --bs-body-color-rgb: 214, 210, 202;
+  --bs-secondary-color: #8b9099; --bs-tertiary-bg: #23262d; --bs-border-color: #2a2e36;
+  --bs-emphasis-color: #fff; --bs-link-color: #f5a04f; --bs-link-hover-color: #f08a24;
+  --ample-card: transparent; --ample-soft: rgba(240, 138, 36, .14);
+  color-scheme: dark; background: #15171c; color: #d6d2ca;
+}
+.row.flex-fill > .flex-column {
+  border-right: 1px solid #2a2e36; padding: 10px 12px 12px;
+}
+/* its scroll area: Mailpit pushes it 1rem into the message list; keep it inside */
+.row.flex-fill > .flex-column > .flex-grow-1 { margin-right: 0 !important; padding-right: 0 !important; }
+.row.flex-fill > .flex-column + div { padding-left: 16px !important; }
+
+.row.flex-fill > .flex-column .list-group, #offcanvas .list-group {
+  --bs-list-group-bg: transparent; --bs-list-group-color: #d6d2ca; --bs-list-group-border-color: transparent;
+  --bs-list-group-action-color: #d6d2ca; --bs-list-group-action-hover-color: #fff; --bs-list-group-action-hover-bg: rgba(255, 255, 255, .06);
+  --bs-list-group-action-active-color: #fff; --bs-list-group-action-active-bg: rgba(255, 255, 255, .09);
+  --bs-list-group-active-bg: rgba(240, 138, 36, .14); --bs-list-group-active-color: #f5a04f; --bs-list-group-active-border-color: transparent;
+  --bs-list-group-disabled-color: #5d626c; --bs-list-group-disabled-bg: transparent;
+  gap: 2px;
+}
+.row.flex-fill > .flex-column .list-group-item, #offcanvas .list-group-item {
+  border: 0; border-radius: 8px !important; padding: 8px 12px; font-size: 14px;
+  transition: background-color .15s, color .15s;
+}
+.row.flex-fill > .flex-column .list-group-item.active, #offcanvas .list-group-item.active {
+  box-shadow: inset 3px 0 0 #f08a24; font-weight: 600;
+}
+.row.flex-fill > .flex-column .list-group-item .badge, #offcanvas .list-group-item .badge {
+  background: #f08a24 !important; color: #1a1205 !important;
+}
+.row.flex-fill > .flex-column .text-danger, #offcanvas .text-danger { color: #f0605a !important; }
+.row.flex-fill > .flex-column .text-muted, #offcanvas .text-muted { color: #8b9099 !important; }
+/* an open message: Mailpit makes its sidebar a quarter of the screen (col-xl-3); give it the
+   inbox sidebar's width (col-xl-2), so it does not jump between pages */
+@media (min-width: 1200px) {
+  .row.flex-fill > .col-xl-3.flex-column { flex: 0 0 auto; width: 16.66666667%; }
+  .row.flex-fill > .col-xl-3.flex-column + .col-xl-9 { flex: 0 0 auto; width: 83.33333333%; }
+}
+/* an open message: "Return to inbox" is a solid amber button */
+.row.flex-fill > .col-xl-3.flex-column > .list-group > .list-group-item {
+  background: #f08a24; color: #1a1205; font-weight: 700; justify-content: center; text-align: center;
+}
+.row.flex-fill > .col-xl-3.flex-column > .list-group > .list-group-item span { font-weight: 700; }
+.row.flex-fill > .col-xl-3.flex-column > .list-group > .list-group-item .bi::before { -webkit-text-stroke: .9px currentColor; font-size: 1.05em; }
+.row.flex-fill > .col-xl-3.flex-column > .list-group > .list-group-item:hover { background: #e07b15; color: #1a1205; }
+.row.flex-fill > .col-xl-3.flex-column > .list-group > .list-group-item:active { background: #d06d10; }
+.row.flex-fill > .col-xl-3.flex-column > .list-group > .list-group-item .badge { background: #15171c !important; color: #f5a04f !important; }
+/* an open message: the list of the other messages in the dark sidebar */
+#MessageList .list-group { gap: 4px; }
+#MessageList .list-group-item.message { padding: 9px 12px; line-height: 1.45; }
+#MessageList .message:not(.active) b { color: #eae6de; font-weight: 700; }
+#MessageList .message:not(.active).read b { color: #b8b4ac; font-weight: 500; }
+#MessageList .message:not(.active):hover { background-color: rgba(255, 255, 255, .06); }
+#MessageList .message.active b { color: #f5a04f; }
+#MessageList .message .badge { border-radius: 999px; padding: 3px 8px; font-size: 10.5px; margin-top: 4px; }
+#MessageList .message .badge[style*="108, 117, 125"] { background: rgba(240, 138, 36, .18) !important; color: #f5a04f; }
+#MessageList .bi-paperclip { color: #f08a24; }
+/* About + settings at the bottom */
+.row.flex-fill > .flex-column > :last-child { border-top: 1px solid #2a2e36; padding-top: 10px; }
+/* "Customized by AMPLE" (added by ample-mailpit.js) above About; the line moves above it */
+.ample-credit {
+  display: flex; align-items: center; gap: 7px; padding: 10px 4px 6px; border-top: 1px solid #2a2e36;
+  font-size: 12px; color: #8b9099; white-space: nowrap;
+}
+.ample-credit svg { width: 20px; height: 16px; flex: none; }
+.ample-credit b { color: #f08a24; font-weight: 800; letter-spacing: 1.2px; margin-left: -3px; }
+.row.flex-fill > .flex-column > .ample-credit + .about-mailpit { border-top: 0; padding-top: 4px; }
+.row.flex-fill > .flex-column .btn-outline-secondary, #offcanvas .btn-outline-secondary {
+  --bs-btn-color: #b8b4ac; --bs-btn-border-color: #3a3f4a; --bs-btn-hover-bg: #f08a24; --bs-btn-hover-border-color: #f08a24; --bs-btn-hover-color: #1a1205;
+}
+.row.flex-fill > .flex-column .btn-sm.text-muted:hover { color: #f5a04f !important; }
+.row.flex-fill > .flex-column ::-webkit-scrollbar-thumb { border-color: #15171c; }
+
+/* ---- inbox list: every message is its own card ------------------------------------------
+   avatar (sender's first letter, color from ample-mailpit.js) | sender, To | subject, snippet,
+   tags | size | time.  Unread: amber dot on the avatar, bold, warmer card.  Hover: amber bar
+   on the left.  Selected (Ctrl / Shift click): amber card.  Beats Mailpit's own
+   "#message-page .message:not(.active) …" rules. */
+#message-page > .list-group { gap: 8px; padding: 4px 14px 16px 2px; margin: 0 !important; border-radius: 0; }
+#message-page .list-group > .message {
+  position: relative; margin: 0 !important; padding: 13px 18px 13px 72px !important; min-height: 68px;
+  align-items: center; font-size: 13.5px;
+  background: var(--ample-row); color: var(--bs-body-color); text-decoration: none;
+  border: 1px solid var(--bs-border-color) !important; border-radius: 12px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+  transition: background-color .15s, border-color .15s, box-shadow .15s, transform .15s;
+}
+#message-page .list-group > .message.read { --ample-row: var(--ample-card); }
+#message-page .list-group > .message:not(.read) { --ample-row: var(--ample-unread); }
+/* avatar */
+#message-page .list-group > .message::before {
+  content: attr(data-av); position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px; border-radius: 50%; background: var(--av, #8b9099); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700;
+}
+/* unread: amber dot on the avatar's corner */
+#message-page .list-group > .message:not(.read)::after {
+  content: ""; position: absolute; left: 46px; top: calc(50% - 22px); width: 12px; height: 12px; border-radius: 50%;
+  background: #f08a24; border: 2px solid var(--ample-row);
+}
+#message-page .list-group > .message:not(.active):hover {
+  background: var(--ample-row); border-color: rgba(240, 138, 36, .55) !important;
+  box-shadow: inset 3px 0 0 #f08a24, 0 6px 16px rgba(0, 0, 0, .08); transform: translateY(-1px);
+}
+#message-page .list-group > .message:not(.active).selected {
+  --ample-row: var(--ample-soft); background: var(--ample-soft); border-color: #f08a24 !important;
+}
+#message-page .list-group > .message:focus-visible { outline: 2px solid #f08a24; outline-offset: 2px; }
+/* text: sender and subject bold when unread, calmer when read */
+#message-page .list-group > .message:not(.active) b { color: var(--bs-body-color); font-weight: 700; }
+#message-page .list-group > .message:not(.active).read b { color: var(--bs-body-color); font-weight: 500; opacity: .78; }
+#message-page .list-group > .message .subject { font-size: 14px; }
+#message-page .list-group > .message .text-muted { color: var(--bs-secondary-color) !important; }
+#message-page .list-group > .message .subject + .small { margin-top: 2px; }
+/* tags: soft pills (Mailpit's plain grey ones become amber; its "tag colors" option still wins) */
+#message-page .list-group > .message .badge {
+  border-radius: 999px; padding: 3px 9px; font-size: 11px; font-weight: 600; margin-top: 5px;
+}
+#message-page .list-group > .message .badge[style*="108, 117, 125"] { background: var(--ample-soft) !important; color: var(--bs-link-color); }
+#message-page .list-group > .message .bi-paperclip { color: #f08a24; }
+/* narrow window: columns stack, so the avatar sits at the top */
+@media (max-width: 991.98px) {
+  #message-page .list-group > .message::before { top: 14px; transform: none; }
+  #message-page .list-group > .message:not(.read)::after { top: 10px; }
+}
+
+/* ---- an open message ---------------------------------------------------------------------
+   1. the header (From / To / Subject / Date / Tags) is a card, the subject on top, big */
+#message-view > .row.w-100 {
+  margin: 12px 0 0; padding: 16px 20px 12px; width: 100% !important;
+  background: var(--ample-card); border: 1px solid var(--bs-border-color); border-radius: 12px;
+}
+#message-view > .row.w-100 > [class*="col"] { padding-left: 0; padding-right: 0; }
+#message-view .messageHeaders { margin: 0; width: 100%; }
+#message-view .messageHeaders tbody { display: flex; flex-direction: column; }
+#message-view .messageHeaders tr { display: flex; align-items: baseline; }
+#message-view .messageHeaders th {
+  flex: 0 0 96px; min-width: 0; padding: 5px 12px 5px 0; color: var(--bs-secondary-color);
+  font-size: 11.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
+}
+#message-view .messageHeaders td { flex: 1; min-width: 0; padding: 4px 0; font-size: 14px; }
+/* subject first, large, with a line under it */
+#message-view .messageHeaders tr:has(> td > strong.text-spaces) {
+  order: -1; margin-bottom: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--bs-border-color);
+}
+#message-view .messageHeaders tr:has(> td > strong.text-spaces) > th { display: none; }
+#message-view .messageHeaders tr:has(> td > strong.text-spaces) strong { font-size: 19px; font-weight: 700; line-height: 1.35; }
+/* sender: name bold, address calm */
+#message-view .messageHeaders td.privacy > span > .text-spaces { font-weight: 700; }
+#message-view .messageHeaders td .small, #message-view .messageHeaders td a.text-body { color: var(--bs-secondary-color) !important; }
+#message-view .messageHeaders td a.text-body:hover { color: var(--bs-link-hover-color) !important; }
+/* size next to the date: a small pill */
+#message-view .messageHeaders td > small.ms-2 {
+  display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  background: var(--bs-secondary-bg); color: var(--bs-secondary-color);
+}
+/* tags field: amber pills, no box */
+#message-view .form-control.dropdown { background: transparent; }
+#message-view .form-control.dropdown .badge {
+  background: var(--ample-soft) !important; color: var(--bs-link-color) !important; border-radius: 999px;
+  padding: 4px 10px; font-weight: 600; font-size: 12px;
+}
+#message-view .form-control.dropdown .badge .btn-close { filter: none; opacity: .6; }
+/* attachment / inline image count on the right: amber pills with a paperclip */
+#message-view [title="Attachments in this message"], #message-view [title="Inline images in this message"] {
+  background: var(--ample-soft) !important; color: var(--bs-link-color) !important; font-weight: 600; padding: 6px 12px !important;
+}
+#message-view [title="Attachments in this message"]::before { content: "\f4b3"; font-family: bootstrap-icons; margin-right: 6px; vertical-align: -1px; }
+#message-view [title="Inline images in this message"]::before { content: "\f42b"; font-family: bootstrap-icons; margin-right: 6px; vertical-align: -1px; }
+
+/* 2. tabs: one bar with a thin line; the open tab amber with a thick amber line */
+#nav-tab.nav-tabs { border-bottom: 1px solid var(--bs-border-color); gap: 2px; align-items: flex-end; }
+#nav-tab .nav-link {
+  border: 0 !important; background: transparent !important; color: var(--bs-secondary-color);
+  font-weight: 600; font-size: 14px; padding: 9px 14px; border-radius: 8px 8px 0 0; box-shadow: none;
+  transition: color .15s, background-color .15s;
+}
+#nav-tab .nav-link:hover { color: #f08a24; background: var(--ample-soft) !important; }
+#nav-tab .nav-link.active, #nav-tab .show > .nav-link { color: var(--bs-link-color) !important; box-shadow: inset 0 -3px 0 #f08a24 !important; }
+#nav-tab .badge { padding: 3px 7px !important; font-size: 11px; vertical-align: 1px; margin-left: 4px; }
+#nav-tab .bi-check-all { margin-left: 4px; }
+/* the Checks menu */
+#nav-tab .dropdown-menu {
+  --bs-dropdown-bg: var(--ample-card); --bs-dropdown-border-color: var(--bs-border-color);
+  --bs-dropdown-link-hover-bg: var(--ample-soft); --bs-dropdown-link-hover-color: var(--bs-link-color);
+  --bs-dropdown-link-active-bg: #f08a24; --bs-dropdown-link-active-color: #1a1205;
+  border-radius: 10px; padding: 6px; box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
+}
+#nav-tab .dropdown-menu .dropdown-item { border-radius: 6px; }
+/* phone / tablet / screen preview buttons: one joined group, the chosen one amber */
+#nav-tab > .ms-auto { border: 1px solid var(--bs-border-color); border-radius: 8px; overflow: hidden; margin-bottom: 6px; background: var(--ample-card); }
+#nav-tab > .ms-auto .btn { border: 0; border-radius: 0; color: var(--bs-secondary-color); padding: 5px 12px; }
+#nav-tab > .ms-auto .btn:hover { color: #f08a24; background: var(--ample-soft); }
+#nav-tab > .ms-auto .btn:disabled { opacity: 1; background: #f08a24; color: #1a1205; }
+
+/* 3. the content: HTML in a white rounded frame (emails are made for white), the rest in panels */
+#responsive-view { border: 1px solid var(--bs-border-color); border-radius: 12px; overflow: hidden; background: #fff; }
+#responsive-view.phone, #responsive-view.tablet { margin: 0 auto; box-shadow: 0 10px 30px rgba(0, 0, 0, .15); }
+#preview-html.tablet, #preview-html.phone { border: 0; }
+#nav-plain-text .text-view, #nav-html-source pre, #nav-headers > * {
+  background: var(--ample-card); border: 1px solid var(--bs-border-color); border-radius: 12px;
+  padding: 16px 18px; margin: 0;
+}
+#nav-plain-text .text-view { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; font-size: 13px; line-height: 1.65; }
+#nav-html-source pre { font-size: 12.5px; }
+#nav-raw iframe { border: 1px solid var(--bs-border-color) !important; border-radius: 12px; padding: 10px 14px; background: var(--bs-body-bg); }
+/* the scrollbar of the message area: a visible track */
+#message-page::-webkit-scrollbar-track, #nav-html-source pre::-webkit-scrollbar-track { background: rgba(127, 127, 127, .13); border-radius: 10px; }
+
+/* 4. attachments */
+#nav-tabContent > .tab-pane > hr { border-color: var(--bs-border-color); opacity: 1; margin: 22px 0 16px; }
+#nav-tabContent > .tab-pane > .btn-outline-secondary.btn-sm {
+  --bs-btn-color: var(--bs-link-color); --bs-btn-bg: var(--ample-soft); --bs-btn-border-color: rgba(240, 138, 36, .45);
+  --bs-btn-hover-color: #1a1205; --bs-btn-hover-bg: #f08a24; --bs-btn-hover-border-color: #f08a24;
+  --bs-btn-active-color: #1a1205; --bs-btn-active-bg: #e07b15; --bs-btn-active-border-color: #e07b15;
+  border-radius: 8px; font-weight: 600; padding: 5px 12px;
+}
+.card.attachment {
+  color: var(--bs-body-color); background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color); border-radius: 12px;
+  overflow: hidden; transition: transform .15s, border-color .15s, box-shadow .15s;
+}
+.card.attachment:hover { transform: translateY(-2px); border-color: #f08a24; box-shadow: 0 10px 24px rgba(0, 0, 0, .14); }
+.card.attachment img.card-img-top[src^="data:"] { opacity: 0; }
+.card.attachment .icon { color: #f08a24; font-size: 3.2rem; }
+.card.attachment .icon .bi-file-pdf-fill { color: #e5484d; }
+.card.attachment .icon .bi-file-image-fill { color: #0e9fb0; }
+.card.attachment .icon .bi-file-text-fill { color: #3b82c4; }
+.card.attachment .icon .bi-file-word-fill { color: #2b5797; }
+.card.attachment .icon .bi-file-spreadsheet-fill { color: #2f9e57; }
+.card.attachment .icon .bi-file-slides-fill { color: #d9692b; }
+.card.attachment .icon .bi-file-zip-fill { color: #8b5cf6; }
+.card.attachment .icon :is(.bi-file-music-fill, .bi-file-play-fill) { color: #d9485f; }
+.card.attachment .icon :is(.bi-calendar-event, .bi-file-check-fill) { color: #2f9e7a; }
+.card.attachment .card-footer {
+  background: var(--ample-card); color: var(--bs-body-color); border-top: 1px solid var(--bs-border-color) !important; font-weight: 600; padding: 8px 10px;
+}
+.card.attachment .card-body { padding: 12px 14px; }
+.card.attachment:hover .card-body { background: rgba(var(--bs-body-bg-rgb), .96); color: var(--bs-body-color); }
+.card.attachment .card-body .bi { color: #f08a24; }
+/* attachment details: a panel, values in code pills, copy buttons amber */
+#nav-tabContent .row.gx-1.mb-3 > .col {
+  background: var(--ample-card); border: 1px solid var(--bs-border-color); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;
+  --bs-code-color: var(--bs-link-color);
+}
+#nav-tabContent .row.gx-1.mb-3 > .col h5 { font-size: 15px; font-weight: 700; }
+#nav-tabContent .row.gx-1.mb-3 > .col strong { color: var(--bs-secondary-color); font-weight: 600; display: inline-block; min-width: 96px; }
+#nav-tabContent .row.gx-1.mb-3 > .col code { background: var(--bs-tertiary-bg); padding: 2px 7px; border-radius: 6px; }
+#nav-tabContent .row.gx-1.mb-3 > .col .btn-link { color: var(--bs-link-color); text-decoration: none; font-family: Consolas, monospace; font-size: 12px; word-break: break-all; text-align: left; }
+#nav-tabContent .row.gx-1.mb-3 > .col .btn-link:hover { color: #f08a24; }
+
+/* ---- scrollbars ------------------------------------------------------------------------ */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-button { display: none; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(240, 138, 36, .55); border-radius: 10px; border: 2px solid var(--bs-body-bg); }
+::-webkit-scrollbar-thumb:hover { background: #f08a24; }

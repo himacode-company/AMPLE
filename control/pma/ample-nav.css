@@ -1,0 +1,205 @@
+/*
+ * AMPLE: phpMyAdmin left sidebar in the Ember identity (always dark).
+ * Every rule starts with #pma_navigation, so nothing outside the sidebar changes.
+ * Loaded after phpMyAdmin's theme by Apache (control/templates/httpd.conf.tpl);
+ * no phpMyAdmin file is modified. Icons are inline SVG (no image files).
+ */
+#pma_navigation {
+  --sb: #15171c; --sb2: #1f2229; --sb-line: #2a2e36; --sb-text: #e2dfd8; --sb-muted: #9a9ea7;
+  --sb-hover: rgba(255, 255, 255, .055); --amber: #f08a24; --amber-soft: rgba(240, 138, 36, .14);
+  background: var(--sb) !important; color: var(--sb-text); box-shadow: 1px 0 0 var(--sb-line);
+}
+
+/* ---- header: phpMyAdmin logo (white), "by AMPLE", icon row ------------------------ */
+#pma_navigation #pma_navigation_header { padding-bottom: 10px; border-bottom: 1px solid var(--sb-line); }
+#pma_navigation #pmalogo { padding: 18px 14px 0; }
+#pma_navigation #imgpmalogo { filter: brightness(0) invert(1); opacity: .94; }
+#pma_navigation #ample-by { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 6px 0 2px;
+  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--sb-muted); }
+#pma_navigation #ample-by svg { width: 17px; height: 13px; display: block; }
+#pma_navigation #ample-by b { color: var(--amber); letter-spacing: 2px; }
+
+#pma_navigation #navipanellinks { display: flex; justify-content: center; gap: 4px; padding: 10px 10px 0; }
+#pma_navigation #navipanellinks a { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; transition: background .15s; }
+#pma_navigation #navipanellinks a:hover { background: var(--amber-soft); }
+#pma_navigation #navipanellinks .icon { margin: 0; }
+/* hidden: phpMyAdmin documentation + MariaDB documentation (kept: Home, Logout, Settings, Reload) */
+#pma_navigation #navipanellinks a[href*="doc/html"],
+#pma_navigation #navipanellinks a[href*="url.php"] { display: none; }
+
+/* ◐ light / dark button (made by ample-nav.js): a moon in light mode, a sun in dark mode */
+#pma_navigation #ample-theme .ample-theme-icon {
+  display: block; width: 16px; height: 16px; background: #facc15;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1z'/%3E%3C/svg%3E") center / 16px no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1z'/%3E%3C/svg%3E") center / 16px no-repeat;
+}
+html[data-theme="dark"] #pma_navigation #ample-theme .ample-theme-icon {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='3'/%3E%3Cpath d='M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='3'/%3E%3Cpath d='M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1'/%3E%3C/svg%3E");
+}
+
+/* ---- Recent / Favorites: hidden (the styles below stay in case they come back) --- */
+#pma_navigation .pma_quick_warp { display: none !important; }
+#pma_navigation .pma_quick_warp { margin: 10px 8px 4px; gap: 6px; }
+#pma_navigation .pma_quick_warp .drop_list { flex: 1; float: none; margin: 0; }
+#pma_navigation .pma_quick_warp .drop_button { width: 100%; background: var(--sb2) !important; color: var(--sb-text) !important;
+  border: 1px solid var(--sb-line) !important; border-radius: 7px !important; font-size: 12px; padding: 5px 8px; box-shadow: none !important; }
+#pma_navigation .pma_quick_warp .drop_button:hover { border-color: var(--amber) !important; }
+#pma_navigation .pma_quick_warp .drop_list ul { background: var(--sb2) !important; border: 1px solid var(--sb-line) !important;
+  border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .45) !important; color: var(--sb-muted); }
+#pma_navigation .pma_quick_warp .drop_list ul li { border-color: var(--sb-line) !important; }
+#pma_navigation .pma_quick_warp .drop_list a { color: var(--sb-text) !important; }
+#pma_navigation .pma_quick_warp .drop_list li:hover { background: var(--amber-soft) !important; }
+
+/* ---- collapse all / link with main panel ---------------------------------------- */
+/* a full-width bar above the list: covers what scrolls under it (the list's names have
+   z-index 100 in phpMyAdmin's theme, so the bar sits above that) */
+#pma_navigation #navigation_controls_outer {
+  position: relative; z-index: 150; background: var(--sb) !important; border-bottom: 1px solid var(--sb-line);
+  padding: 7px 0 !important; margin: 0 0 0 -4px; list-style: none;
+}
+#pma_navigation #navigation_controls { float: none !important; padding: 0 !important; margin: 0; display: flex; justify-content: center; gap: 8px; }
+#pma_navigation #navigation_controls a {
+  display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px;
+  background: rgba(255, 255, 255, .04); border: 1px solid var(--sb-line); transition: background .15s, border-color .15s;
+}
+#pma_navigation #navigation_controls a:hover { background: rgba(255, 255, 255, .09); border-color: #3a3f49; }
+#pma_navigation #navigation_controls .icon { margin: 0; }
+
+/* ---- filter boxes --------------------------------------------------------------- */
+#pma_navigation .searchClause { background: var(--sb2) !important; color: var(--sb-text) !important; border: 1px solid var(--sb-line) !important;
+  border-radius: 7px 0 0 7px !important; font-size: 12.5px; padding: 4px 9px; box-shadow: none !important; }
+#pma_navigation .searchClause::placeholder { color: #737882; }
+#pma_navigation .searchClause:focus { border-color: var(--amber) !important; box-shadow: 0 0 0 2px var(--amber-soft) !important; }
+#pma_navigation .searchClauseClear { background: var(--sb2) !important; color: var(--sb-muted) !important; border: 1px solid var(--sb-line) !important;
+  border-left: 0 !important; border-radius: 0 7px 7px 0 !important; font-size: 11px; }
+#pma_navigation .searchClauseClear:hover { color: var(--amber) !important; }
+#pma_navigation #pma_navigation_tree li.fast_filter { padding: 4px 8px 6px 0; }
+
+/* ---- the tree ------------------------------------------------------------------- */
+#pma_navigation #pma_navigation_tree { color: var(--sb-muted); margin-left: 4px; }
+#pma_navigation #pma_navigation_tree a { color: var(--sb-text); }
+#pma_navigation #pma_navigation_tree a:hover { text-decoration: none; }
+#pma_navigation #pma_navigation_tree a.hover_show_full { font-size: 13px; }
+#pma_navigation #pma_navigation_tree li { padding: 4px 0; border-radius: 6px; }
+/* an item with a list of children (an open database): its highlight gets the same space below
+   the name as above it (4px), made by a top margin on the children's list. Not by bottom
+   padding: that showed as a thin strip under the last child. */
+#pma_navigation #pma_navigation_tree li:has(> div.list_container) { padding-bottom: 0; }
+#pma_navigation #pma_navigation_tree li > div.list_container { margin-top: 4px; }
+/* more space between databases */
+#pma_navigation #pma_navigation_tree_content > ul > li.database { margin-bottom: 6px; }
+#pma_navigation #pma_navigation_tree li.italics { font-style: normal; }
+
+/* no connector lines */
+#pma_navigation #pma_navigation_tree div.block i,
+#pma_navigation #pma_navigation_tree div.block b { border: 0 !important; background: none !important; }
+#pma_navigation #pma_navigation_tree .list_container { border-left: 0 !important; margin-left: 0; padding-left: 14px; background: var(--sb); }
+#pma_navigation #pma_navigation_tree div.pageselector { border-left: 0; }
+
+/* hover: the row only (open children cover the rest with the sidebar color) */
+#pma_navigation #pma_navigation_tree li.activePointer { background: var(--sb-hover); color: var(--sb-text); }
+#pma_navigation #pma_navigation_tree li.activePointer > a.hover_show_full { color: #fff; }
+/* the database / table open in the main panel */
+#pma_navigation #pma_navigation_tree li.selected { background: var(--amber-soft); box-shadow: inset 3px 0 0 var(--amber); color: var(--sb-text); }
+#pma_navigation #pma_navigation_tree li.selected > a.hover_show_full { color: #fff; font-weight: 600; }
+
+/* ---- AMPLE folders (made by ample-nav.js) --------------------------------------- */
+#pma_navigation #pma_navigation_tree_content > ul > li.ample-folder { list-style: none; cursor: pointer; user-select: none;
+  display: flex; align-items: center; gap: 7px; margin: 12px 8px 3px 2px; padding: 5px 8px; border-radius: 7px;
+  font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--amber); }
+#pma_navigation #pma_navigation_tree_content > ul > li.ample-folder:first-child { margin-top: 6px; }
+#pma_navigation #pma_navigation_tree_content > ul > li.ample-folder:hover { background: var(--sb-hover); }
+#pma_navigation li.ample-folder .ample-caret { width: 10px; display: inline-block; transition: transform .15s; font-size: 10px; }
+#pma_navigation li.ample-folder.open .ample-caret { transform: rotate(90deg); }
+#pma_navigation li.ample-folder .ample-count { margin-left: auto; font-size: 10.5px; padding: 0 7px; border-radius: 9px;
+  background: var(--amber-soft); letter-spacing: 0; }
+#pma_navigation li.ample-folder.system { color: var(--sb-muted); }
+#pma_navigation li.ample-folder.system .ample-count { background: rgba(255, 255, 255, .07); }
+#pma_navigation #pma_navigation_tree_content > ul > li.ample-in { margin-left: 8px; }
+#pma_navigation #pma_navigation_tree_content > ul > li.ample-sys > a.hover_show_full { color: var(--sb-muted); }
+#pma_navigation #pma_navigation_tree_content > ul > li.ample-hidden { display: none !important; }
+
+/* ---- icons: simple line icons (16 px) ------------------------------------------- */
+#pma_navigation .icon { background-repeat: no-repeat !important; background-position: center !important; background-size: 16px 16px !important; }
+#pma_navigation .ic_b_plus  { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23f08a24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4l4 4-4 4'/%3E%3C/svg%3E") !important; }
+#pma_navigation .ic_b_minus { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23f08a24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") !important; }
+/* inside a database (tables, views ...): grey arrows, so the levels are easy to tell apart */
+#pma_navigation #pma_navigation_tree .list_container .ic_b_plus  { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%237d828c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4l4 4-4 4'/%3E%3C/svg%3E") !important; }
+#pma_navigation #pma_navigation_tree .list_container .ic_b_minus { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%237d828c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") !important; }
+/* databases: teal */
+#pma_navigation .ic_s_db    { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%232dd4bf' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='8' cy='3.6' rx='5' ry='2'/%3E%3Cpath d='M3 3.6v8.8c0 1.1 2.2 2 5 2s5-.9 5-2V3.6M3 8c0 1.1 2.2 2 5 2s5-.9 5-2'/%3E%3C/svg%3E") !important; }
+/* tables: blue */
+#pma_navigation .ic_b_props { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235aa9ff' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='2.5' width='12' height='11' rx='1.6'/%3E%3Cpath d='M2 6h12M2 9.6h12M6.4 6v7.5'/%3E%3C/svg%3E") !important; }
+#pma_navigation .ic_b_browse { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239a9ea7' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 4.6a1 1 0 0 1 1-1h3l1.5 1.5H13a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z'/%3E%3C/svg%3E") !important; }
+#pma_navigation .ic_b_views { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2367e8f9' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.5 8S4 3.6 8 3.6 14.5 8 14.5 8 12 12.4 8 12.4 1.5 8 1.5 8z'/%3E%3Ccircle cx='8' cy='8' r='2'/%3E%3C/svg%3E") !important; }
+/* "New" database (top level): amber circle + */
+#pma_navigation .ic_b_newdb {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23f08a24' stroke-width='1.6' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M8 5.2v5.6M5.2 8h5.6'/%3E%3C/svg%3E") !important; }
+/* "New" table inside a database: a green table with + (different from "New" database) */
+#pma_navigation .ic_b_table_add {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2341c27f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 13.5H3.6A1.6 1.6 0 0 1 2 11.9V4.1a1.6 1.6 0 0 1 1.6-1.6h8.8A1.6 1.6 0 0 1 14 4.1V8M2 6h12M6.4 6v7.5M12 10.5v4M10 12.5h4'/%3E%3C/svg%3E") !important; }
+/* "New" view: a cyan eye with + */
+#pma_navigation .ic_b_view_add {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2367e8f9' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.5 7.5S3.8 3.5 7.5 3.5s6 4 6 4M5.5 7.5a2 2 0 1 1 4 0'/%3E%3Cpath d='M12 10v4.5M9.8 12.2h4.5'/%3E%3C/svg%3E") !important; }
+/* the "New" items inside a database: smaller and quieter text than "New" database */
+#pma_navigation #pma_navigation_tree li:is(.new_table, .new_view) > a.hover_show_full { color: var(--sb-muted) !important; font-size: 12.5px; }
+#pma_navigation #pma_navigation_tree li:is(.new_table, .new_view) > a.hover_show_full:hover { color: var(--sb-text) !important; }
+/* top icon row, one color each: Home blue, Logout red, Settings violet, Reload green */
+#pma_navigation .ic_b_home { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235aa9ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 7.5 8 3l5.5 4.5M4 6.5V13h3v-3h2v3h3V6.5'/%3E%3C/svg%3E") !important; }
+#pma_navigation .ic_s_loggoff { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23f87171' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M8 2v6M4.6 4.6a5 5 0 1 0 6.8 0'/%3E%3C/svg%3E") !important; }
+#pma_navigation .ic_b_docs { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23c9c6bf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2.5h7.5a1.5 1.5 0 0 1 1.5 1.5v9.5H5a2 2 0 0 1-2-2z'/%3E%3Cpath d='M3 11.5a2 2 0 0 1 2-2h7'/%3E%3C/svg%3E") !important; }
+#pma_navigation .ic_b_sqlhelp { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23c9c6bf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M6.3 6.3a1.8 1.8 0 1 1 2.4 1.7c-.5.2-.7.6-.7 1.1'/%3E%3Cpath d='M8 11.3h.01'/%3E%3C/svg%3E") !important; }
+/* settings: a real gear (outline with teeth + center hole), not rays */
+#pma_navigation .ic_s_cog { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a78bfa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E") !important; }
+#pma_navigation .ic_s_reload { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2341c27f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 8a5 5 0 1 1-1.5-3.6'/%3E%3Cpath d='M13 2.5v3h-3'/%3E%3C/svg%3E") !important; }
+/* the two controls above the list: Collapse all violet, Link with main panel cyan */
+#pma_navigation .ic_s_collapseall { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 2.5 8 6l3.5-3.5M4.5 13.5 8 10l3.5 3.5'/%3E%3C/svg%3E") !important; }
+#pma_navigation .ic_s_link, #pma_navigation .ic_s_unlink { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2367e8f9' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.5 9.5l3-3M7 4.5 8.5 3A2.5 2.5 0 0 1 12 6.5L10.5 8M9 11.5 7.5 13A2.5 2.5 0 0 1 4 9.5L5.5 8'/%3E%3C/svg%3E") !important; }
+#pma_navigation .ic_s_unlink { opacity: .5; }
+
+/* ---- bottom line: "phpMyAdmin 5.2.3 · GPL License" (made by ample-nav.js) -------- */
+/* The sidebar as a column: header (its size) | list (all the rest) | bottom line (its own
+   place). phpMyAdmin computes the list height itself (sidebar - header, without the header's
+   padding/border), which made the list taller than the room and let the bottom line cover its
+   last items. These rules replace that computation. */
+#pma_navigation #pma_navigation_content { display: flex; flex-direction: column; }
+#pma_navigation #pma_navigation_header { flex: none; }
+/* inside the list area, a column too: the two buttons (their size) | the list (the exact rest,
+   scrolling). The list must have a bounded height to scroll, so it is a flex child here, not
+   phpMyAdmin's absolutely positioned box with a computed height. */
+#pma_navigation #pma_navigation_tree { flex: 1 1 auto; height: auto !important; min-height: 0; display: flex; flex-direction: column; }
+#pma_navigation #pma_navigation_tree > :not(#pma_navigation_tree_content) { flex: none; }
+#pma_navigation #pma_navigation_tree_content {
+  position: relative !important; flex: 1 1 auto; min-height: 0; height: auto !important; overflow-y: auto !important;
+}
+#pma_navigation #ample-sb-foot {
+  position: static; flex: none; z-index: 2; padding: 9px 12px; text-align: center;
+  background: var(--sb); border-top: 1px solid var(--sb-line); color: #737882; font-size: 11.5px;
+  /* never wrap or spill out (phpMyAdmin collapses the sidebar by setting its width to 0) */
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-sizing: border-box;
+}
+/* the sidebar knows its own width; collapsed (or nearly) = no bottom line at all */
+#pma_navigation { container-type: inline-size; }
+@container (max-width: 80px) { #pma_navigation #ample-sb-foot { display: none; } }
+#pma_navigation #ample-sb-foot a { color: var(--sb-muted); text-decoration: underline; text-underline-offset: 3px; }
+#pma_navigation #ample-sb-foot a:hover { color: var(--amber); }
+/* a little room after the last item of the list */
+#pma_navigation #pma_navigation_tree_content { padding-bottom: 12px; }
+
+/* ---- edges: resize handle, collapse button, scrollbar --------------------------- */
+#pma_navigation #pma_navigation_resizer { background-color: var(--sb-line) !important; width: 3px !important; transition: background-color .15s; }
+#pma_navigation #pma_navigation_resizer:hover { background-color: var(--amber) !important; }
+#pma_navigation #pma_navigation_collapser { background: var(--sb) !important; color: var(--sb-muted) !important; border: 1px solid var(--sb-line) !important;
+  border-left: 0 !important; border-radius: 0 0 7px 0; text-shadow: none !important; }
+#pma_navigation #pma_navigation_collapser:hover { color: var(--amber) !important; }
+
+/* Chrome/Edge: rounded design below; Firefox: colors only (scrollbar-color would switch
+   the rounded design off in Chrome, so it is used only where ::-webkit-scrollbar is unknown) */
+@supports not selector(::-webkit-scrollbar) {
+  #pma_navigation #pma_navigation_tree_content { scrollbar-width: thin; scrollbar-color: rgba(240, 138, 36, .6) transparent; }
+}
+#pma_navigation #pma_navigation_tree_content::-webkit-scrollbar { width: 8px; }
+#pma_navigation #pma_navigation_tree_content::-webkit-scrollbar-track { background: transparent; }
+#pma_navigation #pma_navigation_tree_content::-webkit-scrollbar-thumb { background: rgba(240, 138, 36, .55); border-radius: 8px; border: 2px solid var(--sb); }
+#pma_navigation #pma_navigation_tree_content::-webkit-scrollbar-thumb:hover { background: var(--amber); }

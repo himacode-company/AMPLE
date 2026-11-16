@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="AMPLE">
+  <!-- AMPLE app icon, measured from the reference design.
+       The "A" is two pieces with a gap between them: the top (apex + upper legs, with a
+       smooth inner arch) and the bottom (crossbar + feet, rounded on the inside). The
+       crossbar is joined by a smooth ECG pulse: down, a tall spike into the A, down, back up. -->
+  <rect width="512" height="512" rx="115" fill="#141414"/>
+  <g fill="#f08a24" stroke="#f08a24" stroke-width="6" stroke-linejoin="round">
+    <!-- top piece -->
+    <path d="M206.3 105 Q214 91 228 91 L280.5 91 Q294.4 91 302.1 105 L404.1 290.9 L322.8 290.9 L288.6 228 C266.8 187.9 240.2 187.9 218.6 228 L184.6 290.9 L104.2 290.9 Z"/>
+    <!-- bottom-left: crossbar + left foot -->
+    <path d="M90.2 316.5 L205 316.5 L205 343.3 L180 343.3 Q157 343.3 138.9 375 L124.1 401 Q117.9 411.9 105 411.9 L37.8 411.9 Z"/>
+    <!-- bottom-right: crossbar + right foot -->
+    <path d="M300 316.5 L418.2 316.5 L470.6 411.9 L401 411.9 Q388.1 411.9 381.9 401 L367.1 375 Q349 343.3 325 343.3 L300 343.3 Z"/>
+  </g>
+  <!-- the pulse -->
+  <path d="M172 330.5 L177.6 330.5 Q191.6 330.5 198 343 L210.9 368.3 Q218.2 382.5 222.6 367.1 L249.3 273.2 Q254.8 254 261.5 272.8 L289 349.5 Q293.7 362.7 298.8 351.9 L304.7 339.5 Q309 330.5 319 330.5 L324 330.5" fill="none" stroke="#f08a24" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

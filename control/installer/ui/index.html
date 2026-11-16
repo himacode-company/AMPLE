@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>AMPLE Setup</title>
+  <link rel="stylesheet" href="setup.css">
+</head>
+<body>
+  <header class="titlebar"><span class="tb-mark"></span><span>AMPLE Setup</span></header>
+
+  <main class="wrap">
+    <div class="head">
+      <div class="tile" aria-hidden="true">
+        <svg viewBox="28 78 456 348">
+          <g fill="#1a1205" stroke="#1a1205" stroke-width="6" stroke-linejoin="round">
+            <path d="M206.3 105 Q214 91 228 91 L280.5 91 Q294.4 91 302.1 105 L404.1 290.9 L322.8 290.9 L288.6 228 C266.8 187.9 240.2 187.9 218.6 228 L184.6 290.9 L104.2 290.9 Z"/>
+            <path d="M90.2 316.5 L205 316.5 L205 343.3 L180 343.3 Q157 343.3 138.9 375 L124.1 401 Q117.9 411.9 105 411.9 L37.8 411.9 Z"/>
+            <path d="M300 316.5 L418.2 316.5 L470.6 411.9 L401 411.9 Q388.1 411.9 381.9 401 L367.1 375 Q349 343.3 325 343.3 L300 343.3 Z"/>
+          </g>
+          <path d="M172 330.5 L177.6 330.5 Q191.6 330.5 198 343 L210.9 368.3 Q218.2 382.5 222.6 367.1 L249.3 273.2 Q254.8 254 261.5 272.8 L289 349.5 Q293.7 362.7 298.8 351.9 L304.7 339.5 Q309 330.5 319 330.5 L324 330.5" fill="none" stroke="#1a1205" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 id="title">Welcome to AMPLE</h1>
+        <p id="subtitle">We'll set everything up in a few minutes</p>
+      </div>
+      <div class="dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span></div>
+    </div>
+
+    <!-- 1. Install ------------------------------------------------------------------------------>
+    <section class="screen" data-screen="install">
+      <!-- AMPLE is already installed: an update (or a repair) instead of a new install -->
+      <div class="card upd" id="upd-card" hidden>
+        <div class="upd-vers">
+          <div><small>Installed</small><b id="upd-from">1.0</b></div>
+          <span class="upd-arrow" aria-hidden="true">→</span>
+          <div><small>This setup</small><b id="upd-to">1.0</b></div>
+        </div>
+        <p class="upd-text" id="upd-text"></p>
+        <p class="hint" id="upd-note">While it updates, AMPLE closes for a moment: Apache, MariaDB and Mailpit stop safely and start again at the end.</p>
+        <button class="linkbtn" id="upd-elsewhere" type="button">Install a separate copy in another folder instead</button>
+      </div>
+      <div class="card" id="loc-card">
+        <label class="label" for="loc">Install location</label>
+        <div class="row">
+          <input id="loc" class="input" readonly>
+          <button class="btn" id="loc-change">Change</button>
+        </div>
+        <div class="hint" id="loc-hint"></div>
+        <div class="label scope-label">Install for</div>
+        <div class="scope" role="radiogroup">
+          <label class="scope-opt"><input type="radio" name="scope" value="me" checked>
+            <span><b>Only me</b> (recommended)<small>Only your Windows account can open or change AMPLE's files</small></span></label>
+          <label class="scope-opt"><input type="radio" name="scope" value="all">
+            <span><b>All users of this PC</b><small>Every Windows account here can use and change AMPLE</small></span></label>
+        </div>
+        <div class="hint warn-text" id="scope-warn" hidden>Other accounts on this PC will be able to change AMPLE's programs, and what they change runs when you use AMPLE. Choose this only if you trust everyone who uses this PC.</div>
+      </div>
+      <div class="card steps" id="steps">
+        <div class="step" data-step="pc"><span class="num">1</span><div class="body"><b>Checking this PC</b><small></small><div class="bar"><i></i></div></div><span class="pct"></span></div>
+        <div class="step" data-step="ample"><span class="num">2</span><div class="body"><b>AMPLE</b><small>control panel + command line</small><div class="bar"><i></i></div></div><span class="pct"></span></div>
+        <div class="step" data-step="apache"><span class="num">3</span><div class="body"><b id="v-apache">Apache</b><small></small><div class="bar"><i></i></div></div><span class="pct"></span></div>
+        <div class="step" data-step="php"><span class="num">4</span><div class="body"><b id="v-php">PHP</b><small></small><div class="bar"><i></i></div></div><span class="pct"></span></div>
+        <div class="step" data-step="mariadb"><span class="num">5</span><div class="body"><b id="v-mariadb">MariaDB</b><small></small><div class="bar"><i></i></div></div><span class="pct"></span></div>
+        <div class="step" data-step="phpmyadmin"><span class="num">6</span><div class="body"><b id="v-phpmyadmin">phpMyAdmin</b><small></small><div class="bar"><i></i></div></div><span class="pct"></span></div>
+        <div class="step" data-step="mailpit"><span class="num">7</span><div class="body"><b id="v-mailpit">Mailpit</b><small></small><div class="bar"><i></i></div></div><span class="pct"></span></div>
+        <div class="step" data-step="composer"><span class="num">8</span><div class="body"><b>Composer</b><small></small><div class="bar"><i></i></div></div><span class="pct"></span></div>
+      </div>
+      <div class="error" id="install-error" hidden></div>
+      <div class="actions">
+        <button class="btn" id="install-cancel">Cancel</button>
+        <button class="btn primary grow" id="install-go">Install</button>
+      </div>
+    </section>
+
+    <!-- 2. Import from XAMPP? ----------------------------------------------------------------------->
+    <section class="screen" data-screen="ask" hidden>
+      <div class="card big">
+        <h2>Import from XAMPP?</h2>
+        <p class="muted" id="ask-text">Looking for XAMPP…</p>
+        <p class="muted small">Your databases are copied into AMPLE (system databases and log files are left out). XAMPP itself is never changed.</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="ask-skip">Skip</button>
+        <button class="btn" id="ask-pick" hidden>Choose XAMPP folder</button>
+        <button class="btn primary grow" id="ask-yes">Yes, import</button>
+      </div>
+    </section>
+
+    <!-- 3. Import ------------------------------------------------------------------------------>
+    <section class="screen" data-screen="import" hidden>
+      <div class="card">
+        <label class="label" for="xa-loc">XAMPP databases folder</label>
+        <div class="row">
+          <input id="xa-loc" class="input" readonly>
+          <button class="btn" id="xa-change">Change</button>
+        </div>
+        <div class="warn" id="xa-warn" hidden>XAMPP's MySQL is running. Stop it in the XAMPP Control Panel first: a database copied while it runs can be damaged. Then press "Check again".</div>
+      </div>
+      <div class="card">
+        <div class="xa-bar">
+          <span id="xa-count"></span>
+          <button class="btn small" id="xa-all">Select all</button>
+          <button class="btn small" id="xa-none">Clear all</button>
+        </div>
+        <div class="xa-list" id="xa-list"></div>
+        <label class="check" id="xa-projects-row" hidden><input type="checkbox" id="xa-projects"><span id="xa-projects-text"></span></label>
+      </div>
+      <pre class="log" id="xa-log" hidden></pre>
+      <div class="results" id="xa-results"></div>
+      <div class="actions">
+        <button class="btn" id="xa-skip">Skip</button>
+        <button class="btn" id="xa-recheck" hidden>Check again</button>
+        <button class="btn primary grow" id="xa-go">Import</button>
+      </div>
+    </section>
+
+    <!-- 4. Options ----------------------------------------------------------------------------->
+    <section class="screen" data-screen="options" hidden>
+      <div class="card opts">
+        <div class="opt"><button class="switch" data-opt="desktop" role="switch" aria-checked="true"><span></span></button><div><b>Desktop shortcut</b><small>AMPLE on your desktop, with its icon</small></div></div>
+        <div class="opt"><button class="switch" data-opt="start" role="switch" aria-checked="true"><span></span></button><div><b>Start menu shortcut</b><small>Find AMPLE by typing its name in Start</small></div></div>
+        <div class="opt"><button class="switch" data-opt="path" role="switch" aria-checked="true"><span></span></button><div><b>php &amp; composer in any terminal</b><small>Adds AMPLE's bin folder to your PATH (no administrator)</small></div></div>
+        <div class="opt"><button class="switch" data-opt="windows" role="switch" aria-checked="false"><span></span></button><div><b>Start with Windows</b><small>Opens hidden next to the clock when you sign in</small></div></div>
+        <div class="opt"><button class="switch" data-opt="https" role="switch" aria-checked="false"><span></span></button><div><b>HTTPS for sites</b><small>https://NAME.localhost (trust the certificate later in Sites)</small></div></div>
+      </div>
+      <div class="error" id="finish-error" hidden></div>
+      <div class="actions">
+        <button class="btn primary grow" id="finish-go">Finish</button>
+      </div>
+    </section>
+
+    <!-- 5. Ready ------------------------------------------------------------------------------>
+    <section class="screen" data-screen="done" hidden>
+      <div class="card big center">
+        <div class="big-check">✓</div>
+        <h2 id="done-title">AMPLE is ready</h2>
+        <p class="muted" id="done-text">Apache, MariaDB and Mailpit are running.</p>
+        <p class="muted small" id="done-notes"></p>
+      </div>
+      <div class="actions">
+        <button class="btn primary grow" id="done-open">Open AMPLE</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="pw" hidden>
+    <div class="modal-box">
+      <h2>XAMPP's MySQL password</h2>
+      <p class="muted">XAMPP's root user has a password. Type it to read its databases (it is not saved).</p>
+      <input type="password" class="input" id="pw-input" maxlength="128">
+      <div class="actions">
+        <button class="btn" id="pw-cancel">Cancel</button>
+        <button class="btn primary" id="pw-ok">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="setup.js"></script>
+</body>
+</html>
