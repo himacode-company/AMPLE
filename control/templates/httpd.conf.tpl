@@ -119,11 +119,17 @@ Alias /ample-pma "{{ROOT}}/control/pma"
 # "ample design phpmyadmin original" turns the three lines below into comments (#): phpMyAdmin
 # then looks exactly as its makers ship it.
 <Location "/phpmyadmin/">
+  # (only when mod_substitute and mod_filter are loaded: if Windows Smart App Control blocks one
+  #  of them, AMPLE starts Apache without it and phpMyAdmin simply keeps its original look)
+  <IfModule substitute_module>
+  <IfModule filter_module>
     {{PMA_AMPLE}}AddOutputFilterByType SUBSTITUTE text/html
     {{PMA_AMPLE}}SubstituteMaxLineLength 10m
     # The first piece sets light/dark BEFORE the page is drawn (no light flash): the choice saved
     # by the ◐ button (shared with the AMPLE dashboard), else Windows' own setting.
     {{PMA_AMPLE}}Substitute "s|</head>|<script>try{var t=localStorage.getItem('ample-theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t)}catch(e){}</script><link rel='stylesheet' href='/ample-pma/ample-nav.css'><link rel='stylesheet' href='/ample-pma/ample-top.css'><link rel='stylesheet' href='/ample-pma/ample-page.css'><link rel='stylesheet' href='/ample-pma/ample-console.css'><link rel='stylesheet' href='/ample-pma/ample-modal.css'><link rel='stylesheet' href='/ample-pma/ample-designer.css'><script src='/ample-pma/ample-nav.js' defer></script><script src='/ample-pma/ample-page.js' data-port='{{MYSQL_PORT}}' data-password='{{MYSQL_HAS_PASSWORD}}' defer></script><script src='/ample-pma/ample-designer.js' defer></script></head>|n"
+  </IfModule>
+  </IfModule>
 </Location>
 
 Alias /ample "{{DASHBOARD}}"
@@ -151,10 +157,15 @@ Alias /ample "{{DASHBOARD}}"
     #  - our script right BEFORE Mailpit's, with the SAME one-time nonce copied from Mailpit's
     #    tag ($2): Mailpit's security policy only runs scripts carrying it, and stays unchanged
     # "ample design mailpit original" turns these four lines into comments (#).
+  # (only when mod_substitute and mod_filter are loaded; otherwise Mailpit keeps its own look)
+  <IfModule substitute_module>
+  <IfModule filter_module>
     {{MAILPIT_AMPLE}}RequestHeader unset Accept-Encoding
     {{MAILPIT_AMPLE}}AddOutputFilterByType SUBSTITUTE text/html
     {{MAILPIT_AMPLE}}Substitute "s|</head>|<link rel='stylesheet' href='/ample-pma/ample-mailpit.css'></head>|n"
     {{MAILPIT_AMPLE}}Substitute "s|<script src=\"([^\"]+)\" nonce=\"([^\"]+)\"></script>|<script src=\"/ample-pma/ample-mailpit.js\" nonce=\"$2\"></script><script src=\"$1\" nonce=\"$2\"></script>|"
+  </IfModule>
+  </IfModule>
 </Location>
 RedirectMatch 301 "^/mailpit$" "/mailpit/"
 
@@ -162,9 +173,17 @@ RedirectMatch 301 "^/mailpit$" "/mailpit/"
 TypesConfig conf/mime.types
 AddType application/x-compress .Z
 AddType application/x-gzip .gz .tgz
+# Optional modules (compression, folder listings): if Windows Smart App Control blocks one, AMPLE
+# starts Apache without it, and these lines are simply skipped.
+<IfModule deflate_module>
+<IfModule filter_module>
 AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+</IfModule>
 
+<IfModule autoindex_module>
 IndexOptions FancyIndexing HTMLTable VersionSort NameWidth=* FoldersFirst Charset=UTF-8
+</IfModule>
 AddDefaultCharset UTF-8
 
 # --- Unknown host names are refused (DNS-rebinding protection) ------------

@@ -53,6 +53,48 @@ module.exports = [
   },
 
   {
+    // services.js: an optional Apache module was blocked, Apache started without it
+    id: 'ample.sac_module_skipped',
+    level: 'warning',
+    match: /Smart App Control blocked (.+?); Apache started without/,
+    vars: (m) => ({ files: m[1] }),
+    title: { en: 'Apache runs without {files} (blocked by Windows)', ar: 'يعمل Apache دون {files} (منعه ويندوز)' },
+    summary: {
+      en: 'Windows Smart App Control blocked an optional Apache module, so AMPLE started Apache without it. Your sites work.',
+      ar: 'منع Smart App Control في ويندوز إضافة اختيارية من Apache، فشغّل AMPLE خادم Apache بدونها. مواقعك تعمل.',
+    },
+    details: {
+      en: 'These modules only add extras: page compression (mod_deflate), folder listings (mod_autoindex), cache headers (mod_expires), and the AMPLE look for phpMyAdmin and Mailpit (mod_substitute, mod_filter). Smart App Control blocks unsigned files until Microsoft has seen them on many PCs, so this often goes away by itself after a few weeks.',
+      ar: 'هذه الإضافات للميزات الإضافية فقط: ضغط الصفحات (mod_deflate)، وعرض محتوى المجلدات (mod_autoindex)، وترويسات التخزين المؤقت (mod_expires)، وشكل AMPLE في phpMyAdmin و Mailpit (mod_substitute و mod_filter). يمنع Smart App Control الملفات غير الموقّعة حتى تراها مايكروسوفت على أجهزة كثيرة، لذلك يزول هذا غالباً من تلقاء نفسه بعد بضعة أسابيع.',
+    },
+    steps: {
+      en: ['Nothing to do: AMPLE tries the module again on every start.', 'Run: ample check  — it lists every file Windows blocked.', 'Turning Smart App Control off (Windows Security → App & browser control) removes the block, but that is your decision: on many Windows versions it cannot be turned back on.'],
+      ar: ['لا حاجة لأي إجراء: يجرّب AMPLE الإضافة من جديد مع كل تشغيل.', 'نفّذ: ample check  — يعرض كل ملف منعه ويندوز.', 'إطفاء Smart App Control (أمن Windows ← التحكم في التطبيقات والمستعرض) يرفع المنع، لكن ذلك قرارك أنت: في كثير من إصدارات ويندوز لا يمكن إعادة تشغيله.'],
+    },
+  },
+
+  {
+    // services.js: a core Apache file (PHP, rewrite, ssl...) was blocked, Apache cannot start
+    id: 'ample.sac_apache_core',
+    startup: true, // stops the service from starting; resolved once it starts
+    match: /Smart App Control blocked (\S+), which Apache needs/,
+    vars: (m) => ({ file: m[1] }),
+    title: { en: 'Windows blocked {file}, so Apache cannot start', ar: 'منع ويندوز الملف {file}، فلا يستطيع Apache العمل' },
+    summary: {
+      en: 'Windows Smart App Control refused to load {file}, a file Apache cannot run without.',
+      ar: 'رفض Smart App Control في ويندوز تحميل الملف {file}، وهو ملف لا يعمل Apache بدونه.',
+    },
+    details: {
+      en: 'Smart App Control only lets unsigned files run once Microsoft has seen them on many PCs. Apache, PHP and their modules are open-source builds that are not digitally signed, so a release can be blocked for a few weeks.',
+      ar: 'لا يسمح Smart App Control بتشغيل الملفات غير الموقّعة إلا بعد أن تراها مايكروسوفت على أجهزة كثيرة. و Apache و PHP وإضافاتهما نسخ مفتوحة المصدر غير موقّعة رقمياً، لذلك قد يُمنع إصدار منها لبضعة أسابيع.',
+    },
+    steps: {
+      en: ['Run: ample check  — it lists every file Windows blocked.', 'If this started after an update, go back: ample setup reinstalls the versions listed in control\\components.json.', 'Turning Smart App Control off (Windows Security → App & browser control) removes the block, but that is your decision: on many Windows versions it cannot be turned back on.'],
+      ar: ['نفّذ: ample check  — يعرض كل ملف منعه ويندوز.', 'إذا بدأ ذلك بعد تحديث، فارجع إلى الإصدار السابق: يعيد ample setup تثبيت الإصدارات المذكورة في control\\components.json.', 'إطفاء Smart App Control (أمن Windows ← التحكم في التطبيقات والمستعرض) يرفع المنع، لكن ذلك قرارك أنت: في كثير من إصدارات ويندوز لا يمكن إعادة تشغيله.'],
+    },
+  },
+
+  {
     id: 'ample.config_failed',
     startup: true, // stops the service from starting; resolved once it starts
     match: /Apache config test failed/,

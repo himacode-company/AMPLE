@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://ample.himacode.com/download/get.php?v=1.0"><img src="https://img.shields.io/badge/Download-Windows%2010%20%7C%2011-F08A24?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows"></a>
-  <img src="https://img.shields.io/badge/version-1.0-1b1e24?style=for-the-badge" alt="Version 1.0">
+  <a href="https://ample.himacode.com/download/get.php?v=1.0.1"><img src="https://img.shields.io/badge/Download-Windows%2010%20%7C%2011-F08A24?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows"></a>
+  <img src="https://img.shields.io/badge/version-1.0.1-1b1e24?style=for-the-badge" alt="Version 1.0.1">
   <img src="https://img.shields.io/badge/price-free-3fb97c?style=for-the-badge" alt="Free">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1b1e24?style=for-the-badge" alt="License: GPL-3.0"></a>
 </p>
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/MariaDB-11.8-003545?style=flat-square&logo=mariadb&logoColor=white" alt="MariaDB 11.8">
   <img src="https://img.shields.io/badge/Apache-2.4-D22128?style=flat-square&logo=apache&logoColor=white" alt="Apache 2.4">
   <img src="https://img.shields.io/badge/phpMyAdmin-5.2-6C78AF?style=flat-square&logo=phpmyadmin&logoColor=white" alt="phpMyAdmin 5.2">
-  <img src="https://img.shields.io/badge/Mailpit-1.33-0f766e?style=flat-square" alt="Mailpit 1.33">
+  <img src="https://img.shields.io/badge/Mailpit-1.34-0f766e?style=flat-square" alt="Mailpit 1.34">
   <img src="https://img.shields.io/badge/Composer-included-885630?style=flat-square&logo=composer&logoColor=white" alt="Composer">
 </p>
 
@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <a href="https://ample.himacode.com/download/get.php?v=1.0"><b>Download</b></a> ·
+  <a href="https://ample.himacode.com/download/get.php?v=1.0.1"><b>Download</b></a> ·
   <a href="https://ample.himacode.com/">Website</a> ·
   <a href="https://ample.himacode.com/docs/">Docs</a> ·
   <a href="https://ample.himacode.com/guides/">Guides</a> ·
@@ -87,9 +87,12 @@ AMPLE runs on **Windows 10 and Windows 11 (64-bit)**. You do not need administra
 
 ### Option 1: the installer (recommended)
 
-1. **[Download AMPLE-Setup-1.0.exe](https://ample.himacode.com/download/get.php?v=1.0)** (105 MB) from ample.himacode.com.
+1. **[Download AMPLE for Windows](https://ample.himacode.com/download/get.php?v=latest)** (about 105 MB) from ample.himacode.com.
 2. Run it and choose a folder: just for you, or for every user of this PC.
 3. Open AMPLE and press **Start**. Your first site is on `http://localhost`.
+
+> **Windows says "Smart App Control blocked an app that might be unsafe"?**
+> Smart App Control blocks new installers it does not know yet. Download the **[ZIP version](https://ample.himacode.com/download/get.php?v=latest&type=zip)** instead: right-click it, choose **Extract All**, then run `AMPLE-Setup.exe` inside the folder. It is the same setup, and Windows lets it run. You do not need to turn Smart App Control off.
 
 ### Option 2: from the source code
 
@@ -136,15 +139,15 @@ ample update            check every component against its official source
 
 The full command list, folders and settings are in **[GUIDE.md](GUIDE.md)**, and everything is explained in the **[documentation](https://ample.himacode.com/docs/)**.
 
-## What's inside AMPLE 1.0
+## What's inside AMPLE 1.0.1
 
 | Component | Version | What it does |
 |---|---|---|
 | Apache | 2.4.66 | The web server |
 | PHP | 8.5.12 | One folder per version; add more with `ample php-add` |
-| MariaDB | 11.8.9 | The database (MySQL-compatible) |
+| MariaDB | 11.8.10 | The database (MySQL-compatible) |
 | phpMyAdmin | 5.2.3 | Manage your databases, in the AMPLE design |
-| Mailpit | 1.33.1 | Catches every email PHP sends |
+| Mailpit | 1.34.0 | Catches every email PHP sends |
 | Composer | ✓ | PHP's package manager, ready in any terminal |
 | Cloudflare Tunnel | on first share | Downloaded only when you share a site |
 

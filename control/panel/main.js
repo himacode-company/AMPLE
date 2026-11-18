@@ -382,14 +382,18 @@ if (!app.requestSingleInstanceLock()) {
     });
     // Updates found when the panel opened: a Windows notification; clicking it opens Settings.
     // The page sends only a count and short names; the words are written here.
-    handleLocal('ample:notifyUpdates', (count, names) => {
+    // An important AMPLE update (latest.json "important": true) says so, with its notes.
+    handleLocal('ample:notifyUpdates', (count, names, important) => {
       const n = Math.max(0, Math.min(99, Number(count) || 0));
       if (!n || !Notification.isSupported()) return { ok: false };
       const list = (Array.isArray(names) ? names : []).map((x) => String(x).slice(0, 40)).slice(0, 6).join(', ');
       const ar = settings.load().language === 'ar';
+      const imp = important && typeof important === 'object' ? { v: String(important.version || '').slice(0, 20), note: String(important.note || '').slice(0, 220) } : null;
       const note = new Notification({
-        title: ar ? (n === 1 ? 'تحديث جديد في AMPLE' : `${n} تحديثات جديدة في AMPLE`) : (n === 1 ? 'An AMPLE update is available' : `${n} AMPLE updates are available`),
-        body: (ar ? 'متوفر الآن: ' : 'Ready to install: ') + list + (ar ? '\nاضغط لفتح الإعدادات.' : '\nClick to open Settings.'),
+        title: imp
+          ? (ar ? `تحديث مهم: AMPLE ${imp.v}` : `Important update: AMPLE ${imp.v}`)
+          : ar ? (n === 1 ? 'تحديث جديد في AMPLE' : `${n} تحديثات جديدة في AMPLE`) : (n === 1 ? 'An AMPLE update is available' : `${n} AMPLE updates are available`),
+        body: (imp && imp.note ? imp.note : (ar ? 'متوفر الآن: ' : 'Ready to install: ') + list) + (ar ? '\nاضغط لفتح الإعدادات.' : '\nClick to open Settings.'),
         icon: icons && icons.window ? icons.window : undefined,
       });
       note.on('click', () => { focusWindow(); if (win && !win.isDestroyed()) win.webContents.send('ample:goto', 'settings'); });

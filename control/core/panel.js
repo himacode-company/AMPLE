@@ -20,6 +20,9 @@ function prepare() {
     fs.rmSync(EXE, { force: true });
     fs.renameSync(original, EXE);
   }
+  // Not needed by AMPLE: Chromium's software Vulkan, only used when the graphics card cannot be. It
+  // is unsigned, so Windows Smart App Control blocks it and shows "some features may not work".
+  for (const f of ['vk_swiftshader.dll', 'vk_swiftshader_icd.json']) fs.rmSync(path.join(DIR, f), { force: true });
   const app = path.join(DIR, 'resources', 'app');
   fs.mkdirSync(app, { recursive: true });
   fs.writeFileSync(path.join(app, 'package.json'), JSON.stringify({

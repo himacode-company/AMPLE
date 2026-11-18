@@ -642,6 +642,7 @@
     // AMPLE itself has its own button (it is updated by running the new AMPLE Setup)
     const ready = (up.list || []).filter((r) => r.available && !panelOnly(r) && r.name !== 'ample');
     setUpdateBadge();
+    renderImportant();
     const all = $('up-all');
     all.hidden = !ready.length;
     all.disabled = busy;
@@ -667,6 +668,18 @@
       else row.appendChild(button(t('set.upOne'), 'primary', () => runUpdates([r.name]), { disabled: busy }));
       return row;
     }));
+  }
+  // An important AMPLE update (latest.json "important": true): a bar at the top of Home, with its
+  // notes and the same "Update AMPLE" button as in Settings.
+  function renderImportant() {
+    const r = (up.list || []).find((x) => x.name === 'ample' && x.available && x.important);
+    const bar = $('update-important');
+    bar.hidden = !r;
+    if (!r) return;
+    $('update-important-text').textContent = t('set.upImportant', { v: r.latest }) + (r.note ? ' ' + r.note : '');
+    const go = $('update-important-go');
+    go.disabled = !!up.running;
+    go.onclick = () => runAmpleUpdate(r);
   }
   // The amber number on "Settings": how many updates are waiting.
   function setUpdateBadge() {
@@ -700,7 +713,8 @@
     try { up.list = await api.updatesCheck(); } catch { return; }
     renderUpdates();
     const ready = up.list.filter((r) => r.available);
-    if (ready.length) api.notifyUpdates(ready.length, ready.map((r) => `${r.label} ${r.latest}`)).catch(() => {});
+    const imp = ready.find((r) => r.name === 'ample' && r.important);
+    if (ready.length) api.notifyUpdates(ready.length, ready.map((r) => `${r.label} ${r.latest}`), imp ? { version: imp.latest, note: imp.note } : null).catch(() => {});
   }
   async function checkUpdates() {
     up.checking = true;

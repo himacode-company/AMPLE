@@ -30,7 +30,7 @@ contextBridge.exposeInMainWorld('ample', {
   updatesApply: call('ample:updatesApply'),    // (['php', ...] | ['all'])
   ampleUpdate: call('ample:ampleUpdate'),      // download the new AMPLE Setup (SHA-256 checked) and run it
   panelUpdate: call('ample:panelUpdate'),      // update Electron: the panel closes, a helper updates it and reopens it
-  notifyUpdates: call('ample:notifyUpdates'),  // (count, ['AMPLE', 'PHP']) a Windows notification
+  notifyUpdates: call('ample:notifyUpdates'),  // (count, ['AMPLE', 'PHP'], { version, note } | null) a Windows notification
   onGoto: (cb) => { ipcRenderer.on('ample:goto', (_e, page) => cb(String(page))); },  // the notification was clicked
   // Progress of a long task: cb({ kind, text, pct, read, total }) (plain values only).
   onProgress: (cb) => { ipcRenderer.on('ample:progress', (_e, p) => cb(p)); },

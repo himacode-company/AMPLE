@@ -182,6 +182,7 @@ async function checkAmple() {
   return {
     name: 'ample', label: 'AMPLE', current: V.short(r.current), latest: V.short(r.latest),
     comp: r.newer ? r.manifest : null, note: r.newer ? r.manifest.notes : null,
+    important: r.newer && r.manifest.important,
   };
 }
 

@@ -98,8 +98,16 @@ function generatePhpIni(version) {
   return phpini.writePhpIni(version, baseVars(), render);
 }
 
+// Leave Apache modules out of httpd.conf (the line stays, as a comment, so it is easy to see).
+// Only used for optional modules that Windows Smart App Control blocked (see services.js).
+function skipApacheModules(conf, names) {
+  return conf.replace(/^LoadModule\s+\S+\s+modules\/(mod_[a-z_]+)\.so.*$/gm, (line, mod) =>
+    (names.has(mod) ? `# ${line.trim()}    # left out: blocked by Windows Smart App Control (optional module)` : line));
+}
+
 // Generate all config files for the active PHP version.
-function generate() {
+// opts.skipModules: optional Apache modules to leave out (a Set of names like "mod_deflate").
+function generate(opts = {}) {
   ensureDirs();
   const phpVersion = activePhp(settings.load());
   const php = phpini.writePhpIni(phpVersion, baseVars(), render); // may import manual edits into ample.json
@@ -115,7 +123,11 @@ function generate() {
 
   const files = [['httpd.conf.tpl', P.apacheConf], ['my.ini.tpl', P.myIni]];
   if (fs.existsSync(P.phpmyadmin)) files.push(['config.inc.php.tpl', path.join(P.phpmyadmin, 'config.inc.php')]);
-  for (const [tpl, out] of files) fs.writeFileSync(out, render(tpl, vars));
+  for (const [tpl, out] of files) {
+    let text = render(tpl, vars);
+    if (tpl === 'httpd.conf.tpl' && opts.skipModules && opts.skipModules.size) text = skipApacheModules(text, opts.skipModules);
+    fs.writeFileSync(out, text);
+  }
   // bin\php, bin\composer, ... always point at the active PHP version.
   require('./shell').writeLaunchers(phpVersion);
 

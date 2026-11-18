@@ -128,6 +128,11 @@ function mariadbPing() {
   return r.status === 0 && /alive/i.test(r.stdout || '');
 }
 
+// Apache modules AMPLE can run without (see apache.prepare). Everything else is required.
+const OPTIONAL_APACHE_MODULES = new Set(['mod_deflate', 'mod_expires', 'mod_autoindex', 'mod_substitute', 'mod_filter']);
+// httpd -t: "Cannot load modules/mod_deflate.so into server: An Application Control policy has blocked this file."
+const SAC_LOAD_RE = /Cannot load "?([^"\s]+?)"? into server: An Application Control policy has blocked this file/i;
+
 const SERVICES = {
   apache: {
     label: 'Apache',
@@ -135,13 +140,34 @@ const SERVICES = {
     extraPorts: (s) => (s.https ? [s.ports.https] : []),
     ready: (port) => portAnswers(port),
     errorLog: () => path.join(P.logs, 'apache', 'error.log'),
+    // Test httpd.conf before starting. If Windows Smart App Control blocks an OPTIONAL module
+    // (compression, folder listings, the AMPLE look for phpMyAdmin / Mailpit), Apache starts
+    // without it instead of not starting at all. A blocked core file (PHP, rewrite, headers,
+    // proxy, ssl...) is explained in plain words instead of the raw httpd message.
     prepare() {
-      const r = config.generate();
-      const t = spawnSync(path.join(P.apache, 'bin', 'httpd.exe'), ['-t', '-f', P.apacheConf], {
-        env: config.envFor(r.phpDir), encoding: 'utf8',
-      });
-      if (t.status !== 0) throw new Error('Apache config test failed:\n' + (t.stderr || t.stdout).trim());
-      return r;
+      const skip = new Set();
+      for (;;) {
+        const r = config.generate({ skipModules: skip });
+        const t = spawnSync(path.join(P.apache, 'bin', 'httpd.exe'), ['-t', '-f', P.apacheConf], {
+          env: config.envFor(r.phpDir), encoding: 'utf8',
+        });
+        if (t.status === 0) {
+          if (skip.size) {
+            const files = [...skip].map((m) => m + '.so').join(', ');
+            log('Apache', 'WARN', `Windows Smart App Control blocked ${files}; Apache started without ${skip.size > 1 ? 'them' : 'it'} (optional)`, 'warn');
+          }
+          return r;
+        }
+        const out = (t.stderr || t.stdout || '').trim();
+        const blocked = out.match(SAC_LOAD_RE);
+        if (blocked) {
+          const file = blocked[1].replace(/\\/g, '/').split('/').pop();
+          const mod = file.replace(/\.(so|dll)$/i, '');
+          if (OPTIONAL_APACHE_MODULES.has(mod) && !skip.has(mod)) { skip.add(mod); continue; }
+          throw new Error(`Windows Smart App Control blocked ${file}, which Apache needs, so Apache cannot start. Run "ample check" to see every blocked file.\n${out}`);
+        }
+        throw new Error('Apache config test failed:\n' + out);
+      }
     },
     spawn(r) {
       return spawn(path.join(P.apache, 'bin', 'httpd.exe'), ['-f', P.apacheConf], {

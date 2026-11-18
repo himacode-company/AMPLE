@@ -190,6 +190,7 @@ const METHODS = {
     return list.map((r) => ({
       name: r.name, label: r.label || r.name, current: r.current || null, latest: r.latest || null,
       available: !!r.comp, error: r.error || null, note: r.note ? (lang === 'ar' ? r.note.ar : r.note.en) : null,
+      important: !!r.important,
     }));
   },
   // AMPLE itself: download the new AMPLE Setup (size + SHA-256 checked), then run it. Setup shows
