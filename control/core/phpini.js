@@ -84,10 +84,18 @@ const fmt = (v) => (/^[A-Za-z0-9_.+\-/:]*$/.test(String(v)) && String(v) !== '' 
 // ---------- what does this PHP version support? ---------------------------------
 
 // Try loading each extension on its own (Smart App Control may block some DLLs).
+// The results depend on the Visual C++ runtime: a newer one can make a failed
+// extension load. Each cache remembers the runtime it was made with ("_vc") and is
+// thrown away when it changes.
+const vcNow = () => require('./vcredist').installed() || 'none';
+const isVcError = (text) => require('./vcredist').isVcError(text);
+
 function detectExtensions(version, wanted) {
   const dir = phpDirOf(version);
   const file = path.join(cacheDir(version), 'extensions.json');
-  const cache = readJson(file, {});
+  const vc = vcNow();
+  let cache = readJson(file, {});
+  if (cache._vc !== vc) cache = { _vc: vc };
   let dirty = false;
   for (const ext of wanted) {
     if (ext in cache) continue;
@@ -98,6 +106,12 @@ function detectExtensions(version, wanted) {
         '-r', `echo extension_loaded('${ext}') ? 'OK' : 'NO';`], 15000);
       const ok = (r.stdout || '').trim().endsWith('OK');
       const out = ((r.stderr || '') + (r.stdout || '')).replace(/\s+/g, ' ').trim();
+      // PHP itself can't start (Visual C++ too old): not the extension's fault, so
+      // nothing is remembered; the caller reports the real problem.
+      if (!ok && isVcError(out)) {
+        const e = require('./vcredist');
+        throw e.error(e.explain(out, `PHP ${version}`));
+      }
       cache[ext] = ok ? { ok: true } : {
         ok: false,
         reason: /Application Control|policy/i.test(out) ? 'blocked by Windows Smart App Control' : (out.slice(0, 200) || 'failed to load'),
@@ -115,7 +129,7 @@ function detectExtensions(version, wanted) {
 // only exist when it is loaded).
 function knownDirectives(version, exts, zendExts = []) {
   const dir = phpDirOf(version);
-  const key = [...exts].sort().join(',') + (zendExts.length ? `|zend:${zendExts.join(',')}` : '');
+  const key = [...exts].sort().join(',') + (zendExts.length ? `|zend:${zendExts.join(',')}` : '') + `|vc:${vcNow()}`;
   const file = path.join(cacheDir(version), 'directives.json');
   const cache = readJson(file, {});
   if (cache.key === key && Array.isArray(cache.list)) return new Set([...cache.list, ...APACHE_SAPI_DIRECTIVES]);

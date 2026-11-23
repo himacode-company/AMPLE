@@ -38,7 +38,8 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { box.hidden = true; }, 4500);
   }
-  const msg = (e) => (e && e.message ? e.message : String(e));
+  // Without Electron's "Error invoking remote method 'ample:x': Error: " in front.
+  const msg = (e) => (e && e.message ? e.message : String(e)).replace(/^Error invoking remote method '[^']*':\s*(?:Error:\s*)?/, '');
 
   // ================================ Home ======================================================
   function stateOf(s) {
@@ -1324,7 +1325,9 @@
         const actions = have ? [el('span', 'tag', t('php.have'))]
           : [button(phpx.busy === 'add:' + a.branch ? t('php.getting') : t('php.get'), '', () => addPhp(a.branch),
             { busy: phpx.busy === 'add:' + a.branch, disabled: busy })];
-        return siteRow({ title: 'PHP ' + a.branch, small: a.version, actions });
+        // e.g. PHP 8.6 on Visual C++ 14.40: "needs Visual C++ 14.50+" (the download offers to install it).
+        const small = a.vcOk === false && !have ? `${a.version} · ${t('php.vcNeeds', { v: a.vcNeed })}` : a.version;
+        return siteRow({ title: 'PHP ' + a.branch, small, actions });
       }));
     }
 
@@ -1383,10 +1386,30 @@
   async function phpTask(busy, fn) {
     phpx.busy = busy;
     renderPhp();
-    try { await fn(); } catch (e) { toast(msg(e)); }
+    let vcProblem = null;
+    try { await fn(); } catch (e) {
+      // "PHP 8.6 needs Visual C++ 14.50+ …": offer to install it right here.
+      if (/ample vc install/.test(msg(e))) vcProblem = msg(e).replace(/\s*(Install it with one click|ثبّتها بضغطة واحدة)[\s\S]*$/, '');
+      else toast(msg(e));
+    }
     phpx.busy = null;
     await loadPhp();
     refreshStatus();
+    if (vcProblem) await offerVc(vcProblem);
+  }
+
+  // Latest Visual C++ runtime from Microsoft, after the visitor agrees (Windows asks too).
+  async function offerVc(problem) {
+    if (!(await confirmBox(t('php.vcTitle'), `${problem} ${t('php.vcText')}`, t('php.vcInstall'), false))) return;
+    phpLog.length = 0;
+    phpx.busy = 'vc';
+    renderPhp();
+    try {
+      const r = await api.vcInstall();
+      toast(r.already ? t('php.vcAlready', { v: r.after }) : t('php.vcDone', { v: r.after }) + (r.restart ? ' ' + t('php.vcRestart') : ''));
+    } catch (e) { toast(msg(e)); }
+    phpx.busy = null;
+    await loadPhp();
   }
 
   async function usePhp(v) {

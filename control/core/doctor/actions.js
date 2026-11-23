@@ -110,6 +110,14 @@ const ACTIONS = {
     log('Doctor', 'FIX', 'mariadb-upgrade completed');
     return { ok: true, message: { en: 'System tables upgraded.', ar: 'تمت ترقية جداول النظام.' } };
   },
+
+  // Latest Visual C++ runtime from Microsoft (signature checked; Windows asks for permission).
+  async 'vc.install'() {
+    const r = await require('../vcredist').install();
+    log('Doctor', 'FIX', `Visual C++ runtime ${r.before || 'none'} -> ${r.after}`);
+    const restart = r.restart ? { en: ' Windows recommends restarting the PC.', ar: ' ينصح ويندوز بإعادة تشغيل الجهاز.' } : { en: '', ar: '' };
+    return { ok: true, message: { en: `Visual C++ runtime ${r.after} installed. Switch PHP or start Apache again.${restart.en}`, ar: `تم تثبيت مكتبة Visual C++ بإصدار ${r.after}. بدّل PHP أو شغّل Apache من جديد.${restart.ar}` } };
+  },
 };
 
 async function run(action) {

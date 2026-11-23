@@ -9,7 +9,7 @@ const { spawnSync } = require('child_process');
 const P = require('./paths');
 const settings = require('./settings');
 
-const VC_URL = 'https://aka.ms/vs/17/release/vc_redist.x64.exe';
+const VC_URL = require('./vcredist').URL;
 const SAC_EXIT = new Set([-1058471934, 3236495362]); // 0xC0E90002 STATUS_SYSTEM_INTEGRITY_POLICY_VIOLATION
 
 const T = (en, ar) => ({ en, ar });
@@ -46,12 +46,22 @@ function checkVcRuntime() {
   if (!v) {
     return { id: 'vcredist', status: 'fail', title: T('Visual C++ runtime is missing', 'مكتبة Visual C++ غير مثبتة'),
       detail: T('Apache and PHP need the "Microsoft Visual C++ Redistributable" (x64). Without it they do not start at all.', 'يحتاج Apache و PHP إلى "Microsoft Visual C++ Redistributable" (x64)، وبدونها لا يعملان أبداً.'),
-      fix: T(`Download and install it from Microsoft: ${VC_URL}`, `نزّلها وثبّتها من مايكروسوفت: ${VC_URL}`) };
+      fix: T(`Run: ample vc install (or download it from Microsoft: ${VC_URL})`, `نفّذ: ample vc install (أو نزّلها من مايكروسوفت: ${VC_URL})`) };
   }
-  const ok = require('./update').cmp(v, '14.30') >= 0;
-  return { id: 'vcredist', status: ok ? 'ok' : 'fail', title: T(`Visual C++ runtime ${v}`, `مكتبة Visual C++ بإصدار ${v}`),
-    detail: ok ? null : T('Version 14.30 or newer is needed by Apache and PHP.', 'يحتاج Apache و PHP إلى الإصدار 14.30 أو أحدث.'),
-    fix: ok ? null : T(`Update it: ${VC_URL}`, `حدّثها: ${VC_URL}`) };
+  const { cmp } = require('./update');
+  const ok = cmp(v, '14.30') >= 0;
+  if (!ok) {
+    return { id: 'vcredist', status: 'fail', title: T(`Visual C++ runtime ${v}`, `مكتبة Visual C++ بإصدار ${v}`),
+      detail: T('Version 14.30 or newer is needed by Apache and PHP.', 'يحتاج Apache و PHP إلى الإصدار 14.30 أو أحدث.'),
+      fix: T(`Run: ample vc install (or download it from Microsoft: ${VC_URL})`, `نفّذ: ample vc install (أو نزّلها من مايكروسوفت: ${VC_URL})`) };
+  }
+  // Newer builds (PHP 8.6+, Apache built with Visual Studio 2026) need 14.50+.
+  if (cmp(v, '14.50') < 0) {
+    return { id: 'vcredist', status: 'info', title: T(`Visual C++ runtime ${v}`, `مكتبة Visual C++ بإصدار ${v}`),
+      detail: T('Enough for the current versions. PHP 8.6 and newer need 14.50+.', 'كافية للإصدارات الحالية. يحتاج PHP 8.6 وما بعده إلى الإصدار 14.50 أو أحدث.'),
+      fix: T('Optional: ample vc install (the latest from Microsoft; Windows asks for permission)', 'اختياري: ample vc install (أحدث إصدار من مايكروسوفت، ويطلب ويندوز الإذن)') };
+  }
+  return { id: 'vcredist', status: 'ok', title: T(`Visual C++ runtime ${v}`, `مكتبة Visual C++ بإصدار ${v}`) };
 }
 
 // Files blocked by Code Integrity (Smart App Control / WDAC) inside AMPLE, last 7 days.

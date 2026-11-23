@@ -167,6 +167,12 @@ async function installPhpVersion(want, log = console.log) {
   const key = Object.keys(b).find((k) => /^ts-vs\d+-x64$/.test(k));
   if (!key) throw new Error(`No Thread-Safe x64 build for PHP ${branch}`);
   const version = b.version.replace(/-\d+$/, '');
+  // PHP 8.6+ is built with Visual Studio 2026 and needs a newer Visual C++ runtime:
+  // say so before downloading, instead of a cryptic VCRUNTIME140.dll error later.
+  const vc = require('./vcredist');
+  const need = vc.neededByVs(key.match(/vs(\d+)/)[1]);
+  const st = vc.enough(need);
+  if (!st.ok) throw vc.error(vc.message(`PHP ${version}`, need, st.have));
   const comp = {
     version,
     url: 'https://windows.php.net/downloads/releases/' + b[key].zip.path,
@@ -191,7 +197,11 @@ async function availablePhp() {
   const rel = await (await fetch('https://windows.php.net/downloads/releases/releases.json', { headers: { 'User-Agent': UA } })).json();
   return Object.entries(rel)
     .filter(([, b]) => b && b.version && Object.keys(b).some((k) => /^ts-vs\d+-x64$/.test(k)))
-    .map(([branch, b]) => ({ branch, version: b.version.replace(/-\d+$/, '') }))
+    .map(([branch, b]) => {
+      const key = Object.keys(b).find((k) => /^ts-vs\d+-x64$/.test(k));
+      const vcNeed = require('./vcredist').neededByVs(key.match(/vs(\d+)/)[1]);
+      return { branch, version: b.version.replace(/-\d+$/, ''), vcNeed, vcOk: require('./vcredist').enough(vcNeed).ok };
+    })
     .sort((a, b) => b.branch.localeCompare(a.branch, undefined, { numeric: true }));
 }
 

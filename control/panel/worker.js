@@ -360,6 +360,12 @@ const METHODS = {
     const v = await require('../core/download').installPhpVersion(branch, (text) => progress({ kind: 'php', text: String(text) }));
     return { version: v };
   },
+  // Latest Visual C++ runtime from Microsoft (signature checked; Windows asks for permission).
+  // PHP 8.6+ needs 14.50 or newer.
+  async vcInstall() {
+    const r = await require('../core/vcredist').install((text) => progress({ kind: 'php', text: String(text) }));
+    return { before: r.before, after: r.after, restart: !!r.restart, already: r.code === 1638 };
+  },
   // The main php.ini settings, for EVERY PHP version.
   async phpIniSet(values) {
     const RULES = {
@@ -473,6 +479,9 @@ process.parentPort.on('message', async (e) => {
     const result = await METHODS[method](...args);
     process.parentPort.postMessage({ id, ok: true, result });
   } catch (err) {
-    process.parentPort.postMessage({ id, ok: false, error: err.message });
+    // Errors that come in both languages (e.g. Visual C++ too old) are sent in the panel's.
+    let text = err.message;
+    if (err.ar) { try { if (require('../core/doctor').language() === 'ar') text = err.ar; } catch { /* keep English */ } }
+    process.parentPort.postMessage({ id, ok: false, error: text });
   }
 });

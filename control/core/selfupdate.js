@@ -20,7 +20,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
-const { spawn, execFileSync } = require('child_process');
+const { spawn, spawnSync, execFileSync } = require('child_process');
 const P = require('./paths');
 const V = require('./version');
 
@@ -117,7 +117,15 @@ async function fetchChecked(url, sum, size, dest, progress) {
 
 // Run the setup on its own; it shows its update screen. (Never as plain Node: AMPLE Setup is an
 // Electron app, so ELECTRON_RUN_AS_NODE, set for the panel's worker, must not reach it.)
+// It is started by Windows (WMI), not as the panel's child: Windows closes every program the panel
+// opened when the panel closes, and setup closes the panel to replace its files, so as a child it
+// would close itself halfway. (Setup 1.0.2+ also moves out by itself if it finds the panel above it.)
 function launch(file) {
+  const q = (s) => String(s).replace(/'/g, "''");
+  const r = spawnSync('powershell', ['-NoProfile', '-NonInteractive', '-Command',
+    `(Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = '${q(`"${file}"`)}'; CurrentDirectory = '${q(path.dirname(file))}' }).ReturnValue`],
+  { encoding: 'utf8', windowsHide: true, timeout: 20000 });
+  if ((r.stdout || '').trim() === '0') return;
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
   spawn(file, [], { cwd: path.dirname(file), detached: true, stdio: 'ignore', windowsHide: false, env }).unref();

@@ -19,6 +19,42 @@ const ELECTRON_EXE = process.execPath;
 const ELECTRON_DIR = path.dirname(process.execPath);
 const VERSION = (() => { try { return require(path.join(APP_DIR, 'package.json')).version; } catch { return '1.0.0'; } })();
 
+// ---- started by the AMPLE control panel (Update button)? Run on our own first --------------------
+// Windows keeps every program the panel opens in the panel's "job": when the panel is closed, all of
+// them are closed with it. Setup closes the old panel to replace its files, so it closed ITSELF too
+// and the update stopped halfway. So when the panel started us, Windows (WMI) starts a fresh copy of
+// this setup outside that job, and this copy quits. The fresh copy waits until this one is gone
+// (only one setup may run). Panels from 1.0.2 on start setup outside the job themselves.
+const OUTSIDE = process.argv.find((a) => a.startsWith('--outside='));
+function startedByPanel() {
+  const r = spawnSync('powershell', ['-NoProfile', '-NonInteractive', '-Command',
+    `$me = Get-CimInstance Win32_Process -Filter "ProcessId=${process.pid}"; ` +
+    `if ($me) { (Get-CimInstance Win32_Process -Filter "ProcessId=$($me.ParentProcessId)").ExecutablePath }`],
+  { encoding: 'utf8', windowsHide: true, timeout: 15000 });
+  const parent = (r.stdout || '').trim();
+  // the panel is <AMPLE>\electron\AMPLE.exe (its worker runs the same exe)
+  return !!parent && /\\electron\\AMPLE\.exe$/i.test(parent) &&
+    fs.existsSync(path.join(path.dirname(path.dirname(parent)), 'control', 'core', 'paths.js'));
+}
+function startOutsideJob() {
+  const cmd = `"${process.execPath}" --outside=${process.pid}`.replace(/'/g, "''");
+  const r = spawnSync('powershell', ['-NoProfile', '-NonInteractive', '-Command',
+    `(Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = '${cmd}'; CurrentDirectory = '${path.dirname(process.execPath).replace(/'/g, "''")}' }).ReturnValue`],
+  { encoding: 'utf8', windowsHide: true, timeout: 20000 });
+  return (r.stdout || '').trim() === '0';
+}
+if (OUTSIDE) {
+  // wait (up to 10 s) until the copy that started us has quit
+  const pid = Number(OUTSIDE.split('=')[1]);
+  for (let i = 0; i < 100; i++) {
+    try { process.kill(pid, 0); } catch { break; }
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100);
+  }
+} else if (process.platform === 'win32' && startedByPanel() && startOutsideJob()) {
+  app.exit(0);
+  return;
+}
+
 app.setPath('userData', path.join(os.tmpdir(), 'ample-setup')); // leaves nothing in AppData
 app.setAppUserModelId('AMPLE.Setup');
 
@@ -188,6 +224,14 @@ if (!app.requestSingleInstanceLock()) {
       try {
         const c = JSON.parse(fs.readFileSync(path.join(PAYLOAD, 'control', 'components.json'), 'utf8'));
         versions = { apache: c.apache.version, php: c.php[0].version, mariadb: c.mariadb.version, phpmyadmin: c.phpmyadmin.version, mailpit: c.mailpit.version };
+        // An update keeps the components you have (see keepMine in worker.js): show yours.
+        try {
+          const mine = JSON.parse(fs.readFileSync(path.join(target, 'control', 'components.json'), 'utf8'));
+          for (const k of ['apache', 'mariadb', 'phpmyadmin', 'mailpit']) if (mine[k] && mine[k].version) versions[k] = mine[k].version;
+          const active = (() => { try { return JSON.parse(fs.readFileSync(path.join(target, 'ample.json'), 'utf8')).php; } catch { return null; } })();
+          if (active) versions.php = active;
+          else if (Array.isArray(mine.php) && mine.php[0]) versions.php = mine.php[0].version;
+        } catch { /* a new install */ }
       } catch { /* names without versions */ }
       return { target, version: VERSION, check: checkTarget(target), versions };
     });

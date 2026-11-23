@@ -72,9 +72,13 @@ async function closeRunning() {
   try { core('share.js').killTunnel(); } catch { /* not sharing */ }
   // What is still running (the old control panel, a tunnel...) is closed. MariaDB is never forced:
   // killing it could damage your databases, so if it did not stop, setup stops and says so.
+  // Each process on its own, NEVER with /T (its whole tree): when the update is started from the
+  // panel, this setup is the panel's child, and /T closed the setup itself together with the panel.
+  // Everything AMPLE runs lives in its folder, so runningFromRoot() already lists all of it.
+  const self = new Set([process.pid, process.ppid]);
   for (const p of runningFromRoot()) {
-    if (/^(mariadbd|mysqld)\.exe$/i.test(p.name)) continue;
-    spawnSync('taskkill', ['/PID', String(p.pid), '/T', '/F'], { windowsHide: true });
+    if (/^(mariadbd|mysqld)\.exe$/i.test(p.name) || self.has(p.pid)) continue;
+    spawnSync('taskkill', ['/PID', String(p.pid), '/F'], { windowsHide: true });
   }
   for (let i = 0; i < 24 && runningFromRoot().length; i++) await sleep(250);
   const left = runningFromRoot();
@@ -91,7 +95,9 @@ function vcRuntime() {
   const m = (r.stdout || '').match(/v?(\d+)\.(\d+)\./);
   return m ? `${m[1]}.${m[2]}` : null;
 }
-const verOk = (v) => { if (!v) return false; const [a, b] = v.split('.').map(Number); return a > 14 || (a === 14 && b >= 30); };
+const verAtLeast = (v, min) => { if (!v) return false; const [a, b] = v.split('.').map(Number); return a > 14 || (a === 14 && b >= min); };
+const verOk = (v) => verAtLeast(v, 30);     // needed by the bundled Apache + PHP 8.5
+const verLatest = (v) => verAtLeast(v, 50); // needed by PHP 8.6+ (Visual Studio 2026 builds)
 
 function windowsName() {
   const build = Number(os.release().split('.')[2] || 0);
@@ -100,7 +106,8 @@ function windowsName() {
 
 async function installVcRuntime() {
   const exe = path.join(os.tmpdir(), 'vc_redist.x64.exe');
-  const res = await fetch('https://aka.ms/vs/17/release/vc_redist.x64.exe', { redirect: 'follow' });
+  // Microsoft's permalink for the latest v14 runtime (Visual Studio 2017-2026).
+  const res = await fetch('https://aka.ms/vc14/vc_redist.x64.exe', { redirect: 'follow' });
   if (!res.ok) throw new Error(`Could not download the Visual C++ runtime (HTTP ${res.status})`);
   fs.writeFileSync(exe, Buffer.from(await res.arrayBuffer()));
   // Run it only if Microsoft really signed it.
@@ -141,17 +148,45 @@ function setAccess(scope) {
 }
 
 // ---- 2. AMPLE files + Electron + Node --------------------------------------------------------
-async function copyAmple() {
+const COMPONENTS = () => path.join(ROOT, 'control', 'components.json');
+function readComponents() { try { return JSON.parse(fs.readFileSync(COMPONENTS(), 'utf8')); } catch { return null; } }
+// An AMPLE update changes AMPLE's own code only. Your components (Apache, PHP, MariaDB, phpMyAdmin,
+// Mailpit, Composer, the control panel's Electron...) stay exactly the versions you have, newer or
+// older than this setup's: you update them yourself from the Updates page ("ample update").
+// Only a component you don't have at all (new in this AMPLE version) is taken from this setup.
+function keepMine(old, shipped) {
+  if (!old) return { comps: shipped, kept: [] };
+  const comps = { ...shipped }, kept = [];
+  for (const [k, v] of Object.entries(old)) {
+    if (k.startsWith('_') || !v || typeof v !== 'object') continue;   // "_help" text comes from the setup
+    comps[k] = v;
+    const s = shipped[k];
+    const mine = Array.isArray(v) ? v.map((p) => p.version).join(', ') : v.version;
+    const theirs = s && (Array.isArray(s) ? s.map((p) => p.version).join(', ') : s.version);
+    if (mine && mine !== theirs) kept.push(`${k} ${mine}`);
+  }
+  return { comps, kept };
+}
+
+async function copyAmple(old) {
   fs.mkdirSync(ROOT, { recursive: true });
   // AMPLE's code (control\, ample.cmd, ...). Your data is never in the payload.
   copyDir(PAYLOAD, ROOT, (s) => path.relative(PAYLOAD, s).toLowerCase() === path.join('htdocs', 'index.php') && fs.existsSync(path.join(ROOT, 'htdocs', 'index.php')));
-  // The control panel = this same Electron, only the exe renamed (never modified).
+  // The payload brought this setup's components.json: put your own versions back.
+  const shipped = readComponents();
+  const { comps, kept } = keepMine(old, shipped);
+  fs.writeFileSync(COMPONENTS(), JSON.stringify(comps, null, 2) + '\n');
+  if (kept.length) say(`your component versions are kept: ${kept.join(' · ')}`);
+  // The control panel = this same Electron, only the exe renamed (never modified). An update keeps
+  // the Electron you have (it is a component too); only a new install copies this one.
   const dest = path.join(ROOT, 'electron');
-  const appDir = path.join(ELECTRON_DIR, 'resources', 'app');
-  copyDir(ELECTRON_DIR, dest, (s) => s === appDir || s === ELECTRON_EXE);
-  copyFile(ELECTRON_EXE, path.join(dest, 'AMPLE.exe'));
-  const comps = JSON.parse(fs.readFileSync(path.join(ROOT, 'control', 'components.json'), 'utf8'));
-  fs.writeFileSync(path.join(dest, '.ample-version'), comps.electron.version);
+  const keepPanel = !!(old && old.electron) && fs.existsSync(path.join(dest, 'AMPLE.exe'));
+  if (!keepPanel) {
+    const appDir = path.join(ELECTRON_DIR, 'resources', 'app');
+    copyDir(ELECTRON_DIR, dest, (s) => s === appDir || s === ELECTRON_EXE);
+    copyFile(ELECTRON_EXE, path.join(dest, 'AMPLE.exe'));
+    fs.writeFileSync(path.join(dest, '.ample-version'), shipped.electron.version);
+  }
   core('panel.js').prepare();
 }
 
@@ -208,9 +243,11 @@ const METHODS = {
     // 1. this PC
     step('pc', 'run');
     let vc = vcRuntime();
-    if (!verOk(vc)) {
+    if (!verLatest(vc)) {
+      // Older than 14.50: update it now, so every PHP version added later (8.6+) also works.
+      // Only a missing / too old runtime (< 14.30) stops the setup.
       step('pc', 'run', { detail: 'installing the Visual C++ runtime (Windows asks)' });
-      await installVcRuntime();
+      try { await installVcRuntime(); } catch (e) { if (!verOk(vc)) throw e; }
       vc = vcRuntime();
       if (!verOk(vc)) throw Object.assign(new Error('The Visual C++ runtime is needed by Apache and PHP. It was not installed (the Windows box was cancelled?).'), { step: 'pc' });
     }
@@ -221,7 +258,7 @@ const METHODS = {
     step('ample', 'run', { pct: 0 });
     await closeRunning(); // an update: nothing from this folder may be running while it is replaced
     if (!opts.update) setAccess(result.scope); // an update keeps the permissions chosen the first time
-    await copyAmple();
+    await copyAmple(opts.update ? readComponents() : null); // your versions, read before they are replaced
     await installNode((pct) => step('ample', 'run', { pct }));
     step('ample', 'ok', { detail: 'control panel + command line' });
 

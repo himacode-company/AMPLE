@@ -357,7 +357,7 @@ if (!app.requestSingleInstanceLock()) {
       return shell.openExternal(url).then(() => ({ ok: true }));
     });
     handleLocal('ample:openMail', openMail);
-    for (const m of ['php', 'phpExtensions', 'phpAvailable', 'phpUse', 'phpCompare', 'phpAdd', 'phpIniSet', 'phpExtSet', 'xdebugSet']) handle('ample:' + m, m);
+    for (const m of ['php', 'phpExtensions', 'phpAvailable', 'phpUse', 'phpCompare', 'phpAdd', 'phpIniSet', 'phpExtSet', 'xdebugSet', 'vcInstall']) handle('ample:' + m, m);
     // "Copy" buttons: text only, limited size (the page itself gets no clipboard permission).
     handleLocal('ample:copy', (text) => { clipboard.writeText(String(text).slice(0, 10000)); return { ok: true }; });
     handleLocal('ample:pickImportFile', pickImportFile);

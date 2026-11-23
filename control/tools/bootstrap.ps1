@@ -43,7 +43,7 @@ $vcOk = $vc -and ([version]($vc.TrimStart('v')) -ge [version]'14.30')
 if ($vcOk) { Write-Host "2. Visual C++ runtime $vc already here" }
 else {
     Write-Host "2. Visual C++ runtime: $(if ($vc) { "$vc is too old" } else { 'missing' }) (Apache and PHP need it)"
-    $url = 'https://aka.ms/vs/17/release/vc_redist.x64.exe'
+    $url = 'https://aka.ms/vc14/vc_redist.x64.exe'
     $go = $Unattended -or ((Read-Host "   Download and install it from Microsoft now? Windows will ask for permission (Y/n)") -notmatch '^[nN]')
     if ($go) {
         $exe = Join-Path $env:TEMP 'vc_redist.x64.exe'

@@ -1,9 +1,9 @@
 {
   "_help": "AMPLE's own version. The ONLY place to change it: the setup file name (AMPLE-Setup-<version>.exe), the control panel, the installer and the update check all read it from here. 'notes' go into dist\\latest.json and are shown in the panel next to the update. 'important': true = an update people should not skip: AMPLE 1.0.1 and newer then say so in the Windows notification and on the Home page.",
-  "version": "1.0.1",
-  "important": true,
+  "version": "1.0.2",
+  "important": false,
   "notes": {
-    "en": "Important, please update: fixes Apache not starting when Windows Smart App Control blocks one of its optional files (mod_deflate). AMPLE now starts Apache without the blocked optional file and explains it in Log Doctor. Also updates MariaDB to 11.8.10, Mailpit to 1.34.0 and the control panel (Electron 45.3.3). Your projects, databases and settings are kept.",
-    "ar": "تحديث مهم، يُرجى التحديث: يحل مشكلة عدم تشغيل Apache عندما تمنع ميزة Smart App Control في ويندوز أحد ملفاته الاختيارية (mod_deflate). يشغّل AMPLE الآن خادم Apache دون الملف الاختياري الممنوع ويشرح ذلك في Log Doctor. ويحدّث أيضاً MariaDB إلى 11.8.10 و Mailpit إلى 1.34.0 ولوحة التحكم (Electron 45.3.3). تبقى مشاريعك وقواعد بياناتك وإعداداتك كما هي."
+    "en": "PHP 8.6 support: PHP 8.6 needs a newer Microsoft Visual C++ runtime (14.50+). AMPLE now checks this before downloading or switching PHP, says clearly what is missing, and installs the latest runtime from Microsoft with one click (or: ample vc install). Setup also installs the latest runtime, Log Doctor explains the error, and a stale PHP test cache no longer hides extensions after the runtime is updated. Your projects, databases and settings are kept.",
+    "ar": "دعم PHP 8.6: يحتاج PHP 8.6 إلى إصدار أحدث من مكتبة Microsoft Visual C++ (14.50 أو أحدث). يتحقق AMPLE الآن من ذلك قبل تنزيل PHP أو التبديل إليه، ويوضح ما ينقص، ويثبّت أحدث مكتبة من مايكروسوفت بضغطة واحدة (أو بالأمر: ample vc install). ويثبّت برنامج الإعداد أيضاً أحدث مكتبة، ويشرح Log Doctor هذا الخطأ، ولم تعد ذاكرة اختبار PHP القديمة تُخفي الإضافات بعد تحديث المكتبة. تبقى مشاريعك وقواعد بياناتك وإعداداتك كما هي."
   }
 }

@@ -23,11 +23,18 @@ const SNAPSHOT = 'echo json_encode(['
   + ']);';
 
 function snapshot(version) {
+  // PHP 8.6+ refuses to start on an older Visual C++ runtime: say it clearly, before anything else.
+  const vc = require('./vcredist');
+  const need = vc.neededByPhpDir(phpini.phpDirOf(version));
+  const st = vc.enough(need);
+  if (need && !st.ok) throw vc.error(vc.message(`PHP ${version}`, need, st.have));
   const gen = config.generatePhpIni(version);
   const r = phpini.runPhp(version, ['-c', gen.iniFile, '-d', 'display_startup_errors=0', '-r', SNAPSHOT]);
   const line = (r.stdout || '').trim().split(/\r?\n/).pop();
   let data;
   try { data = JSON.parse(line); } catch {
+    const why = vc.explain(`${r.stderr || ''}${r.stdout || ''}`, `PHP ${version}`);
+    if (why) throw vc.error(why);
     throw new Error(`Could not read PHP ${version}'s configuration:\n${(r.stderr || r.stdout || '').trim()}`);
   }
   return {

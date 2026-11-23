@@ -534,6 +534,24 @@ Turn it off when not debugging (it slows PHP down): ample xdebug off`);
     const v = await installPhpVersion(args[0]);
     console.log(`PHP ${v} ready. Switch to it with: ample php-use ${v}`);
   },
+  // Microsoft Visual C++ runtime: show it, or install the latest one from Microsoft.
+  async vc() {
+    const vc = require('../core/vcredist');
+    if (args[0] === 'install') {
+      const r = await vc.install((t) => console.log('  ' + t));
+      console.log(r.code === 1638 ? `✔ A newer Visual C++ runtime is already installed (${r.after}).`
+        : `✔ Visual C++ runtime ${r.before || 'none'} → ${r.after}` + (r.restart ? ' (Windows recommends a restart)' : ''));
+      return;
+    }
+    const have = vc.installed();
+    console.log(`Visual C++ runtime: ${have || 'not installed'}`);
+    const config = require('../core/config');
+    for (const v of config.listPhpVersions()) {
+      const need = vc.neededByPhpDir(require('../core/phpini').phpDirOf(v));
+      if (!need) continue;
+      console.log(`  PHP ${v.padEnd(8)} needs ${need}+  ${vc.enough(need).ok ? '✔' : '✖ run: ample vc install'}`);
+    }
+  },
   async config() {
     const r = require('../core/config').generate();
     console.log(`PHP ${r.phpVersion} active. Generated:\n  ` + r.files.join('\n  '));
@@ -553,6 +571,7 @@ Turn it off when not debugging (it slows PHP down): ample xdebug off`);
   php-use <ver>    switch PHP version: makes it match the current one, then restarts Apache
   php-compare [ref] <ver>   report differences between two PHP versions (changes nothing)
   php-add <ver>    download another PHP version from windows.php.net
+  vc [install]     Visual C++ runtime each PHP needs / install the latest from Microsoft
   password <pw>    change the MariaDB password (MariaDB + ample.json + phpMyAdmin)
   doctor           explain the problems in the logs (last 24h)
   doctor <n>       details + how to fix problem n
@@ -593,7 +612,7 @@ Turn it off when not debugging (it slows PHP down): ample xdebug off`);
     // Explain the failure instead of only printing the technical message.
     printDetails({ ...e.diagnosis, n: null, raw: e.message.split('\n') }, require('../core/doctor').language() === 'ar');
   } else {
-    console.error('✖ ' + e.message);
+    console.error('✖ ' + (e.ar && require('../core/doctor').language() === 'ar' ? e.ar : e.message));
   }
   process.exit(1);
 });

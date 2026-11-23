@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://ample.himacode.com/download/get.php?v=1.0.1"><img src="https://img.shields.io/badge/Download-Windows%2010%20%7C%2011-F08A24?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows"></a>
-  <img src="https://img.shields.io/badge/version-1.0.1-1b1e24?style=for-the-badge" alt="Version 1.0.1">
+  <a href="https://ample.himacode.com/download/get.php?v=1.0.2"><img src="https://img.shields.io/badge/Download-Windows%2010%20%7C%2011-F08A24?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows"></a>
+  <img src="https://img.shields.io/badge/version-1.0.2-1b1e24?style=for-the-badge" alt="Version 1.0.2">
   <img src="https://img.shields.io/badge/price-free-3fb97c?style=for-the-badge" alt="Free">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1b1e24?style=for-the-badge" alt="License: GPL-3.0"></a>
 </p>
@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <a href="https://ample.himacode.com/download/get.php?v=1.0.1"><b>Download</b></a> ·
+  <a href="https://ample.himacode.com/download/get.php?v=1.0.2"><b>Download</b></a> ·
   <a href="https://ample.himacode.com/">Website</a> ·
   <a href="https://ample.himacode.com/docs/">Docs</a> ·
   <a href="https://ample.himacode.com/guides/">Guides</a> ·
@@ -139,7 +139,7 @@ ample update            check every component against its official source
 
 The full command list, folders and settings are in **[GUIDE.md](GUIDE.md)**, and everything is explained in the **[documentation](https://ample.himacode.com/docs/)**.
 
-## What's inside AMPLE 1.0.1
+## What's inside AMPLE 1.0.2
 
 | Component | Version | What it does |
 |---|---|---|

@@ -24,7 +24,7 @@ const RULE_FILES = [
   ['./rules/mailpit', ['mailpit']],
   ['./rules/ample', ['ample']],
 ];
-const EXTRA_SOURCES = { 'php.db_access_denied': ['mariadb'] };
+const EXTRA_SOURCES = { 'php.db_access_denied': ['mariadb'], 'php.vc_runtime': ['apache', 'ample'] };
 
 // Specific rules first; catch-all rules (generic: true) only when nothing else matched.
 const RULES = RULE_FILES

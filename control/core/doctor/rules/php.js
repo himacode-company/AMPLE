@@ -6,6 +6,29 @@ const { human, nextSize, extForFunction, extForClass } = require('./util');
 
 module.exports = [
   {
+    // PHP 8.6+ (Visual Studio 2026 builds) on an older Visual C++ runtime. PHP prints:
+    //   'C:\WINDOWS\SYSTEM32\VCRUNTIME140.dll' 14.40 is not compatible with this PHP build linked with 14.51
+    // AMPLE's own check says: PHP 8.6.0 needs the Microsoft Visual C++ runtime 14.50 or newer (you have 14.40)
+    id: 'php.vc_runtime',
+    startup: true, // PHP cannot start at all; resolved once it starts
+    match: /VCRUNTIME140(?:_1)?\.dll['"]?\s+(\d+\.\d+)[\d.]*\s+is not compatible with this PHP build linked with\s+(\d+\.\d+)|(?:PHP [\d.]+ )needs the Microsoft Visual C\+\+ runtime (\d+\.\d+) or newer \((?:you have (\d+\.\d+)|it is not installed)/,
+    vars: (m) => ({ have: m[1] || m[4] || '—', need: m[2] || m[3] }),
+    title: { en: 'PHP needs a newer Visual C++ runtime ({need}+)', ar: 'يحتاج PHP إلى إصدار أحدث من Visual C++ ({need} أو أحدث)' },
+    summary: {
+      en: 'This PHP version was built with a newer Microsoft compiler and does not start with the Visual C++ runtime on this PC ({have}).',
+      ar: 'بُني إصدار PHP هذا بمترجم أحدث من مايكروسوفت، ولا يعمل مع مكتبة Visual C++ الموجودة على هذا الجهاز ({have}).',
+    },
+    details: {
+      en: 'Apache and PHP use Microsoft\'s Visual C++ runtime (vcruntime140.dll), which is installed once for all of Windows. PHP 8.6 and newer are built with Visual Studio 2026 and need runtime 14.50 or newer. Nothing is wrong with PHP or your settings: only the runtime is too old.',
+      ar: 'يستخدم Apache و PHP مكتبة Visual C++ من مايكروسوفت (vcruntime140.dll)، وهي تُثبَّت مرة واحدة لكل ويندوز. يُبنى PHP 8.6 وما بعده باستخدام Visual Studio 2026، ويحتاج إلى المكتبة بإصدار 14.50 أو أحدث. لا توجد مشكلة في PHP أو في إعداداتك: المكتبة فقط قديمة.',
+    },
+    steps: {
+      en: ['Install the latest Visual C++ runtime (button below, or: ample vc install). AMPLE downloads it from Microsoft and checks Microsoft signed it; Windows asks for permission.', 'Then switch to this PHP version again, or start Apache again.', 'Until then, your other PHP versions keep working: ample php-use 8.5'],
+      ar: ['ثبّت أحدث مكتبة Visual C++ (الزر أدناه، أو الأمر: ample vc install). ينزّلها AMPLE من مايكروسوفت ويتأكد أنها موقّعة منها، وسيطلب ويندوز إذنك.', 'بعدها بدّل إلى إصدار PHP هذا من جديد، أو شغّل Apache من جديد.', 'حتى ذلك الحين، تبقى إصدارات PHP الأخرى تعمل: ample php-use 8.5'],
+    },
+    action: () => ({ type: 'vc.install', params: {}, label: { en: 'Install Visual C++', ar: 'ثبّت Visual C++' } }),
+  },
+  {
     id: 'php.memory',
     match: /Allowed memory size of (\d+) bytes exhausted/,
     vars: (m) => ({ limit: human(m[1]), suggest: nextSize(m[1]) }),

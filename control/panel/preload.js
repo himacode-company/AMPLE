@@ -56,6 +56,7 @@ contextBridge.exposeInMainWorld('ample', {
   phpUse: call('ample:phpUse'),                // (version)
   phpCompare: call('ample:phpCompare'),        // (version) report only
   phpAdd: call('ample:phpAdd'),                // ('8.4')
+  vcInstall: call('ample:vcInstall'),          // latest Visual C++ runtime from Microsoft (Windows asks)
   phpIniSet: call('ample:phpIniSet'),          // ({ memory_limit: '512M', ... })
   phpExtSet: call('ample:phpExtSet'),          // (name, true | false)
   xdebugSet: call('ample:xdebugSet'),          // (true | false)

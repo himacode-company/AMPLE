@@ -32,13 +32,8 @@ const components = () => JSON.parse(fs.readFileSync(P.componentsFile, 'utf8'));
 const saveComponents = (c) => fs.writeFileSync(P.componentsFile, JSON.stringify(c, null, 2) + '\n');
 const sha256File = (f) => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
 
-// Installed Visual C++ 2015-2022+ runtime, e.g. "14.40". Apache/PHP builds need a minimum.
-function vcRuntime() {
-  const r = spawnSync('reg', ['query', 'HKLM\\SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64', '/v', 'Version'], { encoding: 'utf8' });
-  const m = (r.stdout || '').match(/v?(\d+)\.(\d+)\./);
-  return m ? `${m[1]}.${m[2]}` : null;
-}
-const VS_NEEDS = { 17: '14.30', 18: '14.50' }; // build toolset -> minimum runtime
+// Installed Visual C++ runtime, e.g. "14.40". Apache/PHP builds need a minimum.
+const { installed: vcRuntime, VS_NEEDS } = require('./vcredist');
 
 // ---- checkers: each returns { name, current, latest, comp?, note? } ----------------
 
@@ -58,8 +53,8 @@ async function checkApache() {
   const newest = builds[0];
   let note = null;
   if (newest && best && cmp(newest.version, best.version) > 0) {
-    note = { en: `Apache ${newest.version} exists but needs Visual C++ runtime ${VS_NEEDS[newest.vs]}+ (you have ${vc}). Install the latest "Visual C++ Redistributable x64" from Microsoft, then run ample update again.`,
-      ar: `توجد نسخة Apache ${newest.version} لكنها تحتاج إلى مكتبة Visual C++ بإصدار ${VS_NEEDS[newest.vs]} أو أحدث (لديك ${vc}). ثبّت أحدث "Visual C++ Redistributable x64" من مايكروسوفت ثم نفّذ ample update من جديد.` };
+    note = { en: `Apache ${newest.version} exists but needs Visual C++ runtime ${VS_NEEDS[newest.vs]}+ (you have ${vc}). Install it with: ample vc install, then run ample update again.`,
+      ar: `توجد نسخة Apache ${newest.version} لكنها تحتاج إلى مكتبة Visual C++ بإصدار ${VS_NEEDS[newest.vs]} أو أحدث (لديك ${vc}). ثبّتها بالأمر: ample vc install ثم نفّذ ample update من جديد.` };
   }
   if (!best || cmp(best.version, c.version) <= 0) return { name: 'apache', label: 'Apache', current: c.version, latest: best ? best.version : null, note };
   const sum = (await text(best.url + '.txt').catch(() => '')).match(/\b[a-f0-9]{64}\b/i);
@@ -76,10 +71,20 @@ async function checkPhp() {
   const b = rel[branch];
   const latest = b ? b.version.replace(/-\d+$/, '') : null;
   const newerBranches = Object.keys(rel).filter((k) => cmp(k, branch) > 0).sort(cmp);
-  const note = newerBranches.length
-    ? { en: `A newer PHP line is available: ${newerBranches.join(', ')}. Try it with: ample php-add ${newerBranches.pop()} (your settings are carried over by php-use).`,
-      ar: `يتوفر خط أحدث من PHP: ${newerBranches.join('، ')}. جرّبه بالأمر: ample php-add ${newerBranches[newerBranches.length - 1]} (ينقل php-use إعداداتك تلقائياً).` }
-    : null;
+  let note = null;
+  if (newerBranches.length) {
+    const top = newerBranches[newerBranches.length - 1];
+    note = { en: `A newer PHP line is available: ${newerBranches.join(', ')}. Try it with: ample php-add ${top} (your settings are carried over by php-use).`,
+      ar: `يتوفر خط أحدث من PHP: ${newerBranches.join('، ')}. جرّبه بالأمر: ample php-add ${top} (ينقل php-use إعداداتك تلقائياً).` };
+    // Newer lines can need a newer Visual C++ runtime (PHP 8.6: 14.50+): say so now.
+    const vsKey = Object.keys(rel[top] || {}).find((k) => /^ts-vs\d+-x64$/.test(k));
+    const need = vsKey ? VS_NEEDS[Number(vsKey.match(/vs(\d+)/)[1])] : null;
+    const vc = vcRuntime();
+    if (need && (!vc || cmp(vc, need) < 0)) {
+      note.en += ` PHP ${top} needs Visual C++ ${need}+ (you have ${vc || 'none'}): run ample vc install first.`;
+      note.ar += ` يحتاج PHP ${top} إلى Visual C++ بإصدار ${need} أو أحدث (لديك ${vc || 'لا شيء'}): نفّذ ample vc install أولاً.`;
+    }
+  }
   return { name: 'php', label: `PHP ${branch}`, current: active, latest, branch, note, comp: latest && cmp(latest, active) > 0 ? { version: latest } : null };
 }
 
@@ -107,11 +112,31 @@ async function checkPma() {
     comp: { ...c, version: v, url, sha256: sum ? sum[0] : null, stripPrefix: `phpMyAdmin-${v}-all-languages` } };
 }
 
+// GitHub's API allows only 60 requests an hour from one internet address without an account (then
+// "HTTP 403"). So the newest version is read from the release page's redirect
+// (github.com/<repo>/releases/latest -> .../releases/tag/v1.34.0), which has no such limit, and the
+// API is only asked when there IS a newer version (for its download link and SHA-256).
+async function ghLatestTag(repo) {
+  const r = await fetch(`https://github.com/${repo}/releases/latest`, { redirect: 'manual', headers: { 'User-Agent': UA } });
+  const m = (r.headers.get('location') || '').match(/\/releases\/tag\/([^/?#]+)$/);
+  if (!m) throw new Error(`could not read the newest ${repo} release (HTTP ${r.status})`);
+  return decodeURIComponent(m[1]);
+}
+async function ghRelease(repo, tag) {
+  try {
+    return await json(`https://api.github.com/repos/${repo}/releases/tags/${encodeURIComponent(tag)}`);
+  } catch (e) {
+    if (/HTTP (403|429)/.test(e.message)) throw new Error('GitHub allows only 60 update checks an hour from one internet address. Try again in an hour.');
+    throw e;
+  }
+}
+
 async function checkMailpit() {
   const c = components().mailpit;
-  const r = await json('https://api.github.com/repos/axllent/mailpit/releases/latest');
-  const v = r.tag_name.replace(/^v/, '');
+  const tag = await ghLatestTag('axllent/mailpit');
+  const v = tag.replace(/^v/, '');
   if (cmp(v, c.version) <= 0) return { name: 'mailpit', label: 'Mailpit', current: c.version, latest: v };
+  const r = await ghRelease('axllent/mailpit', tag);
   const a = r.assets.find((x) => x.name === 'mailpit-windows-amd64.zip');
   return { name: 'mailpit', label: 'Mailpit', current: c.version, latest: v,
     comp: { ...c, version: v, url: a.browser_download_url, sha256: (a.digest || '').replace(/^sha256:/, '') || null } };
@@ -148,9 +173,9 @@ async function checkElectron() {
   if (!c) return { name: 'electron', skip: true };
   const major = c.version.split('.')[0];
   const label = `Electron ${major} (control panel)`;
-  const rels = await json('https://api.github.com/repos/electron/electron/releases?per_page=100');
-  const versions = rels.filter((r) => !r.prerelease && !r.draft && new RegExp(`^v${major}\\.\\d+\\.\\d+$`).test(r.tag_name))
-    .map((r) => r.tag_name.slice(1)).sort(cmp);
+  // Electron's own list of every release (no GitHub API limit). Stable only: "45.4.1", not "45.0.0-beta.3".
+  const rels = await json('https://releases.electronjs.org/releases.json');
+  const versions = rels.map((r) => String(r.version || '')).filter((v) => new RegExp(`^${major}\\.\\d+\\.\\d+$`).test(v)).sort(cmp);
   const latest = versions.pop() || c.version;
   if (cmp(latest, c.version) <= 0) return { name: 'electron', label, current: c.version, latest };
   const base = `https://github.com/electron/electron/releases/download/v${latest}`;
@@ -166,9 +191,10 @@ async function checkElectron() {
 async function checkCloudflared() {
   const c = components().cloudflared;
   if (!c || !fs.existsSync(P.p(c.dest))) return { name: 'cloudflared', skip: true };
-  const r = await json('https://api.github.com/repos/cloudflare/cloudflared/releases/latest');
-  const v = r.tag_name.replace(/^v/, '');
+  const tag = await ghLatestTag('cloudflare/cloudflared');
+  const v = tag.replace(/^v/, '');
   if (cmp(v, c.version) <= 0) return { name: 'cloudflared', label: 'cloudflared (share)', current: c.version, latest: v };
+  const r = await ghRelease('cloudflare/cloudflared', tag);
   const a = r.assets.find((x) => x.name === 'cloudflared-windows-amd64.exe');
   return { name: 'cloudflared', label: 'cloudflared (share)', current: c.version, latest: v,
     comp: { ...c, version: v, url: a.browser_download_url, sha256: (a.digest || '').replace(/^sha256:/, '') || null } };
@@ -322,11 +348,12 @@ const APPLY = {
     const { tryRun } = require('./check');
     const run = tryRun(path.join(P.phpRoot, v, 'php.exe'), ['-n', '-v'], phpini.envFor(path.join(P.phpRoot, v)));
     const wanted = phpini.wantedExtensions(r.current, settings.load());
-    const nowOk = phpini.detectExtensions(r.current, wanted);
-    const newRes = phpini.detectExtensions(v, wanted);
+    const vcErr = !run.ok && require('./vcredist').explain(run.out, `PHP ${v}`);
+    const nowOk = run.ok ? phpini.detectExtensions(r.current, wanted) : {};
+    const newRes = run.ok ? phpini.detectExtensions(v, wanted) : {};
     const lost = wanted.filter((e) => nowOk[e] && nowOk[e].ok && !(newRes[e] && newRes[e].ok));
     if (run.blocked || !run.ok || lost.length) {
-      const why = run.blocked ? 'php.exe is blocked by Windows' : !run.ok ? `php.exe does not run (exit ${run.code})`
+      const why = run.blocked ? 'php.exe is blocked by Windows' : vcErr ? vcErr.en : !run.ok ? `php.exe does not run (exit ${run.code})`
         : `these extensions would stop working: ${lost.map((e) => `${e} (${newRes[e] ? newRes[e].reason : 'missing'})`).join(', ')}`;
       const sac = run.blocked || lost.some((e) => /Smart App Control/i.test((newRes[e] || {}).reason || ''));
       say(`not switching to PHP ${v}: ${why}`);
